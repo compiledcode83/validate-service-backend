@@ -46,6 +46,10 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   TYPEORM_LOGGING: string;
+
+  @IsInt()
+  @Min(10)
+  TYPEORM_POOL_SIZE: number;
 }
 
 export function validate(config: Record<string, unknown>) {

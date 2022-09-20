@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { EnvHelper } from './common/helpers/env.helper';
 import { validate } from './common/validators/env.validator';
+import { TicketProviderModule } from './ticket-provider/ticket-provider.module';
 import databaseConfig from './config/database.config';
 
 EnvHelper.verifyNodeEnv();
@@ -26,10 +27,12 @@ EnvHelper.verifyNodeEnv();
         return {
           ...config,
           namingStrategy: new SnakeNamingStrategy(),
+          autoLoadEntities: true,
         };
       },
       inject: [ConfigService],
     }),
+    TicketProviderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

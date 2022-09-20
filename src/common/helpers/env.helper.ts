@@ -6,6 +6,6 @@ export class EnvHelper {
   }
 
   static getEnvFilePath(): string {
-    return `.env.${process.env.NODE_ENV.toLowerCase()}`;
+    return `.env.${process.env.NODE_ENV?.toLowerCase()}`;
   }
 }
