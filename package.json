@@ -38,6 +38,7 @@
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.2",
     "dotenv-cli": "^6.0.0",
+    "jest-junit": "^14.0.1",
     "mysql2": "^2.3.3",
     "npm": "^8.19.2",
     "reflect-metadata": "^0.1.13",
