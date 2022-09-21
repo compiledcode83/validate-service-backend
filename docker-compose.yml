@@ -1,0 +1,41 @@
+version: '3.2'
+
+services:
+  api:
+    container_name: validate-api
+    image: validate-node:16
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=test
+    depends_on:
+      mysql:
+        condition: service_healthy
+    links:
+      - mysql:mysql
+    command: sh -c "npm run test"
+    networks:
+      - validate-network
+
+  mysql:
+    image: mysql:8
+    container_name: validate-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql
+      - MYSQL_DATABASE=validate-test
+    ports:
+      - 3306:3306
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_buffer_pool_size=128m --max_connections=100 --innodb_log_file_size=64M --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:3306 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+    restart: "no"
+    networks:
+      - validate-network
+
+networks:
+  validate-network:
+    driver: bridge
