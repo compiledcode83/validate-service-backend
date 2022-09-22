@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TicketProvider } from './ticket-provider.entity';
-import { RepositoryFactory } from './repository.factory';
 import { TicketProviderService } from './ticket-provider.service';
+import { TicketProviderRepository } from './ticket-provider.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([RepositoryFactory, TicketProvider])],
-  providers: [TicketProviderService, RepositoryFactory],
+  imports: [TypeOrmModule.forFeature([TicketProvider])],
+  providers: [TicketProviderService, TicketProviderRepository],
 })
 export class TicketProviderModule {}
