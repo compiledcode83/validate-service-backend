@@ -9,6 +9,9 @@ import { validate } from './common/validators/env.validator';
 import { TicketProviderModule } from './ticket-provider/ticket-provider.module';
 import databaseConfig from './config/database.config';
 import { DataSource } from 'typeorm';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { TicketProviderApiTokenModule } from './ticket-provider-api-token/ticket-provider-api-token.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -34,6 +37,9 @@ EnvHelper.verifyNodeEnv();
       inject: [ConfigService],
     }),
     TicketProviderModule,
+    UserModule,
+    AuthModule,
+    TicketProviderApiTokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],

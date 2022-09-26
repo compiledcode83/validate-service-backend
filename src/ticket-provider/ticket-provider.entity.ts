@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-provider-api-token.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
 import { TicketProviderStatus } from './ticket-provider.types';
 
 @Entity('ticket_provider')
@@ -30,4 +31,8 @@ export class TicketProvider {
   @ApiProperty({ description: 'Ticket provider status', example: TicketProviderStatus.Active, required: false })
   @Column({ type: 'enum', nullable: false, enum: TicketProviderStatus })
   status: TicketProviderStatus;
+
+  @OneToMany(() => TicketProviderApiToken, (ticketProviderApiToken) => ticketProviderApiToken.ticketProvider)
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
+  apiTokens: TicketProviderApiToken[];
 }
