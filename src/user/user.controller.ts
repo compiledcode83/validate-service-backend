@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -22,7 +23,7 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @ApiResponse(ApiResponseHelper.unauthorized())
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -55,7 +56,7 @@ export class UserController {
   }
 
   @ApiOperation({ description: `Create a new user` })
-  @ApiResponse(ApiResponseHelper.success(User))
+  @ApiResponse(ApiResponseHelper.success(User, HttpStatus.CREATED))
   @ApiResponse(ApiResponseHelper.validationErrors(['phoneNumber must be a valid phone number']))
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()

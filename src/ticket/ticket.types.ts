@@ -1,5 +1,5 @@
 export class TicketAdditionalData {
-  [key: string]: string;
+  [key: string]: string | number;
 }
 
 export enum TicketStatus {

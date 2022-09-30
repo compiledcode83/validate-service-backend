@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpStatus,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -19,7 +20,7 @@ import { Ticket } from './ticket.entity';
 import { TicketService } from './ticket.service';
 
 @ApiResponse(ApiResponseHelper.unauthorized())
-@Controller('ticket')
+@Controller('tickets')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
@@ -40,7 +41,7 @@ export class TicketController {
   }
 
   @ApiOperation({ description: `Create a new ticket` })
-  @ApiResponse(ApiResponseHelper.success(Ticket))
+  @ApiResponse(ApiResponseHelper.success(Ticket, HttpStatus.CREATED))
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'))
   @Post()

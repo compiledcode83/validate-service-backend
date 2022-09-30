@@ -2,10 +2,9 @@ import { DataSource } from 'typeorm';
 import path = require('path');
 import * as dotenv from 'dotenv';
 import { EnvHelper } from '@src/common/helpers/env.helper';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 dotenv.config({ path: EnvHelper.getEnvFilePath() });
-
-console.log(path.join(__dirname, '../database/migrations/*{.ts,.js'));
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -26,4 +25,5 @@ export const AppDataSource = new DataSource({
     waitForConnections: process.env.MYSQL_WAIT_FOR_CONNECTIONS === 'true',
   },
   poolSize: Number(process.env.TYPEORM_POOL_SIZE),
+  namingStrategy: new SnakeNamingStrategy(),
 });
