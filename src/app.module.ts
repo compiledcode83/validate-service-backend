@@ -12,6 +12,8 @@ import { DataSource } from 'typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TicketProviderApiTokenModule } from './ticket-provider-api-token/ticket-provider-api-token.module';
+import { TicketModule } from './ticket/ticket.module';
+import { TicketTransferModule } from './ticket-transfer/ticket-transfer.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -40,6 +42,8 @@ EnvHelper.verifyNodeEnv();
     UserModule,
     AuthModule,
     TicketProviderApiTokenModule,
+    TicketModule,
+    TicketTransferModule,
   ],
   controllers: [AppController],
   providers: [AppService],

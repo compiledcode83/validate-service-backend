@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-provider-api-token.entity';
+import { Ticket } from '@src/ticket/ticket.entity';
+import { User } from '@src/user/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
 import { TicketProviderStatus } from './ticket-provider.types';
 
@@ -35,4 +37,12 @@ export class TicketProvider {
   @OneToMany(() => TicketProviderApiToken, (ticketProviderApiToken) => ticketProviderApiToken.ticketProvider)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
   apiTokens: TicketProviderApiToken[];
+
+  @OneToMany(() => Ticket, (ticket) => ticket.ticketProvider)
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
+  tickets: Ticket[];
+
+  @OneToMany(() => User, (user) => user.ticketProvider)
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
+  users: User[];
 }

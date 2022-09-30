@@ -18,12 +18,12 @@ export class TicketProviderApiToken {
   @Column({ type: 'datetime', nullable: false })
   createdAt: Date;
 
-  @ApiProperty({ description: 'Last used at date', required: true })
-  @Column({ type: 'datetime', nullable: false })
+  @ApiProperty({ description: 'Last used at date', required: false })
+  @Column({ type: 'datetime', nullable: true })
   lastUsedAt: Date;
 
-  @ApiProperty({ description: 'Deleted at date', required: true })
-  @Column({ type: 'datetime', nullable: false })
+  @ApiProperty({ description: 'Deleted at date', required: false })
+  @Column({ type: 'datetime', nullable: true })
   deletedAt: Date;
 
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.apiTokens)
