@@ -1,3 +1,4 @@
+import { UserStatus } from '@src/user/user.types';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateUserTable1664198326986 implements MigrationInterface {
@@ -63,6 +64,12 @@ export class CreateUserTable1664198326986 implements MigrationInterface {
             name: 'deleted_at',
             type: 'datetime',
             isNullable: true,
+          },
+          {
+            name: 'status',
+            type: 'enum',
+            enum: Object.values(UserStatus),
+            default: `'${UserStatus.Creating}'`,
           },
         ],
       }),

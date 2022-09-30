@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn } from 'typeorm';
+import { UserStatus } from './user.types';
 
 @Entity('user')
 export class User {
@@ -43,4 +44,8 @@ export class User {
   @Exclude({ toPlainOnly: true })
   @DeleteDateColumn({ type: 'datetime', nullable: true })
   deletedAt: Date;
+
+  @ApiProperty({ description: 'User status', example: UserStatus.Creating, required: true })
+  @Column({ type: 'enum', nullable: false, enum: UserStatus })
+  status: UserStatus;
 }
