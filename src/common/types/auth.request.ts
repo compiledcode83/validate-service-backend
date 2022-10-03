@@ -1,6 +1,6 @@
+import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { Request } from 'express';
-// import { User } from '../../user/user.entity';
 
 export interface AuthRequest extends Request {
-  // user: User;
+  ticketProvider: TicketProvider;
 }
