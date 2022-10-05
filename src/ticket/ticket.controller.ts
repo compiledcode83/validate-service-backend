@@ -20,6 +20,7 @@ import { AuthRequest } from '@src/common/types/auth.request';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
+import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { Ticket } from './ticket.entity';
 import { TicketService } from './ticket.service';
 
@@ -46,6 +47,23 @@ export class TicketController {
   @Get(':uuid')
   async findOne(@Param('uuid', ParseUUIDPipe) uuid: string, @Req() req: AuthRequest): Promise<Ticket> {
     const ticket = await this.ticketService.findByUuidAndProvider(uuid, req.ticketProvider.id);
+
+    if (!ticket) {
+      throw new NotFoundException('Ticket not found');
+    }
+
+    return ticket;
+  }
+
+  @ApiOperation({ description: `Validate ticket by uuid` })
+  @ApiResponse(ApiResponseHelper.success(Ticket))
+  @ApiResponse(ApiResponseHelper.notFound('Ticket not found'))
+  @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
+  @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'))
+  @HttpCode(HttpStatus.OK)
+  @Post(':uuid/validate')
+  async validate(@Body() body: ValidateTicketDto, @Req() req: AuthRequest): Promise<Ticket> {
+    const ticket = await this.ticketService.findByUuidAndProvider(body.uuid, req.ticketProvider.id);
 
     if (!ticket) {
       throw new NotFoundException('Ticket not found');

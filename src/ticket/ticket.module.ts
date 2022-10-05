@@ -6,10 +6,11 @@ import { Ticket } from './ticket.entity';
 import { TicketRepository } from './ticket.repository';
 import { UserModule } from '@src/user/user.module';
 import { TicketUserExistsValidator } from './validators/ticket-user-exists-validator';
+import { TicketIsValidatableValidator } from './validators/ticket-is-validatable.validator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Ticket]), UserModule],
-  providers: [TicketService, TicketRepository, TicketUserExistsValidator],
+  providers: [TicketService, TicketRepository, TicketUserExistsValidator, TicketIsValidatableValidator],
   controllers: [TicketController],
   exports: [TicketService],
 })
