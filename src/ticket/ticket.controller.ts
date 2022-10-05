@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   NotFoundException,
   Param,
@@ -14,8 +15,11 @@ import {
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
 import { RequestToBodyInterceptor } from '@src/common/interceptors/request-to-body.interceptor';
+import { PaginatedResult } from '@src/common/pagination/pagination.types';
 import { AuthRequest } from '@src/common/types/auth.request';
+import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { FindTicketsDto } from './dto/find-tickets.dto';
 import { Ticket } from './ticket.entity';
 import { TicketService } from './ticket.service';
 
@@ -23,6 +27,16 @@ import { TicketService } from './ticket.service';
 @Controller('tickets')
 export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
+
+  @ApiOperation({ description: `Find tickets` })
+  @ApiResponse(ApiResponseHelper.success(PaginatedResult<Ticket>))
+  @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
+  @Post('search')
+  async findAllPaginated(@Body() searchParams: FindTicketsDto, @Req() req: AuthRequest): Promise<PagingResult<Ticket>> {
+    return this.ticketService.findAllPaginated(searchParams, req.ticketProvider.id);
+  }
 
   @ApiOperation({ description: `Get ticket by uuid` })
   @ApiResponse(ApiResponseHelper.success(Ticket))

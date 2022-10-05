@@ -2,8 +2,8 @@ import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface 
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserService } from '../user.service';
 
-@ValidatorConstraint({ name: 'userExistsValidator', async: true })
-export class UserExistsValidator implements ValidatorConstraintInterface {
+@ValidatorConstraint({ name: 'userExistsByUuidValidator', async: true })
+export class UserExistsByUuidValidator implements ValidatorConstraintInterface {
   constructor(private readonly userService: UserService) {}
 
   async validate(uuid: string, args: ValidationArguments): Promise<boolean> {

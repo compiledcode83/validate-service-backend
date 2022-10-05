@@ -4,11 +4,12 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
-import { UserExistsValidator } from './validators/user-exists-validator';
+import { UserExistsByUuidValidator } from './validators/user-exists-by-uuid.validator';
+import { UserExistsByIdentifierValidator } from './validators/user-exists-by-identifier.validator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  providers: [UserService, UserRepository, UserExistsValidator],
+  providers: [UserService, UserRepository, UserExistsByUuidValidator, UserExistsByIdentifierValidator],
   controllers: [UserController],
   exports: [UserService],
 })

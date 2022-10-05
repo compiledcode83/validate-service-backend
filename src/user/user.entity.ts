@@ -52,6 +52,14 @@ export class User {
   @Column({ type: 'enum', nullable: false, enum: UserStatus })
   status: UserStatus;
 
+  @ApiProperty({ description: 'Validate wallet seed phrase', maximum: 64, required: true })
+  @Column({ type: 'varchar', nullable: false, length: 64 })
+  seedPhrase: string;
+
+  @ApiProperty({ description: 'User photo url', maximum: 255, required: true })
+  @Column({ type: 'varchar', nullable: false, length: 255 })
+  photoUrl: string;
+
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.users)
   ticketProvider: TicketProvider;
 

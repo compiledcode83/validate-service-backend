@@ -3,7 +3,7 @@ import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-pr
 import { Ticket } from '@src/ticket/ticket.entity';
 import { User } from '@src/user/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
-import { TicketProviderStatus } from './ticket-provider.types';
+import { TicketProviderStatus, TicketProviderUserIdentifier } from './ticket-provider.types';
 
 @Entity('ticket_provider')
 export class TicketProvider {
@@ -33,6 +33,14 @@ export class TicketProvider {
   @ApiProperty({ description: 'Ticket provider status', example: TicketProviderStatus.Active, required: false })
   @Column({ type: 'enum', nullable: false, enum: TicketProviderStatus })
   status: TicketProviderStatus;
+
+  @ApiProperty({
+    description: `Ticket provider's user unique identifier`,
+    example: TicketProviderUserIdentifier.PhoneNumber,
+    required: true,
+  })
+  @Column({ type: 'enum', nullable: false, enum: TicketProviderUserIdentifier })
+  userIdentifier: TicketProviderUserIdentifier;
 
   @OneToMany(() => TicketProviderApiToken, (ticketProviderApiToken) => ticketProviderApiToken.ticketProvider)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })

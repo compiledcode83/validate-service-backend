@@ -1,19 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Max, Min, Validate } from 'class-validator';
-import { CursorValidator } from './cursor.validator';
+import { IsBase64, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
 
 export class CursorFilterDto {
   @ApiProperty({ required: false, description: 'Paginates results forward' })
-  @IsString()
+  @IsBase64()
   @IsOptional()
-  @Validate(CursorValidator)
   afterCursor?: string;
 
   @ApiProperty({ required: false, description: 'Paginates results backward' })
-  @IsString()
+  @IsBase64()
   @IsOptional()
-  @Validate(CursorValidator)
   beforeCursor?: string;
 
   @ApiProperty({ example: 10, minimum: 1, maximum: 50, required: false })

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { Allow, IsEmail, IsPhoneNumber, IsString, MaxLength, MinLength, Validate, ValidateIf } from 'class-validator';
-import { UserExistsValidator } from '../validators/user-exists-validator';
+import { UserExistsByUuidValidator } from '../validators/user-exists-by-uuid.validator';
 
 export class UpdateUserDto {
   @ApiProperty({ example: 'John Doe', required: false, minimum: 1, maximum: 128, description: 'Full name' })
@@ -22,7 +22,7 @@ export class UpdateUserDto {
   @IsPhoneNumber()
   phoneNumber: string;
 
-  @Validate(UserExistsValidator)
+  @Validate(UserExistsByUuidValidator)
   uuid: string;
 
   @Allow()

@@ -31,6 +31,7 @@ export class AppBootstrapManager {
             target: false,
           },
           stopAtFirstError: true,
+          forbidNonWhitelisted: true,
         }),
       );
 
