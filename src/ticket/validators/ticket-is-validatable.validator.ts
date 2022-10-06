@@ -15,6 +15,6 @@ export class TicketIsValidatableValidator implements ValidatorConstraintInterfac
   }
 
   defaultMessage() {
-    return 'Ticket is already used';
+    return 'Ticket is already used or not created yet';
   }
 }

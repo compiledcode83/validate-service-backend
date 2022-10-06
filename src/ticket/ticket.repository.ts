@@ -43,7 +43,7 @@ export class TicketRepository extends Repository<Ticket> {
     return paginator.paginate(queryBuilder);
   }
 
-  async validate(uuid: string): Promise<Ticket> {
+  async validate(uuid: string, ticketProviderId: number): Promise<Ticket> {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
@@ -51,9 +51,9 @@ export class TicketRepository extends Repository<Ticket> {
       await queryRunner.startTransaction();
 
       const ticket = await queryRunner.manager
-        .createQueryBuilder()
+        .createQueryBuilder(Ticket, 'ticket')
         .setLock('pessimistic_write')
-        .where({ uuid, status: TicketStatus.Active })
+        .where({ uuid, ticketProviderId, status: TicketStatus.Active })
         .getOne();
 
       if (!ticket) {

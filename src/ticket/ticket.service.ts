@@ -34,7 +34,7 @@ export class TicketService {
     return this.findByUuid(ticket.uuid);
   }
 
-  async validate(uuid: string): Promise<Ticket> {
-    return this.ticketRepository.validate(uuid);
+  async validate(uuid: string, ticketProviderId: number): Promise<Ticket> {
+    return this.ticketRepository.validate(uuid, ticketProviderId);
   }
 }
