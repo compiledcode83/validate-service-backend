@@ -6,10 +6,7 @@ import { UserFactory } from '@src/database/factories/user.factory';
 import { AppDataSource } from '@src/config/datasource';
 import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { faker } from '@faker-js/faker';
-import { Ticket } from '@src/ticket/ticket.entity';
 import { TicketFactory } from '@src/database/factories/ticket.factory';
-import { TicketStatus } from '@src/ticket/ticket.types';
 import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
 import { TicketTransferFactory } from '@src/database/factories/ticket-transfer.factory';
 

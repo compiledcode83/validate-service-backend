@@ -43,7 +43,6 @@ export class TicketProviderEncryptionKeyController {
 
   @ApiOperation({ description: `Create new encryption key` })
   @ApiResponse(ApiResponseHelper.success(TicketProviderEncryptionKey, HttpStatus.CREATED))
-  @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (integer is expected)']))
   @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'))
   @Post()
   async create(@Req() req: AuthRequest): Promise<TicketProviderEncryptionKey> {
