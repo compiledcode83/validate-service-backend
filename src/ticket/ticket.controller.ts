@@ -14,12 +14,14 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
+import { ParamToBodyInterceptor } from '@src/common/interceptors/param-to-body.interceptor';
 import { RequestToBodyInterceptor } from '@src/common/interceptors/request-to-body.interceptor';
 import { PaginatedResult } from '@src/common/pagination/pagination.types';
 import { AuthRequest } from '@src/common/types/auth.request';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
+import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { Ticket } from './ticket.entity';
 import { TicketService } from './ticket.service';
 
@@ -52,6 +54,27 @@ export class TicketController {
     }
 
     return ticket;
+  }
+
+  @ApiOperation({ description: `Validate ticket by uuid` })
+  @ApiResponse(ApiResponseHelper.success(Ticket))
+  @ApiResponse(ApiResponseHelper.notFound('Ticket is already used or not created yet'))
+  @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
+  @UseInterceptors(
+    ClassSerializerInterceptor,
+    new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'),
+    new ParamToBodyInterceptor('uuid', 'uuid'),
+  )
+  @HttpCode(HttpStatus.OK)
+  @Post(':uuid/validate')
+  async validate(@Body() body: ValidateTicketDto, @Req() req: AuthRequest): Promise<Ticket> {
+    const validatedTicket = await this.ticketService.validate(body.uuid, req.ticketProvider.id);
+
+    if (!validatedTicket) {
+      throw new NotFoundException('Ticket not found');
+    }
+
+    return validatedTicket;
   }
 
   @ApiOperation({ description: `Create a new ticket` })

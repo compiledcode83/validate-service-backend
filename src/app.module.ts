@@ -8,12 +8,12 @@ import { EnvHelper } from './common/helpers/env.helper';
 import { validate } from './common/validators/env.validator';
 import { TicketProviderModule } from './ticket-provider/ticket-provider.module';
 import databaseConfig from './config/database.config';
-import { DataSource } from 'typeorm';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TicketProviderApiTokenModule } from './ticket-provider-api-token/ticket-provider-api-token.module';
 import { TicketModule } from './ticket/ticket.module';
 import { TicketTransferModule } from './ticket-transfer/ticket-transfer.module';
+import { TicketProviderEncryptionKeyModule } from './ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -44,6 +44,7 @@ EnvHelper.verifyNodeEnv();
     TicketProviderApiTokenModule,
     TicketModule,
     TicketTransferModule,
+    TicketProviderEncryptionKeyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

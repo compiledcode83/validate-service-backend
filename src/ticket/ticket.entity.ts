@@ -53,6 +53,10 @@ export class Ticket {
   @Column({ type: 'datetime', nullable: true })
   deletedAt: Date;
 
+  @ApiProperty({ description: 'Ticket validation time', required: false })
+  @Column({ type: 'datetime', nullable: true })
+  validatedAt: Date;
+
   @ApiProperty({
     description: 'Smart contract address',
     example: '0xeBA05C5521a3B81e23d15ae9B2d07524BC453561',

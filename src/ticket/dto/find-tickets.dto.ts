@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { CursorFilterDto } from '@src/common/pagination/cursor-filter.dto';
 import { Ticket } from '../ticket.entity';
 import { Type } from 'class-transformer';
 import { IsSeedPhrase } from '@src/common/decorators/is-seed-phrase.decorator';
+import { TicketStatus } from '../ticket.types';
 
 export class FindTicketsDto extends CursorFilterDto {
   @ApiProperty({ example: '8e9c3708-25d8-467f-9a68-00507f8ece4a', required: false })
@@ -16,7 +17,12 @@ export class FindTicketsDto extends CursorFilterDto {
   @IsSeedPhrase()
   seedPhrase: string;
 
-  @ApiProperty({ example: 'createdAt', enum: ['createdAt'], required: false })
+  @ApiProperty({ example: TicketStatus.Active, enum: TicketStatus, required: false })
+  @IsOptional()
+  @IsEnum(TicketStatus)
+  status: TicketStatus = TicketStatus.Active;
+
+  @ApiProperty({ example: 'createdAt', enum: ['createdAt', 'status'], required: false })
   @IsOptional()
   @IsIn(['createdAt'])
   orderParam: keyof Ticket = 'createdAt';
