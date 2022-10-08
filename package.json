@@ -24,12 +24,15 @@
     "migration:revert": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:revert",
     "migration:generate": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generate --",
     "migration:create": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:create --",
-    "repl": "npm run start -- --entryFile repl"
+    "repl": "npm run start -- --entryFile repl",
+    "consumer": "npm run start -- --entryFile consumer",
+    "consumer:dev": "npm run start -- --watch --entryFile consumer"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/microservices": "^9.1.4",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.1.2",
@@ -41,6 +44,7 @@
     "dotenv": "^16.0.2",
     "dotenv-cli": "^6.0.0",
     "jest-junit": "^14.0.1",
+    "kafkajs": "^2.2.0",
     "mysql2": "^2.3.3",
     "npm": "^8.19.2",
     "passport": "^0.6.0",

@@ -7,6 +7,8 @@ async function bootstrap() {
 
   AppBootstrapManager.setAppDefaults(app);
 
+  app.enableShutdownHooks();
+
   await app.listen(3000);
 }
 bootstrap();

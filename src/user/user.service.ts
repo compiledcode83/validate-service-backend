@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ProducerService } from '@src/producer/producer.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
@@ -6,7 +7,7 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepository, private readonly producerService: ProducerService) {}
 
   async findByUuidAndProvider(uuid: string, ticketProviderId: number): Promise<User> {
     return this.userRepository.findOne({ where: { uuid, ticketProviderId } });
@@ -38,6 +39,12 @@ export class UserService {
 
     const user = await this.userRepository.save(userEntity, { reload: false });
 
+    this.producerService.emit('web3.wallet.create', { userUuid: user.uuid });
+
     return this.findByUuid(user.uuid);
+  }
+
+  async updateWallet(uuid: string, walletAddress: string): Promise<void> {
+    await this.userRepository.update({ uuid }, { walletAddress });
   }
 }
