@@ -9,14 +9,25 @@ import { TestHelper } from '@test/helpers/test.helper';
 import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { SECRET_KEY_LENGTH } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.types';
 import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
+import { KAFKA_PRODUCER_TOKEN } from '@src/producer/producer.types';
 
 describe('Ticket-provider-encryption-keys (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
+  let mockedClientKafka: jest.Mock;
 
   beforeAll(async () => {
-    moduleFixture = await AppBootstrapManager.getTestingModule();
+    const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
+    mockedClientKafka = jest.fn().mockImplementation(() => ({
+      connect: () => jest.fn().mockImplementation(() => Promise.resolve()),
+      close: () => jest.fn().mockImplementation(() => Promise.resolve()),
+      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
+    }));
+
+    testingModuleBuilder.overrideProvider(KAFKA_PRODUCER_TOKEN).useClass(mockedClientKafka);
+    moduleFixture = await testingModuleBuilder.compile();
+
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
     testHelper = new TestHelper(moduleFixture, jest);

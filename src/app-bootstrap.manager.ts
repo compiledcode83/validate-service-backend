@@ -1,5 +1,5 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { json } from 'express';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
@@ -8,10 +8,10 @@ import { ApiTokenGuard } from './auth/guards/api-token.guard';
 import { Reflector } from '@nestjs/core';
 
 export class AppBootstrapManager {
-  static async getTestingModule(): Promise<TestingModule> {
+  static getTestingModuleBuilder(): TestingModuleBuilder {
     return Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    });
   }
 
   static setAppDefaults(app: INestApplication): INestApplication {
