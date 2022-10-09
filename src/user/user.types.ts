@@ -4,3 +4,7 @@ export enum UserStatus {
 }
 
 export const SEED_PHRASE_LENGTH = 64;
+
+export interface WalletCreateMessage {
+  userUuid: string;
+}

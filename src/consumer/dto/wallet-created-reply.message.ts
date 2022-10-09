@@ -1,4 +1,4 @@
-export class WalletCreatedReplyMessage {
+export class WalletCreateReplyMessage {
   userUuid: string;
   walletAddress: string;
 }

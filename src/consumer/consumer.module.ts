@@ -9,6 +9,9 @@ import { validate } from '@src/common/validators/env.validator';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { UserModule } from '@src/user/user.module';
+import { TicketModule } from '@src/ticket/ticket.module';
+import kafkaProducerConfig from '@src/config/kafka-producer.config';
+import { TicketTransferModule } from '@src/ticket-transfer/ticket-transfer.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -17,7 +20,7 @@ EnvHelper.verifyNodeEnv();
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
-      load: [databaseConfig, kafkaConsumerConfig],
+      load: [databaseConfig, kafkaProducerConfig, kafkaConsumerConfig],
       validate: validate,
     }),
     TypeOrmModule.forRootAsync({
@@ -33,7 +36,9 @@ EnvHelper.verifyNodeEnv();
       },
       inject: [ConfigService],
     }),
-    // UserModule,
+    UserModule,
+    TicketModule,
+    TicketTransferModule,
   ],
   providers: [ConsumerService],
   controllers: [ConsumerController],

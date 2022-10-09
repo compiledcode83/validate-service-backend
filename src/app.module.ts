@@ -16,6 +16,7 @@ import { TicketTransferModule } from './ticket-transfer/ticket-transfer.module';
 import { TicketProviderEncryptionKeyModule } from './ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import kafkaProducerConfig from './config/kafka-producer.config';
 import { ProducerModule } from './producer/producer.module';
+import kafkaConsumerConfig from './config/kafka-consumer.config';
 
 EnvHelper.verifyNodeEnv();
 
@@ -24,7 +25,7 @@ EnvHelper.verifyNodeEnv();
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
-      load: [databaseConfig, kafkaProducerConfig],
+      load: [databaseConfig, kafkaProducerConfig, kafkaConsumerConfig],
       validate: validate,
     }),
     TypeOrmModule.forRootAsync({

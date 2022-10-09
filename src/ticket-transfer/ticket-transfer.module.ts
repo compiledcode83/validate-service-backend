@@ -7,9 +7,10 @@ import { UserModule } from '@src/user/user.module';
 import { TicketModule } from '@src/ticket/ticket.module';
 import { TicketTransferRepository } from './ticket-transfer.repository';
 import { TicketExistsValidator } from './validators/ticket-exists-validator';
+import { ProducerModule } from '@src/producer/producer.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TicketTransfer]), UserModule, TicketModule],
+  imports: [TypeOrmModule.forFeature([TicketTransfer]), UserModule, TicketModule, ProducerModule],
   providers: [TicketTransferService, TicketTransferRepository, TicketExistsValidator],
   controllers: [TicketTransferController],
   exports: [TicketTransferService],

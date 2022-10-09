@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
+import { UserStatus, WalletCreateMessage } from './user.types';
 
 @Injectable()
 export class UserService {
@@ -39,12 +40,12 @@ export class UserService {
 
     const user = await this.userRepository.save(userEntity, { reload: false });
 
-    this.producerService.emit('web3.wallet.create', { userUuid: user.uuid });
+    this.producerService.emit('web3.wallet.create', { userUuid: user.uuid } as WalletCreateMessage);
 
     return this.findByUuid(user.uuid);
   }
 
-  async updateWallet(uuid: string, walletAddress: string): Promise<void> {
-    await this.userRepository.update({ uuid }, { walletAddress });
+  async complete(uuid: string, walletAddress: string): Promise<void> {
+    await this.userRepository.update({ uuid }, { walletAddress, status: UserStatus.Active });
   }
 }
