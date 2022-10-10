@@ -10,6 +10,7 @@ export enum TicketStatus {
 
 export interface TicketMintMessage {
   ticketUuid: string;
+  userUuid: string;
   name: string;
   description: string;
   image: string;

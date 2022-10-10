@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsIn, IsInt, IsString, Min, MinLength, validateSync } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsString, Min, MinLength, ValidateIf, validateSync } from 'class-validator';
 
-enum Environment {
+export enum Environment {
   Development = 'development',
   Production = 'production',
   Test = 'test',
@@ -51,6 +51,9 @@ class EnvironmentVariables {
   @Min(10)
   TYPEORM_POOL_SIZE: number;
 
+  @IsIn(['true', 'false'])
+  MYSQL_TLS: string;
+
   @IsString()
   @MinLength(1)
   KAFKA_CONSUMER_BROKER_URL: string;
@@ -58,6 +61,19 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   KAFKA_CONSUMER_CONSUMER_GROUP: string;
+
+  @IsIn(['true', 'false'])
+  KAFKA_CONSUMER_SSL: string;
+
+  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
+  @IsString()
+  @MinLength(1)
+  KAFKA_CONSUMER_USERNAME: string;
+
+  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
+  @IsString()
+  @MinLength(1)
+  KAFKA_CONSUMER_PASSWORD: string;
 
   @IsString()
   @MinLength(1)
@@ -68,10 +84,17 @@ class EnvironmentVariables {
   KAFKA_PRODUCER_CONSUMER_GROUP: string;
 
   @IsIn(['true', 'false'])
-  MYSQL_TLS: string;
+  KAFKA_PRODUCER_SSL: string;
 
-  @IsIn(['true', 'false'])
-  KAFKA_SSL: string;
+  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
+  @IsString()
+  @MinLength(1)
+  KAFKA_PRODUCER_USERNAME: string;
+
+  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
+  @IsString()
+  @MinLength(1)
+  KAFKA_PRODUCER_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {

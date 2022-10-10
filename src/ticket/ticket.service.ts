@@ -39,6 +39,7 @@ export class TicketService {
 
     this.producerService.emit('web3.nft.mint', {
       ticketUuid: ticket.uuid,
+      userUuid: user.uuid,
       name: ticket.name,
       description: ticket.name,
       image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
