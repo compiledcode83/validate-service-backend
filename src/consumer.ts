@@ -21,13 +21,6 @@ async function bootstrap() {
     };
   }
 
-  console.log({
-    clientId: 'web3-reply-consumer',
-    brokers: kafkaOptions.brokerUrl.split(','),
-    ssl: kafkaOptions.ssl,
-    ...saslConfig,
-  });
-
   const microserviceOptions: MicroserviceOptions = {
     transport: Transport.KAFKA,
     options: {
