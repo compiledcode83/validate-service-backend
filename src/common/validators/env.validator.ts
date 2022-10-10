@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsInt, IsString, Min, MinLength, validateSync } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsString, Min, MinLength, validateSync } from 'class-validator';
 
 enum Environment {
   Development = 'development',
@@ -66,6 +66,9 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   KAFKA_PRODUCER_CONSUMER_GROUP: string;
+
+  @IsIn(['true', 'false'])
+  MYSQL_TLS: string;
 }
 
 export function validate(config: Record<string, unknown>) {
