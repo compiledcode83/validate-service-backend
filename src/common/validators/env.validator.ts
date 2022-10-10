@@ -50,6 +50,22 @@ class EnvironmentVariables {
   @IsInt()
   @Min(10)
   TYPEORM_POOL_SIZE: number;
+
+  @IsString()
+  @MinLength(1)
+  KAFKA_CONSUMER_BROKER_URL: string;
+
+  @IsString()
+  @MinLength(1)
+  KAFKA_CONSUMER_CONSUMER_GROUP: string;
+
+  @IsString()
+  @MinLength(1)
+  KAFKA_PRODUCER_BROKER_URL: string;
+
+  @IsString()
+  @MinLength(1)
+  KAFKA_PRODUCER_CONSUMER_GROUP: string;
 }
 
 export function validate(config: Record<string, unknown>) {
