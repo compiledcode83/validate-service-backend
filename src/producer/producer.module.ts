@@ -15,7 +15,8 @@ import { KAFKA_PRODUCER_TOKEN } from './producer.types';
           options: {
             client: {
               clientId: 'api-gateway-producer',
-              brokers: [configService.get('kafkaProducerConfig.brokerUrl')],
+              brokers: configService.get('kafkaProducerConfig.brokerUrl').split(','),
+              ssl: configService.get<boolean>('kafkaProducerConfig.ssl'),
             },
             consumer: {
               groupId: configService.get('kafkaProducerConfig.consumerGroup'),

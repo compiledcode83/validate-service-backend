@@ -69,6 +69,9 @@ class EnvironmentVariables {
 
   @IsIn(['true', 'false'])
   MYSQL_TLS: string;
+
+  @IsIn(['true', 'false'])
+  KAFKA_SSL: string;
 }
 
 export function validate(config: Record<string, unknown>) {

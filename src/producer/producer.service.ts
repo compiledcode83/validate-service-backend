@@ -11,6 +11,10 @@ export class ProducerService implements OnModuleInit, OnModuleDestroy {
     return this.kafka.emit(pattern, data);
   }
 
+  async healthCheck() {
+    return this.kafka.getConsumerAssignments();
+  }
+
   async onModuleInit() {
     await this.kafka.connect();
   }

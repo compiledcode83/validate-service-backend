@@ -11,7 +11,8 @@ async function bootstrap() {
     options: {
       client: {
         clientId: 'web3-reply-consumer',
-        brokers: [appOptions.brokerUrl],
+        brokers: appOptions.brokerUrl.split(','),
+        ssl: appOptions.ssl,
       },
       consumer: {
         groupId: appOptions.consumerGroup,
