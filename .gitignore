@@ -38,3 +38,5 @@ lerna-debug.log*
 .env.*
 !.env.example
 !.env.test
+
+/terraform/.terraform/*
