@@ -149,7 +149,7 @@ resource "aws_alb_target_group" "api_gateway_tg" {
     unhealthy_threshold = 6
     timeout             = 3
     port                = "traffic-port"
-    path                = "/healthcheck"
+    path                = "/api/v1/health-check"
     interval            = 30
   }
 }
