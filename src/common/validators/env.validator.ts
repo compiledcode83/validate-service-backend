@@ -56,45 +56,24 @@ class EnvironmentVariables {
 
   @IsString()
   @MinLength(1)
-  KAFKA_CONSUMER_BROKER_URL: string;
+  KAFKA_BROKER_URL: string;
 
   @IsString()
   @MinLength(1)
-  KAFKA_CONSUMER_CONSUMER_GROUP: string;
+  KAFKA_CONSUMER_GROUP: string;
 
   @IsIn(['true', 'false'])
-  KAFKA_CONSUMER_SSL: string;
+  KAFKA_SSL: string;
 
   @ValidateIf((o) => o.NODE_ENV === Environment.Production)
   @IsString()
   @MinLength(1)
-  KAFKA_CONSUMER_USERNAME: string;
+  KAFKA_USERNAME: string;
 
   @ValidateIf((o) => o.NODE_ENV === Environment.Production)
   @IsString()
   @MinLength(1)
-  KAFKA_CONSUMER_PASSWORD: string;
-
-  @IsString()
-  @MinLength(1)
-  KAFKA_PRODUCER_BROKER_URL: string;
-
-  @IsString()
-  @MinLength(1)
-  KAFKA_PRODUCER_CONSUMER_GROUP: string;
-
-  @IsIn(['true', 'false'])
-  KAFKA_PRODUCER_SSL: string;
-
-  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
-  @IsString()
-  @MinLength(1)
-  KAFKA_PRODUCER_USERNAME: string;
-
-  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
-  @IsString()
-  @MinLength(1)
-  KAFKA_PRODUCER_PASSWORD: string;
+  KAFKA_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import * as kafkaConfig from './config/kafka-consumer.config';
+import * as kafkaConfig from './config/kafka.config';
 import * as appConfig from './config/app.config';
 import { ConsumerModule } from './consumer/consumer.module';
 import { Environment } from './common/validators/env.validator';

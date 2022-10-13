@@ -8,15 +8,15 @@ export const KafkaProducerProvider = {
   useFactory: async (configService: ConfigService): Promise<Producer> => {
     const kafka = new Kafka({
       logLevel: logLevel.INFO,
-      brokers: configService.get('kafkaProducerConfig.brokerUrl').split(','),
+      brokers: configService.get('kafkaConfig.brokerUrl').split(','),
       clientId: 'api-gateway-producer',
-      ssl: configService.get<boolean>('kafkaProducerConfig.ssl'),
+      ssl: configService.get<boolean>('kafkaConfig.ssl'),
       ...(configService.get('appConfig.environment') === Environment.Production
         ? {
             sasl: {
               mechanism: 'scram-sha-512',
-              username: configService.get('kafkaProducerConfig.username'),
-              password: configService.get('kafkaProducerConfig.password'),
+              username: configService.get('kafkaConfig.username'),
+              password: configService.get('kafkaConfig.password'),
             },
           }
         : {}),
