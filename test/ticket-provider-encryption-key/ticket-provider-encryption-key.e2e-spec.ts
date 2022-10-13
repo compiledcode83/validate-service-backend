@@ -2,30 +2,25 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppBootstrapManager } from '@src/app-bootstrap.manager';
-import { UserFactory } from '@src/database/factories/user.factory';
 import { AppDataSource } from '@src/config/datasource';
 import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { SECRET_KEY_LENGTH } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.types';
 import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
-import { KAFKA_PRODUCER_TOKEN } from '@src/producer/producer.types';
+import { ProducerService } from '@src/producer/producer.service';
 
 describe('Ticket-provider-encryption-keys (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
-  let mockedClientKafka: jest.Mock;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-    mockedClientKafka = jest.fn().mockImplementation(() => ({
-      connect: () => jest.fn().mockImplementation(() => Promise.resolve()),
-      close: () => jest.fn().mockImplementation(() => Promise.resolve()),
-      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
-    }));
 
-    testingModuleBuilder.overrideProvider(KAFKA_PRODUCER_TOKEN).useClass(mockedClientKafka);
+    testingModuleBuilder.overrideProvider(ProducerService).useValue({
+      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
+    });
+
     moduleFixture = await testingModuleBuilder.compile();
 
     app = moduleFixture.createNestApplication();

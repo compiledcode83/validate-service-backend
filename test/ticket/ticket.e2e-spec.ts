@@ -10,27 +10,21 @@ import { faker } from '@faker-js/faker';
 import { Ticket } from '@src/ticket/ticket.entity';
 import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { TicketStatus } from '@src/ticket/ticket.types';
-import { KAFKA_PRODUCER_TOKEN } from '@src/producer/producer.types';
 import { ProducerService } from '@src/producer/producer.service';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
-  let mockedClientKafka: jest.Mock;
-  let producerService: ProducerService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-    mockedClientKafka = jest.fn().mockImplementation(() => ({
-      connect: () => jest.fn().mockImplementation(() => Promise.resolve()),
-      close: () => jest.fn().mockImplementation(() => Promise.resolve()),
-      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
-    }));
 
-    testingModuleBuilder.overrideProvider(KAFKA_PRODUCER_TOKEN).useClass(mockedClientKafka);
+    testingModuleBuilder.overrideProvider(ProducerService).useValue({
+      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
+    });
+
     moduleFixture = await testingModuleBuilder.compile();
-    producerService = moduleFixture.get<ProducerService>(ProducerService);
 
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
