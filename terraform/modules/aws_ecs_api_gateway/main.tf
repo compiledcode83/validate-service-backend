@@ -38,7 +38,7 @@ resource "aws_ecs_task_definition" "api_gateway_ecs_task_definition" {
     {
       command : ["npm", "run", "start:prod"],
       environment : local.env_vars,
-      memory : 512
+      memory : 384
       essential : true,
       image : var.api_gateway_erc_url,
       name : "api_gateway",

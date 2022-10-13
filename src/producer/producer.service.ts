@@ -27,7 +27,7 @@ export class ProducerService implements OnModuleInit, OnModuleDestroy {
 
   async healthCheck() {
     await this.kafka.send({
-      topic: 'healthcheck2',
+      topic: 'healthcheck',
       messages: [
         {
           value: JSON.stringify({ timestamp: new Date(), client: 'api-gateway' }),
