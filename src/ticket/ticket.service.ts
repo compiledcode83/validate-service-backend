@@ -37,7 +37,7 @@ export class TicketService {
     };
     const ticket = await this.ticketRepository.save(ticketEntity, { reload: false });
 
-    this.producerService.emit('web3.nft.mint', {
+    await this.producerService.emit('web3.nft.mint', {
       ticketUuid: ticket.uuid,
       userUuid: user.uuid,
       name: ticket.name,

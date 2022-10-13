@@ -38,7 +38,7 @@ export class TicketTransferService {
     const transfer = await this.ticketTransferRepository.save(entity, { reload: false });
 
     if (transfer) {
-      this.producerService.emit('web3.nft.transfer', {
+      await this.producerService.emit('web3.nft.transfer', {
         transferUuid: transfer.uuid,
         userUuidFrom: ticket.user.uuid,
         userUuidTo: body.userUuid,

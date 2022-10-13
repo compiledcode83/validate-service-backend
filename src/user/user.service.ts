@@ -40,7 +40,7 @@ export class UserService {
 
     const user = await this.userRepository.save(userEntity, { reload: false });
 
-    this.producerService.emit('web3.wallet.create', { userUuid: user.uuid } as WalletCreateMessage);
+    await this.producerService.emit('web3.wallet.create', { userUuid: user.uuid } as WalletCreateMessage);
 
     return this.findByUuid(user.uuid);
   }
