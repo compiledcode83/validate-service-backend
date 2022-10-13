@@ -53,6 +53,8 @@ deploy-production:
     - cd terraform
     - terraform init
     - terraform apply -auto-approve
+    - aws ecs wait services-stable --cluster api_gateway_cluster --services api_gateway_service
+    - aws ecs wait services-stable --cluster web3_consumer_cluster --services web3_consumer_service
 
   only:
     - main

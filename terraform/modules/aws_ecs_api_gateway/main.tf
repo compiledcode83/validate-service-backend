@@ -111,6 +111,11 @@ resource "aws_ecs_service" "api_gateway_service" {
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent = 200
 
+  deployment_circuit_breaker {
+    enable = true
+    rollback = true
+  }
+
   load_balancer {
     target_group_arn = aws_alb_target_group.api_gateway_tg.arn
     container_name   = "api_gateway"
