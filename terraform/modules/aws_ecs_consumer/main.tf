@@ -104,11 +104,6 @@ resource "aws_ecs_service" "web3_consumer_service" {
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent = 200
 
-  deployment_circuit_breaker {
-    enable = true
-    rollback = true
-  }
-
   ordered_placement_strategy {
     type = "spread"
     field = "attribute:ecs.availability-zone"
