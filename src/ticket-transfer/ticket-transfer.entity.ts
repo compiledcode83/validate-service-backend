@@ -44,6 +44,15 @@ export class TicketTransfer {
   @Column({ type: 'enum', nullable: false, enum: TicketTransferStatus })
   status: TicketTransferStatus;
 
+  @ApiProperty({
+    description: 'Ticket creation transaction hash',
+    example: '0xeBA05C5521a3B81e23d15ae9B2d07524BC453561',
+    required: false,
+    maximum: 66,
+  })
+  @Column({ type: 'varchar', nullable: true, length: 66 })
+  transactionHash: string;
+
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.apiTokens)
   ticketProvider: TicketProvider;
 
