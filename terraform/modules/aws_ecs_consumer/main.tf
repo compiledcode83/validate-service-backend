@@ -103,6 +103,13 @@ resource "aws_ecs_service" "web3_consumer_service" {
   desired_count   = 2
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent = 200
+  force_new_deployment = true
+  wait_for_steady_state = true
+
+  deployment_circuit_breaker {
+    enable = true
+    rollback = true
+  }
 
   ordered_placement_strategy {
     type = "spread"
