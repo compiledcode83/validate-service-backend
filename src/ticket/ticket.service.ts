@@ -53,7 +53,16 @@ export class TicketService {
     return this.ticketRepository.validate(uuid, ticketProviderId);
   }
 
-  async complete(uuid: string, contractId: string, tokenId: number, ipfsUri: string): Promise<void> {
-    await this.ticketRepository.update({ uuid }, { contractId, tokenId, ipfsUri, status: TicketStatus.Active });
+  async complete(
+    uuid: string,
+    contractId: string,
+    tokenId: number,
+    ipfsUri: string,
+    transactionHash: string,
+  ): Promise<void> {
+    await this.ticketRepository.update(
+      { uuid },
+      { contractId, tokenId, ipfsUri, status: TicketStatus.Active, transactionHash },
+    );
   }
 }

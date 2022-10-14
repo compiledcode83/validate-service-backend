@@ -3,4 +3,5 @@ export class NftMintReplyMessage {
   tokenId: number;
   contractAddress: string;
   metadataUri: string;
+  transactionHash: string;
 }

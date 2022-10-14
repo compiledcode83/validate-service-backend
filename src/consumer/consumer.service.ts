@@ -24,10 +24,11 @@ export class ConsumerService {
       message.contractAddress,
       message.tokenId,
       message.metadataUri,
+      message.transactionHash,
     );
   }
 
   async handleNftTransferReply(message: NftTransferReplyMessage) {
-    await this.ticketTransferService.complete(message.transferUuid);
+    await this.ticketTransferService.complete(message.transferUuid, message.transactionHash);
   }
 }
