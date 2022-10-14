@@ -2,6 +2,11 @@ data "aws_secretsmanager_secret_version" "current" {
   secret_id = var.secret_manager_id
 }
 
+data "aws_ecr_image" "api_gateway_image" {
+  repository_name = "api_gateway"
+  image_tag       = "latest"
+}
+
 locals {
   env_vars = [
     for k, v in jsondecode(data.aws_secretsmanager_secret_version.current.secret_string) : { name = k, value = v }
@@ -40,7 +45,7 @@ resource "aws_ecs_task_definition" "api_gateway_ecs_task_definition" {
       environment : local.env_vars,
       memory : 384
       essential : true,
-      image : var.api_gateway_erc_url,
+      image : "${var.api_gateway_erc_url}@${data.aws_ecr_image.api_gateway_image.image_digest}",
       name : "api_gateway",
       portMappings : [
         {
