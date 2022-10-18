@@ -45,7 +45,11 @@ export class UserService {
     return this.findByUuid(user.uuid);
   }
 
-  async complete(uuid: string, walletAddress: string): Promise<void> {
+  async completeWithSuccess(uuid: string, walletAddress: string): Promise<void> {
     await this.userRepository.update({ uuid }, { walletAddress, status: UserStatus.Active });
+  }
+
+  async completeWithError(uuid: string, errorData: string): Promise<void> {
+    await this.userRepository.update({ uuid }, { errorData });
   }
 }

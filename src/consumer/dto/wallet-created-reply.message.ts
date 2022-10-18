@@ -1,4 +1,5 @@
 export class WalletCreateReplyMessage {
   userUuid: string;
-  walletAddress: string;
+  walletAddress?: string;
+  errorMessage?: string;
 }

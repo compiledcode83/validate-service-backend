@@ -53,6 +53,10 @@ export class TicketTransfer {
   @Column({ type: 'varchar', nullable: true, length: 66 })
   transactionHash: string;
 
+  @Exclude()
+  @Column({ type: 'text', nullable: true })
+  errorData: string;
+
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.apiTokens)
   ticketProvider: TicketProvider;
 
