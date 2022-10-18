@@ -49,10 +49,14 @@ export class TicketTransferService {
     return this.findByUuid(transfer.uuid);
   }
 
-  async complete(uuid: string, transactionHash: string): Promise<void> {
+  async completeWithSuccess(uuid: string, transactionHash: string): Promise<void> {
     await this.ticketTransferRepository.update(
       { uuid },
       { status: TicketTransferStatus.Completed, transactionHash, finishedAt: new Date() },
     );
+  }
+
+  async completeWithError(uuid: string, errorData: string): Promise<void> {
+    await this.ticketTransferRepository.update({ uuid }, { errorData });
   }
 }

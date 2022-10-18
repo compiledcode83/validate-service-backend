@@ -60,6 +60,10 @@ export class User {
   @Column({ type: 'varchar', nullable: false, length: 255 })
   photoUrl: string;
 
+  @Exclude()
+  @Column({ type: 'text', nullable: true })
+  errorData: string;
+
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.users)
   ticketProvider: TicketProvider;
 

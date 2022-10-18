@@ -15,11 +15,19 @@ export class ConsumerService {
   ) {}
 
   async handleWalletCreateReply(message: WalletCreateReplyMessage) {
-    await this.userService.complete(message.userUuid, message.walletAddress);
+    if (message?.errorMessage) {
+      return this.userService.completeWithError(message.userUuid, message.errorMessage);
+    }
+
+    await this.userService.completeWithSuccess(message.userUuid, message.walletAddress);
   }
 
   async handleNftMintReply(message: NftMintReplyMessage) {
-    await this.ticketService.complete(
+    if (message?.errorMessage) {
+      return this.ticketService.completeWithError(message.ticketUuid, message.errorMessage);
+    }
+
+    await this.ticketService.completeWithSuccess(
       message.ticketUuid,
       message.contractAddress,
       message.tokenId,
@@ -29,6 +37,10 @@ export class ConsumerService {
   }
 
   async handleNftTransferReply(message: NftTransferReplyMessage) {
-    await this.ticketTransferService.complete(message.transferUuid, message.transactionHash);
+    if (message?.errorMessage) {
+      return this.ticketTransferService.completeWithError(message.transferUuid, message.errorMessage);
+    }
+
+    await this.ticketTransferService.completeWithSuccess(message.transferUuid, message.transactionHash);
   }
 }

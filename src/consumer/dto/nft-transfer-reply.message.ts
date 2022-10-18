@@ -1,4 +1,5 @@
 export class NftTransferReplyMessage {
   transferUuid: string;
-  transactionHash: string;
+  transactionHash?: string;
+  errorMessage?: string;
 }
