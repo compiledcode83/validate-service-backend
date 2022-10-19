@@ -7,6 +7,7 @@ import { FindTicketsDto } from './dto/find-tickets.dto';
 import { Ticket } from './ticket.entity';
 import { TicketRepository } from './ticket.repository';
 import { TicketMintMessage, TicketStatus } from './ticket.types';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class TicketService {
@@ -38,6 +39,7 @@ export class TicketService {
     const ticket = await this.ticketRepository.save(ticketEntity, { reload: false });
 
     await this.producerService.emit('web3.nft.mint', {
+      operationUuid: uuid(),
       ticketUuid: ticket.uuid,
       userUuid: user.uuid,
       name: ticket.name,

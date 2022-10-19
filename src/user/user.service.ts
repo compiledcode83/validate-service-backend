@@ -5,6 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserStatus, WalletCreateMessage } from './user.types';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -40,7 +41,10 @@ export class UserService {
 
     const user = await this.userRepository.save(userEntity, { reload: false });
 
-    await this.producerService.emit('web3.wallet.create', { userUuid: user.uuid } as WalletCreateMessage);
+    await this.producerService.emit('web3.wallet.create', {
+      operationUuid: uuid(),
+      userUuid: user.uuid,
+    } as WalletCreateMessage);
 
     return this.findByUuid(user.uuid);
   }

@@ -9,6 +9,7 @@ export enum TicketStatus {
 }
 
 export interface TicketMintMessage {
+  operationUuid: string;
   ticketUuid: string;
   userUuid: string;
   name: string;
@@ -18,6 +19,7 @@ export interface TicketMintMessage {
 }
 
 export interface TicketTransferMessage {
+  operationUuid: string;
   transferUuid: string;
   userUuidFrom: string;
   userUuidTo: string;
