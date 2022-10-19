@@ -7,6 +7,7 @@ import { CreateTicketTransferDto } from './dto/create-ticket-transfer.dto';
 import { TicketTransfer } from './ticket-transfer.entity';
 import { TicketTransferRepository } from './ticket-transfer.repository';
 import { TicketTransferStatus } from './ticket-transfer.types';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class TicketTransferService {
@@ -39,6 +40,7 @@ export class TicketTransferService {
 
     if (transfer) {
       await this.producerService.emit('web3.nft.transfer', {
+        operationUuid: uuid(),
         transferUuid: transfer.uuid,
         userUuidFrom: ticket.user.uuid,
         userUuidTo: body.userUuid,

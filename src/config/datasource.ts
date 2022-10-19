@@ -26,4 +26,5 @@ export const AppDataSource = new DataSource({
   },
   poolSize: Number(process.env.TYPEORM_POOL_SIZE),
   namingStrategy: new SnakeNamingStrategy(),
+  ssl: { rejectUnauthorized: process.env.MYSQL_TLS === 'true' },
 });
