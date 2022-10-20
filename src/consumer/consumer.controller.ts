@@ -1,9 +1,9 @@
 import { Controller, Logger } from '@nestjs/common';
 import { EventPattern, Payload } from '@nestjs/microservices';
 import { ConsumerService } from './consumer.service';
-import { NftMintReplyMessage } from './dto/nft-mint-reply.message';
-import { NftTransferReplyMessage } from './dto/nft-transfer-reply.message';
-import { WalletCreateReplyMessage } from './dto/wallet-created-reply.message';
+import { NftMintReplyMessage } from './messages/nft-mint-reply.message';
+import { NftTransferReplyMessage } from './messages/nft-transfer-reply.message';
+import { WalletCreateReplyMessage } from './messages/wallet-created-reply.message';
 
 @Controller()
 export class ConsumerController {

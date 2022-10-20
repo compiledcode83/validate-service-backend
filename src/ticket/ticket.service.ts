@@ -6,8 +6,8 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { Ticket } from './ticket.entity';
 import { TicketRepository } from './ticket.repository';
-import { TicketMintMessage, TicketStatus } from './ticket.types';
-import { v4 as uuid } from 'uuid';
+import { TicketEventPattern, TicketStatus } from './ticket.types';
+import { TicketMintMessage } from './messages/ticket-mint.message';
 
 @Injectable()
 export class TicketService {
@@ -38,15 +38,17 @@ export class TicketService {
     };
     const ticket = await this.ticketRepository.save(ticketEntity, { reload: false });
 
-    await this.producerService.emit('web3.nft.mint', {
-      operationUuid: uuid(),
-      ticketUuid: ticket.uuid,
-      userUuid: user.uuid,
-      name: ticket.name,
-      description: ticket.name,
-      image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
-      additionalData: ticket.additionalData,
-    } as TicketMintMessage);
+    await this.producerService.emit(
+      TicketEventPattern.Mint,
+      new TicketMintMessage({
+        ticketUuid: ticket.uuid,
+        userUuid: user.uuid,
+        name: ticket.name,
+        description: ticket.name,
+        image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
+        additionalData: ticket.additionalData,
+      }),
+    );
 
     return this.findByUuid(ticket.uuid);
   }

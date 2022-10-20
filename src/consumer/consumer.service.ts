@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { TicketTransferService } from '@src/ticket-transfer/ticket-transfer.service';
 import { TicketService } from '@src/ticket/ticket.service';
 import { UserService } from '@src/user/user.service';
-import { NftMintReplyMessage } from './dto/nft-mint-reply.message';
-import { NftTransferReplyMessage } from './dto/nft-transfer-reply.message';
-import { WalletCreateReplyMessage } from './dto/wallet-created-reply.message';
+import { NftMintReplyMessage } from './messages/nft-mint-reply.message';
+import { NftTransferReplyMessage } from './messages/nft-transfer-reply.message';
+import { WalletCreateReplyMessage } from './messages/wallet-created-reply.message';
 
 @Injectable()
 export class ConsumerService {

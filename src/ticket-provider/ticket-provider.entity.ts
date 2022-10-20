@@ -3,7 +3,7 @@ import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-pr
 import { Ticket } from '@src/ticket/ticket.entity';
 import { User } from '@src/user/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
-import { TicketProviderStatus, TicketProviderUserIdentifier } from './ticket-provider.types';
+import { TicketProviderSecurityLevel, TicketProviderStatus, TicketProviderUserIdentifier } from './ticket-provider.types';
 
 @Entity('ticket_provider')
 export class TicketProvider {
@@ -41,6 +41,9 @@ export class TicketProvider {
   })
   @Column({ type: 'enum', nullable: false, enum: TicketProviderUserIdentifier })
   userIdentifier: TicketProviderUserIdentifier;
+
+  @Column({ type: 'tinyint', default: 1 })
+  securityLevel: TicketProviderSecurityLevel;
 
   @OneToMany(() => TicketProviderApiToken, (ticketProviderApiToken) => ticketProviderApiToken.ticketProvider)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
