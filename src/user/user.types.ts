@@ -5,7 +5,6 @@ export enum UserStatus {
 
 export const SEED_PHRASE_LENGTH = 64;
 
-export interface WalletCreateMessage {
-  operationUuid: string;
-  userUuid: string;
+export enum UserEventPattern {
+  WalletCreate = 'web3.wallet.create',
 }

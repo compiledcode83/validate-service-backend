@@ -67,8 +67,8 @@ export class TicketController {
   )
   @HttpCode(HttpStatus.OK)
   @Post(':uuid/validate')
-  async validate(@Body() body: ValidateTicketDto, @Req() req: AuthRequest): Promise<Ticket> {
-    const validatedTicket = await this.ticketService.validate(body.uuid, req.ticketProvider.id);
+  async validate(@Body() body: ValidateTicketDto): Promise<Ticket> {
+    const validatedTicket = await this.ticketService.validate(body);
 
     if (!validatedTicket) {
       throw new NotFoundException('Ticket not found');
@@ -82,7 +82,7 @@ export class TicketController {
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'))
   @Post()
-  async create(@Body() body: CreateTicketDto, @Req() req: AuthRequest): Promise<Ticket> {
-    return this.ticketService.create(body, req.ticketProvider.id);
+  async create(@Body() body: CreateTicketDto): Promise<Ticket> {
+    return this.ticketService.create(body);
   }
 }

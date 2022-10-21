@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ProducerService } from '@src/producer/producer.service';
 import { TicketService } from '@src/ticket/ticket.service';
-import { TicketTransferMessage } from '@src/ticket/ticket.types';
 import { UserService } from '@src/user/user.service';
 import { CreateTicketTransferDto } from './dto/create-ticket-transfer.dto';
 import { TicketTransfer } from './ticket-transfer.entity';
 import { TicketTransferRepository } from './ticket-transfer.repository';
-import { TicketTransferStatus } from './ticket-transfer.types';
-import { v4 as uuid } from 'uuid';
+import { TicketTransferEventPattern, TicketTransferStatus } from './ticket-transfer.types';
+import { TicketTransferMessage } from '@src/ticket-transfer/messages/ticket-transfer.message';
 
 @Injectable()
 export class TicketTransferService {
@@ -39,13 +38,15 @@ export class TicketTransferService {
     const transfer = await this.ticketTransferRepository.save(entity, { reload: false });
 
     if (transfer) {
-      await this.producerService.emit('web3.nft.transfer', {
-        operationUuid: uuid(),
-        transferUuid: transfer.uuid,
-        userUuidFrom: ticket.user.uuid,
-        userUuidTo: body.userUuid,
-        tokenId: ticket.tokenId,
-      } as TicketTransferMessage);
+      await this.producerService.emit(
+        TicketTransferEventPattern.Transfer,
+        new TicketTransferMessage({
+          transferUuid: transfer.uuid,
+          userUuidFrom: ticket.user.uuid,
+          userUuidTo: body.userUuid,
+          tokenId: ticket.tokenId,
+        }),
+      );
     }
 
     return this.findByUuid(transfer.uuid);
