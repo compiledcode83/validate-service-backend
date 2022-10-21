@@ -52,14 +52,14 @@ export class TicketTransferService {
     return this.findByUuid(transfer.uuid);
   }
 
-  async completeWithSuccess(uuid: string, transactionHash: string): Promise<void> {
+  async complete(uuid: string, transactionHash: string): Promise<void> {
     await this.ticketTransferRepository.update(
       { uuid },
-      { status: TicketTransferStatus.Completed, transactionHash, finishedAt: new Date() },
+      { status: TicketTransferStatus.Completed, transactionHash, finishedAt: new Date(), errorData: null },
     );
   }
 
-  async completeWithError(uuid: string, errorData: string): Promise<void> {
+  async setError(uuid: string, errorData: string): Promise<void> {
     await this.ticketTransferRepository.update({ uuid }, { errorData });
   }
 }

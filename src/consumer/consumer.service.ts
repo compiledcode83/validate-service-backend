@@ -39,10 +39,10 @@ export class ConsumerService {
 
   async handleNftTransferReply(message: NftTransferReplyMessage) {
     if (message?.errorMessage) {
-      return this.ticketTransferService.completeWithError(message.transferUuid, message.errorMessage);
+      return this.ticketTransferService.setError(message.transferUuid, message.errorMessage);
     }
 
-    await this.ticketTransferService.completeWithSuccess(message.transferUuid, message.transactionHash);
+    await this.ticketTransferService.complete(message.transferUuid, message.transactionHash);
   }
 
   async handleNftBurnReply(message: NftBurnReplyMessage) {
