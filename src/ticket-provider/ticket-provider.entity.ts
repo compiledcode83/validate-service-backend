@@ -3,7 +3,11 @@ import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-pr
 import { Ticket } from '@src/ticket/ticket.entity';
 import { User } from '@src/user/user.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
-import { TicketProviderSecurityLevel, TicketProviderStatus, TicketProviderUserIdentifier } from './ticket-provider.types';
+import {
+  TicketProviderSecurityLevel,
+  TicketProviderStatus,
+  TicketProviderUserIdentifier,
+} from './ticket-provider.types';
 
 @Entity('ticket_provider')
 export class TicketProvider {

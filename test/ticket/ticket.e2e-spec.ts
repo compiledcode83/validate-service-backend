@@ -9,23 +9,30 @@ import { TestHelper } from '@test/helpers/test.helper';
 import { faker } from '@faker-js/faker';
 import { Ticket } from '@src/ticket/ticket.entity';
 import { TicketFactory } from '@src/database/factories/ticket.factory';
-import { TicketStatus } from '@src/ticket/ticket.types';
+import { TicketEventPattern, TicketStatus } from '@src/ticket/ticket.types';
 import { ProducerService } from '@src/producer/producer.service';
+import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provider.types';
+import { TicketMintMessage } from '@src/ticket/messages/ticket-mint.message';
+import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
+import { TicketProviderEncryptionService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.service';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
+  let producerService: ProducerService;
+  let mockedEmit: jest.SpyInstance;
+  let ticketProviderEncryptionService: TicketProviderEncryptionService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-
-    testingModuleBuilder.overrideProvider(ProducerService).useValue({
-      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
-    });
-
     moduleFixture = await testingModuleBuilder.compile();
+    producerService = moduleFixture.get<ProducerService>(ProducerService);
+    ticketProviderEncryptionService = moduleFixture.get<TicketProviderEncryptionService>(
+      TicketProviderEncryptionService,
+    );
 
+    mockedEmit = jest.spyOn(producerService, 'emit').mockImplementation(async (): Promise<any> => null);
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
     testHelper = new TestHelper(moduleFixture, jest);
@@ -45,7 +52,7 @@ describe('Ticket (e2e)', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
 
   it('checks that endpoints are protected', () => {
@@ -119,6 +126,140 @@ describe('Ticket (e2e)', () => {
 
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(user.id);
+      });
+  });
+
+  it(`should create a new ticket, without encrypted user data, if TP has level 1 security`, async () => {
+    const ticketProvider = await TicketProviderFactory.create({ securityLevel: TicketProviderSecurityLevel.Level1 });
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketData = {
+      name: faker.random.words(4),
+      imageUrl: faker.internet.url(),
+      additionalData: {
+        seats: 4,
+        type: 'Adult',
+      },
+      userUuid: user.uuid,
+    };
+
+    await request(app.getHttpServer())
+      .post('/api/v1/tickets')
+      .send(ticketData)
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            uuid: expect.any(String),
+            name: ticketData.name,
+            imageUrl: ticketData.imageUrl,
+            additionalData: ticketData.additionalData,
+            status: TicketStatus.Creating,
+            contractId: null,
+            ipfsUri: null,
+            tokenId: null,
+          }),
+        );
+        expect(response.status).toBe(HttpStatus.CREATED);
+
+        const newTicket = await AppDataSource.manager
+          .getRepository(Ticket)
+          .findOne({ where: { uuid: response.body.uuid } });
+
+        expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
+        expect(newTicket.userId).toEqual(user.id);
+
+        const expectedMintMessage = new TicketMintMessage({
+          ticketUuid: newTicket.uuid,
+          userUuid: user.uuid,
+          name: newTicket.name,
+          description: newTicket.name,
+          image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
+          additionalData: newTicket.additionalData,
+        });
+
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Mint, {
+          ...expectedMintMessage,
+          operationUuid: expect.any(String),
+        });
+      });
+  });
+
+  it(`should create a new ticket, with encrypted user data, if TP has level 2 security`, async () => {
+    const ticketProvider = await TicketProviderFactory.create({ securityLevel: TicketProviderSecurityLevel.Level2 });
+    const encryptionKey = await TicketProviderEncryptionKeyFactory.create({
+      ticketProviderId: ticketProvider.id,
+      version: 1,
+    });
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketData = {
+      name: faker.random.words(4),
+      imageUrl: faker.internet.url(),
+      additionalData: {
+        seats: 4,
+        type: 'Adult',
+      },
+      userUuid: user.uuid,
+    };
+
+    await request(app.getHttpServer())
+      .post('/api/v1/tickets')
+      .send(ticketData)
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            uuid: expect.any(String),
+            name: ticketData.name,
+            imageUrl: ticketData.imageUrl,
+            additionalData: ticketData.additionalData,
+            status: TicketStatus.Creating,
+            contractId: null,
+            ipfsUri: null,
+            tokenId: null,
+          }),
+        );
+        expect(response.status).toBe(HttpStatus.CREATED);
+
+        const newTicket = await AppDataSource.manager
+          .getRepository(Ticket)
+          .findOne({ where: { uuid: response.body.uuid } });
+
+        expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
+        expect(newTicket.userId).toEqual(user.id);
+
+        const expectedMintMessage = new TicketMintMessage({
+          ticketUuid: newTicket.uuid,
+          userUuid: user.uuid,
+          name: newTicket.name,
+          description: newTicket.name,
+          image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
+          additionalData: newTicket.additionalData,
+        });
+
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Mint, {
+          ...expectedMintMessage,
+          operationUuid: expect.any(String),
+          user: {
+            iv: expect.any(String),
+            content: expect.any(String),
+            version: encryptionKey.version,
+          },
+        });
+
+        const [, data] = mockedEmit.mock.lastCall;
+        const { user: encryptedUser } = data;
+        const decryptedUser = ticketProviderEncryptionService.decrypt(encryptedUser, encryptionKey.secretKey);
+
+        expect(JSON.parse(decryptedUser)).toEqual({
+          name: user.name,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          photoUrl: user?.photoUrl ?? null,
+        });
       });
   });
 

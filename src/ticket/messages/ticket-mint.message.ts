@@ -1,3 +1,4 @@
+import { EncryptedData } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.types';
 import { v4 as uuid } from 'uuid';
 
 export class TicketMintMessage {
@@ -8,6 +9,7 @@ export class TicketMintMessage {
   description: string;
   image: string;
   additionalData: Record<string, any>;
+  user?: EncryptedData;
 
   constructor(data: Partial<TicketMintMessage>) {
     Object.assign(this, data);

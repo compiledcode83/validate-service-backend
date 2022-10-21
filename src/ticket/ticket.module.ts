@@ -8,9 +8,10 @@ import { UserModule } from '@src/user/user.module';
 import { TicketUserExistsValidator } from './validators/ticket-user-exists-validator';
 import { TicketIsValidatableValidator } from './validators/ticket-is-validatable.validator';
 import { ProducerModule } from '@src/producer/producer.module';
+import { TicketProviderEncryptionKeyModule } from '@src/ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Ticket]), UserModule, ProducerModule],
+  imports: [TypeOrmModule.forFeature([Ticket]), UserModule, ProducerModule, TicketProviderEncryptionKeyModule],
   providers: [TicketService, TicketRepository, TicketUserExistsValidator, TicketIsValidatableValidator],
   controllers: [TicketController],
   exports: [TicketService],
