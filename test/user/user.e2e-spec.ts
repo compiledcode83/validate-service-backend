@@ -6,25 +6,25 @@ import { UserFactory } from '@src/database/factories/user.factory';
 import { AppDataSource } from '@src/config/datasource';
 import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { UserStatus } from '@src/user/user.types';
+import { UserEventPattern, UserStatus } from '@src/user/user.types';
 import { faker } from '@faker-js/faker';
 import { User } from '@src/user/user.entity';
 import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provider.types';
 import { ProducerService } from '@src/producer/producer.service';
+import { WalletCreateMessage } from '@src/user/messages/wallet-create.message';
 
 describe('User (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
+  let producerService: ProducerService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-
-    testingModuleBuilder.overrideProvider(ProducerService).useValue({
-      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
-    });
-
     moduleFixture = await testingModuleBuilder.compile();
+    producerService = moduleFixture.get<ProducerService>(ProducerService);
+    jest.spyOn(producerService, 'emit').mockImplementation(async (): Promise<any> => null);
+
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
     testHelper = new TestHelper(moduleFixture, jest);
@@ -33,6 +33,7 @@ describe('User (e2e)', () => {
   });
 
   afterAll(async () => {
+    jest.resetAllMocks().restoreAllMocks();
     await AppDataSource.destroy();
     await app.close();
   });
@@ -42,7 +43,7 @@ describe('User (e2e)', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
 
   it('checks that endpoints are protected', () => {
@@ -185,6 +186,15 @@ describe('User (e2e)', () => {
           .findOne({ where: { uuid: response.body.uuid } });
 
         expect(newUser.ticketProviderId).toEqual(ticketProvider.id);
+
+        const expectedMessage = new WalletCreateMessage({
+          userUuid: newUser.uuid,
+        });
+
+        expect(producerService.emit).toHaveBeenCalledWith(UserEventPattern.WalletCreate, {
+          ...expectedMessage,
+          operationUuid: expect.any(String),
+        });
       });
   });
 

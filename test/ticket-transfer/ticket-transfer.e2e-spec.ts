@@ -12,19 +12,20 @@ import { TicketTransferFactory } from '@src/database/factories/ticket-transfer.f
 import { ProducerService } from '@src/producer/producer.service';
 import { UserStatus } from '@src/user/user.types';
 import { TicketStatus } from '@src/ticket/ticket.types';
+import { TicketTransferMessage } from '@src/ticket-transfer/messages/ticket-transfer.message';
+import { TicketTransferEventPattern } from '@src/ticket-transfer/ticket-transfer.types';
 
 describe('Ticket-transfer (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
+  let producerService: ProducerService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-
-    testingModuleBuilder.overrideProvider(ProducerService).useValue({
-      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
-    });
     moduleFixture = await testingModuleBuilder.compile();
+    producerService = moduleFixture.get<ProducerService>(ProducerService);
+    jest.spyOn(producerService, 'emit').mockImplementation(async (): Promise<any> => null);
 
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
@@ -34,6 +35,7 @@ describe('Ticket-transfer (e2e)', () => {
   });
 
   afterAll(async () => {
+    jest.resetAllMocks().restoreAllMocks();
     await AppDataSource.destroy();
     await app.close();
   });
@@ -43,7 +45,7 @@ describe('Ticket-transfer (e2e)', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
 
   it('checks that endpoints are protected', () => {
@@ -176,6 +178,18 @@ describe('Ticket-transfer (e2e)', () => {
         expect(ticketTransfer.userIdTo).toEqual(userTo.id);
         expect(ticketTransfer.ticketId).toEqual(ticket.id);
         expect(ticketTransfer.ticketProviderId).toEqual(ticketProvider.id);
+
+        const expectedMessage = new TicketTransferMessage({
+          transferUuid: ticketTransfer.uuid,
+          userUuidFrom: userFrom.uuid,
+          userUuidTo: userTo.uuid,
+          tokenId: ticket.tokenId,
+        });
+
+        expect(producerService.emit).toHaveBeenCalledWith(TicketTransferEventPattern.Transfer, {
+          ...expectedMessage,
+          operationUuid: expect.any(String),
+        });
       });
   });
 

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TicketTransferService } from '@src/ticket-transfer/ticket-transfer.service';
 import { TicketService } from '@src/ticket/ticket.service';
 import { UserService } from '@src/user/user.service';
+import { NftBurnReplyMessage } from './messages/nft-burn-reply.message';
 import { NftMintReplyMessage } from './messages/nft-mint-reply.message';
 import { NftTransferReplyMessage } from './messages/nft-transfer-reply.message';
 import { WalletCreateReplyMessage } from './messages/wallet-created-reply.message';
@@ -24,10 +25,10 @@ export class ConsumerService {
 
   async handleNftMintReply(message: NftMintReplyMessage) {
     if (message?.errorMessage) {
-      return this.ticketService.completeWithError(message.ticketUuid, message.errorMessage);
+      return this.ticketService.setError(message.ticketUuid, message.errorMessage);
     }
 
-    await this.ticketService.completeWithSuccess(
+    await this.ticketService.activate(
       message.ticketUuid,
       message.contractAddress,
       message.tokenId,
@@ -42,5 +43,13 @@ export class ConsumerService {
     }
 
     await this.ticketTransferService.completeWithSuccess(message.transferUuid, message.transactionHash);
+  }
+
+  async handleNftBurnReply(message: NftBurnReplyMessage) {
+    if (message?.errorMessage) {
+      return this.ticketService.setError(message.ticketUuid, message.errorMessage);
+    }
+
+    return;
   }
 }

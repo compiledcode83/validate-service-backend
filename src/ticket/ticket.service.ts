@@ -13,6 +13,8 @@ import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provide
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { User } from '@src/user/user.entity';
 import { ValidateTicketDto } from './dto/validate-ticket.dto';
+import { DeleteTicketDto } from './dto/delete-ticket.dto';
+import { TicketDeleteMessage } from './messages/ticket-delete.message';
 
 @Injectable()
 export class TicketService {
@@ -68,7 +70,20 @@ export class TicketService {
     return this.ticketRepository.validate(body.uuid, body.ticketProvider.id);
   }
 
-  async completeWithSuccess(
+  async delete(body: DeleteTicketDto): Promise<void> {
+    const ticket = await this.findByUuid(body.uuid);
+
+    await this.ticketRepository.update({ uuid: body.uuid }, { status: TicketStatus.Deleted, deletedAt: new Date() });
+    await this.producerService.emit(
+      TicketEventPattern.Burn,
+      new TicketDeleteMessage({
+        ticketUuid: ticket.uuid,
+        tokenId: ticket.tokenId,
+      }),
+    );
+  }
+
+  async activate(
     uuid: string,
     contractId: string,
     tokenId: number,
@@ -77,11 +92,11 @@ export class TicketService {
   ): Promise<void> {
     await this.ticketRepository.update(
       { uuid },
-      { contractId, tokenId, ipfsUri, status: TicketStatus.Active, transactionHash },
+      { contractId, tokenId, ipfsUri, status: TicketStatus.Active, transactionHash, errorData: null },
     );
   }
 
-  async completeWithError(uuid: string, errorData: string): Promise<void> {
+  async setError(uuid: string, errorData: string): Promise<void> {
     await this.ticketRepository.update({ uuid }, { errorData });
   }
 
