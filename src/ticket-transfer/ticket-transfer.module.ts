@@ -6,12 +6,18 @@ import { TicketTransfer } from './ticket-transfer.entity';
 import { UserModule } from '@src/user/user.module';
 import { TicketModule } from '@src/ticket/ticket.module';
 import { TicketTransferRepository } from './ticket-transfer.repository';
-import { TicketExistsValidator } from './validators/ticket-exists-validator';
+import { TicketExistsAndActiveValidator } from './validators/ticket-exists-and-active.validator';
 import { ProducerModule } from '@src/producer/producer.module';
+import { TicketTransferReceiverValidator } from './validators/ticket-transfer-receiver.validator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TicketTransfer]), UserModule, TicketModule, ProducerModule],
-  providers: [TicketTransferService, TicketTransferRepository, TicketExistsValidator],
+  providers: [
+    TicketTransferService,
+    TicketTransferRepository,
+    TicketExistsAndActiveValidator,
+    TicketTransferReceiverValidator,
+  ],
   controllers: [TicketTransferController],
   exports: [TicketTransferService],
 })

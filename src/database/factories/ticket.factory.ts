@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { AppDataSource } from '@src/config/datasource';
 import { Ticket } from '@src/ticket/ticket.entity';
+import { TicketStatus } from '@src/ticket/ticket.types';
 
 export class TicketFactory {
   static async create(data?: Partial<Ticket>) {
@@ -11,6 +12,7 @@ export class TicketFactory {
     ticket.imageUrl = faker.internet.url();
     ticket.tokenId = Number(faker.random.numeric(2));
     ticket.additionalData = { seat: 10 };
+    ticket.status = TicketStatus.Active;
 
     return AppDataSource.manager.getRepository(Ticket).save({ ...ticket, ...data });
   }
