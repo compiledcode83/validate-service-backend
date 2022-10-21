@@ -15,6 +15,7 @@ import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provide
 import { TicketMintMessage } from '@src/ticket/messages/ticket-mint.message';
 import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
 import { TicketProviderEncryptionService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.service';
+import { UserStatus } from '@src/user/user.types';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
@@ -82,6 +83,31 @@ describe('Ticket (e2e)', () => {
             'additionalData must be an object',
           ]),
         );
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`should not create a new ticket if user is not yet active`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
+    const ticketData = {
+      name: faker.random.words(4),
+      imageUrl: faker.internet.url(),
+      additionalData: {
+        seats: 4,
+        type: 'Adult',
+      },
+      userUuid: user.uuid,
+    };
+
+    await request(app.getHttpServer())
+      .post('/api/v1/tickets')
+      .send(ticketData)
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['User is not yet active']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
   });

@@ -10,6 +10,7 @@ import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
 import { TicketTransferFactory } from '@src/database/factories/ticket-transfer.factory';
 import { ProducerService } from '@src/producer/producer.service';
+import { UserStatus } from '@src/user/user.types';
 
 describe('Ticket-transfer (e2e)', () => {
   let app: INestApplication;
@@ -66,6 +67,27 @@ describe('Ticket-transfer (e2e)', () => {
             'Ticket not found',
           ]),
         );
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`should not create a new ticket transfer if receiving user is not yet active`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
+    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/ticket-transfers')
+      .send({
+        userUuid: userTo.uuid,
+        ticketUuid: ticket.uuid,
+      })
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['User is not yet active']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
   });
