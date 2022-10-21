@@ -203,7 +203,7 @@ describe('Ticket-transfer (e2e)', () => {
       });
   });
 
-  it(`should get ticket by uuid successfully`, async () => {
+  it(`should get ticket transfer by uuid successfully`, async () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });

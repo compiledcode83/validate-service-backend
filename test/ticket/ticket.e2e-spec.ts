@@ -323,7 +323,7 @@ describe('Ticket (e2e)', () => {
             name: ticket.name,
             imageUrl: ticket.imageUrl,
             additionalData: ticket.additionalData,
-            status: TicketStatus.Creating,
+            status: TicketStatus.Active,
             contractId: ticket.contractId,
             ipfsUri: ticket.ipfsUri,
             tokenId: ticket.tokenId,
