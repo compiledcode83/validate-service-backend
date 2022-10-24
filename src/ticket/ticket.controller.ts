@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -20,6 +21,7 @@ import { PaginatedResult } from '@src/common/pagination/pagination.types';
 import { AuthRequest } from '@src/common/types/auth.request';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { Ticket } from './ticket.entity';
@@ -84,5 +86,19 @@ export class TicketController {
   @Post()
   async create(@Body() body: CreateTicketDto): Promise<Ticket> {
     return this.ticketService.create(body);
+  }
+
+  @ApiOperation({ description: `Delete a ticket` })
+  @ApiResponse(ApiResponseHelper.success(Ticket, HttpStatus.OK))
+  @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
+  @UseInterceptors(
+    ClassSerializerInterceptor,
+    new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'),
+    new ParamToBodyInterceptor('uuid', 'uuid'),
+  )
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':uuid')
+  async delete(@Body() body: DeleteTicketDto): Promise<void> {
+    await this.ticketService.delete(body);
   }
 }

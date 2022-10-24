@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { Allow, IsObject, IsOptional, IsString, IsUrl, IsUUID, MaxLength, MinLength, Validate } from 'class-validator';
 import { TicketAdditionalData } from '../ticket.types';
-import { TicketUserExistsValidator } from '../validators/ticket-user-exists-validator';
+import { TicketUserExistsAndActiveValidator } from '../validators/ticket-user-exists-and-active.validator';
 
 export class CreateTicketDto {
   @ApiProperty({
@@ -11,7 +11,7 @@ export class CreateTicketDto {
     description: `Ticket user's uuid`,
   })
   @IsUUID()
-  @Validate(TicketUserExistsValidator)
+  @Validate(TicketUserExistsAndActiveValidator)
   userUuid: string;
 
   @ApiProperty({

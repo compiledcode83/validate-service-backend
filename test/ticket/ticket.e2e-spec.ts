@@ -15,6 +15,8 @@ import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provide
 import { TicketMintMessage } from '@src/ticket/messages/ticket-mint.message';
 import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
 import { TicketProviderEncryptionService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.service';
+import { UserStatus } from '@src/user/user.types';
+import { TicketDeleteMessage } from '@src/ticket/messages/ticket-delete.message';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
@@ -82,6 +84,31 @@ describe('Ticket (e2e)', () => {
             'additionalData must be an object',
           ]),
         );
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`should not create a new ticket if user is not yet active`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
+    const ticketData = {
+      name: faker.random.words(4),
+      imageUrl: faker.internet.url(),
+      additionalData: {
+        seats: 4,
+        type: 'Adult',
+      },
+      userUuid: user.uuid,
+    };
+
+    await request(app.getHttpServer())
+      .post('/api/v1/tickets')
+      .send(ticketData)
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['User is not yet active']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
   });
@@ -297,7 +324,7 @@ describe('Ticket (e2e)', () => {
             name: ticket.name,
             imageUrl: ticket.imageUrl,
             additionalData: ticket.additionalData,
-            status: TicketStatus.Creating,
+            status: TicketStatus.Active,
             contractId: ticket.contractId,
             ipfsUri: ticket.ipfsUri,
             tokenId: ticket.tokenId,
@@ -506,6 +533,83 @@ describe('Ticket (e2e)', () => {
           }),
         );
         expect(response.status).toBe(HttpStatus.OK);
+      });
+  });
+
+  it(`doesn't allow to delete the ticket if it doesn't belong to ticket provider`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const ticketProviderSecond = await TicketProviderFactory.create();
+    const user = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProviderSecond.id,
+      userId: user.id,
+      status: TicketStatus.Active,
+    });
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/tickets/${ticket.uuid}`)
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then((response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['Ticket not found or cannot be deleted']));
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`doesn't allow to delete the ticket if it's status isn't active`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      status: TicketStatus.Validated,
+    });
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/tickets/${ticket.uuid}`)
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then((response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['Ticket not found or cannot be deleted']));
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`deletes active ticket successfully`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      status: TicketStatus.Active,
+    });
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/tickets/${ticket.uuid}`)
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.status).toBe(HttpStatus.NO_CONTENT);
+
+        const deletedTicket = await AppDataSource.manager
+          .getRepository(Ticket)
+          .findOne({ where: { uuid: response.body.uuid } });
+
+        expect(deletedTicket.status).toEqual(TicketStatus.Deleted);
+        expect(deletedTicket.deletedAt).not.toBeNull();
+
+        const expectedMessage = new TicketDeleteMessage({
+          ticketUuid: deletedTicket.uuid,
+          tokenId: deletedTicket.tokenId,
+        });
+
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Burn, {
+          ...expectedMessage,
+          operationUuid: expect.any(String),
+        });
       });
   });
 });

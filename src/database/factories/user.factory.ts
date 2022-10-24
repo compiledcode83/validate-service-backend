@@ -10,7 +10,7 @@ export class UserFactory {
     user.email = faker.internet.email();
     user.phoneNumber = faker.phone.number('+1907#######').toString();
     user.walletAddress = faker.finance.ethereumAddress();
-    user.status = UserStatus.Creating;
+    user.status = UserStatus.Active;
 
     return AppDataSource.manager.getRepository(User).save({ ...user, ...data });
   }

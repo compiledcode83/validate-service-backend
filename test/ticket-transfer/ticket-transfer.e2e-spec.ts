@@ -10,19 +10,22 @@ import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
 import { TicketTransferFactory } from '@src/database/factories/ticket-transfer.factory';
 import { ProducerService } from '@src/producer/producer.service';
+import { UserStatus } from '@src/user/user.types';
+import { TicketStatus } from '@src/ticket/ticket.types';
+import { TicketTransferMessage } from '@src/ticket-transfer/messages/ticket-transfer.message';
+import { TicketTransferEventPattern } from '@src/ticket-transfer/ticket-transfer.types';
 
 describe('Ticket-transfer (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
+  let producerService: ProducerService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-
-    testingModuleBuilder.overrideProvider(ProducerService).useValue({
-      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
-    });
     moduleFixture = await testingModuleBuilder.compile();
+    producerService = moduleFixture.get<ProducerService>(ProducerService);
+    jest.spyOn(producerService, 'emit').mockImplementation(async (): Promise<any> => null);
 
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
@@ -32,6 +35,7 @@ describe('Ticket-transfer (e2e)', () => {
   });
 
   afterAll(async () => {
+    jest.resetAllMocks().restoreAllMocks();
     await AppDataSource.destroy();
     await app.close();
   });
@@ -41,7 +45,7 @@ describe('Ticket-transfer (e2e)', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
 
   it('checks that endpoints are protected', () => {
@@ -65,6 +69,78 @@ describe('Ticket-transfer (e2e)', () => {
             'ticketUuid must be a UUID',
             'Ticket not found',
           ]),
+        );
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`should not create a new ticket transfer if receiving user is not yet active`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
+    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/ticket-transfers')
+      .send({
+        userUuid: userTo.uuid,
+        ticketUuid: ticket.uuid,
+      })
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['User is not yet active']));
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`should not create a new ticket transfer if transfering ticket is not yet active`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: userFrom.id,
+      status: TicketStatus.Creating,
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/ticket-transfers')
+      .send({
+        userUuid: userTo.uuid,
+        ticketUuid: ticket.uuid,
+      })
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['Ticket is not yet active']));
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`should not create a new ticket transfer if receiver is the current owner of the ticket`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const currentOwner = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: currentOwner.id,
+      status: TicketStatus.Active,
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/ticket-transfers')
+      .send({
+        userUuid: currentOwner.uuid,
+        ticketUuid: ticket.uuid,
+      })
+      .set('Accept', 'application/json')
+      .set('api-token', token)
+      .then(async (response) => {
+        expect(response.body.message).toEqual(
+          expect.arrayContaining(['The receiving user is already an owner of the ticket']),
         );
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
@@ -102,6 +178,18 @@ describe('Ticket-transfer (e2e)', () => {
         expect(ticketTransfer.userIdTo).toEqual(userTo.id);
         expect(ticketTransfer.ticketId).toEqual(ticket.id);
         expect(ticketTransfer.ticketProviderId).toEqual(ticketProvider.id);
+
+        const expectedMessage = new TicketTransferMessage({
+          transferUuid: ticketTransfer.uuid,
+          userUuidFrom: userFrom.uuid,
+          userUuidTo: userTo.uuid,
+          tokenId: ticket.tokenId,
+        });
+
+        expect(producerService.emit).toHaveBeenCalledWith(TicketTransferEventPattern.Transfer, {
+          ...expectedMessage,
+          operationUuid: expect.any(String),
+        });
       });
   });
 
@@ -129,7 +217,7 @@ describe('Ticket-transfer (e2e)', () => {
       });
   });
 
-  it(`should get ticket by uuid successfully`, async () => {
+  it(`should get ticket transfer by uuid successfully`, async () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
