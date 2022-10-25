@@ -59,7 +59,7 @@ describe('User (e2e)', () => {
     await request(app.getHttpServer())
       .post('/api/v1/users')
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
@@ -86,7 +86,7 @@ describe('User (e2e)', () => {
         phoneNumber: faker.phone.number('+38050#######').toString(),
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([`User with identifier '${email}' already exists`]),
@@ -111,7 +111,7 @@ describe('User (e2e)', () => {
         phoneNumber,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([`User with identifier '${phoneNumber}' already exists`]),
@@ -137,7 +137,7 @@ describe('User (e2e)', () => {
       .post('/api/v1/users')
       .send(userData)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -170,7 +170,7 @@ describe('User (e2e)', () => {
       .post('/api/v1/users')
       .send(userData)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -213,7 +213,7 @@ describe('User (e2e)', () => {
       .patch(`/api/v1/users/${user.uuid}`)
       .send(patchedUser)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
@@ -235,7 +235,7 @@ describe('User (e2e)', () => {
       .patch(`/api/v1/users/${user.uuid}`)
       .send({})
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
@@ -263,7 +263,7 @@ describe('User (e2e)', () => {
       .patch(`/api/v1/users/${user.uuid}`)
       .send(patchedUser)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -290,7 +290,7 @@ describe('User (e2e)', () => {
       .patch(`/api/v1/users/${user.uuid}`)
       .send(patchedUser)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -313,7 +313,7 @@ describe('User (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/users/${user.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual('User not found');
         expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -328,7 +328,7 @@ describe('User (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/users/${user.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -356,7 +356,7 @@ describe('User (e2e)', () => {
         seedPhrase: user.seedPhrase,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual('User not found');
         expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -374,7 +374,7 @@ describe('User (e2e)', () => {
         seedPhrase: user.seedPhrase,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({

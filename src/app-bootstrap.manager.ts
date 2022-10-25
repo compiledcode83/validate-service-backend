@@ -1,10 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
+import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { json } from 'express';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 import { InternalServerErrorExceptionsFilter } from './common/filters/internal-server-error-exceptions.filter';
-import { ApiTokenGuard } from './auth/guards/api-token.guard';
+import { ApiKeyGuard } from './auth/guards/api-token.guard';
 import { Reflector } from '@nestjs/core';
 
 export class AppBootstrapManager {
@@ -22,7 +22,7 @@ export class AppBootstrapManager {
     app
       .use(json({ limit: '50mb' }))
       .setGlobalPrefix('api/v1')
-      .useGlobalGuards(new ApiTokenGuard(reflector))
+      .useGlobalGuards(new ApiKeyGuard(reflector))
       .useGlobalFilters(new InternalServerErrorExceptionsFilter())
       .useGlobalPipes(
         new ValidationPipe({

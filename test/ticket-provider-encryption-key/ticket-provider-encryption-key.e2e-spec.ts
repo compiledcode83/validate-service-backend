@@ -55,7 +55,7 @@ describe('Ticket-provider-encryption-keys (e2e)', () => {
     await request(app.getHttpServer())
       .post('/api/v1/ticket-provider-encryption-keys')
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -81,7 +81,7 @@ describe('Ticket-provider-encryption-keys (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/ticket-provider-encryption-keys/${encryptionKey.version}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual('Encryption key not found');
         expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -99,7 +99,7 @@ describe('Ticket-provider-encryption-keys (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/ticket-provider-encryption-keys/${encryptionKey.version}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
