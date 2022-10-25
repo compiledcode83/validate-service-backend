@@ -4,10 +4,10 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class ApiTokenStrategy extends PassportStrategy(UniqueTokenStrategy, 'api-token') {
+export class ApiKeyStrategy extends PassportStrategy(UniqueTokenStrategy, 'Api-Key') {
   constructor(private authService: AuthService) {
     super({
-      tokenHeader: 'api-token',
+      tokenHeader: 'Api-Key',
       failOnMissing: true,
     });
   }

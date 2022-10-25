@@ -73,7 +73,7 @@ describe('Ticket (e2e)', () => {
         additionalData: 'not an object',
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
@@ -106,7 +106,7 @@ describe('Ticket (e2e)', () => {
       .post('/api/v1/tickets')
       .send(ticketData)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['User is not yet active']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -131,7 +131,7 @@ describe('Ticket (e2e)', () => {
       .post('/api/v1/tickets')
       .send(ticketData)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -174,7 +174,7 @@ describe('Ticket (e2e)', () => {
       .post('/api/v1/tickets')
       .send(ticketData)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -235,7 +235,7 @@ describe('Ticket (e2e)', () => {
       .post('/api/v1/tickets')
       .send(ticketData)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -300,7 +300,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/tickets/${ticket.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual('Ticket not found');
         expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -316,7 +316,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/tickets/${ticket.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -356,7 +356,7 @@ describe('Ticket (e2e)', () => {
         userUuid: user.uuid,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.data).toEqual(
           expect.arrayContaining([
@@ -394,7 +394,7 @@ describe('Ticket (e2e)', () => {
         seedPhrase: user2.seedPhrase,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.data).toEqual(
           expect.arrayContaining([
@@ -431,7 +431,7 @@ describe('Ticket (e2e)', () => {
         seedPhrase: user.seedPhrase,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.data).toEqual(
           expect.arrayContaining([
@@ -453,7 +453,7 @@ describe('Ticket (e2e)', () => {
         status: TicketStatus.Validated,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.data).toEqual(
           expect.arrayContaining([
@@ -482,7 +482,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .post(`/api/v1/tickets/${ticket.uuid}/validate`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['Ticket is already used or not created yet']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -503,7 +503,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .post(`/api/v1/tickets/${ticket.uuid}/validate`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['Ticket is already used or not created yet']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -523,7 +523,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .post(`/api/v1/tickets/${ticket.uuid}/validate`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -550,7 +550,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .delete(`/api/v1/tickets/${ticket.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['Ticket not found or cannot be deleted']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -570,7 +570,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .delete(`/api/v1/tickets/${ticket.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['Ticket not found or cannot be deleted']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -590,7 +590,7 @@ describe('Ticket (e2e)', () => {
     await request(app.getHttpServer())
       .delete(`/api/v1/tickets/${ticket.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.status).toBe(HttpStatus.NO_CONTENT);
 

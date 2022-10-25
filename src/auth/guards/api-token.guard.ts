@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class ApiTokenGuard extends AuthGuard('api-token') {
+export class ApiKeyGuard extends AuthGuard('Api-Key') {
   constructor(private reflector: Reflector) {
     super({
       property: 'ticketProvider',

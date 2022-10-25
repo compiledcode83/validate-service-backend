@@ -60,7 +60,7 @@ describe('Ticket-transfer (e2e)', () => {
     await request(app.getHttpServer())
       .post('/api/v1/ticket-transfers')
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
@@ -88,7 +88,7 @@ describe('Ticket-transfer (e2e)', () => {
         ticketUuid: ticket.uuid,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['User is not yet active']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -113,7 +113,7 @@ describe('Ticket-transfer (e2e)', () => {
         ticketUuid: ticket.uuid,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['Ticket is not yet active']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -137,7 +137,7 @@ describe('Ticket-transfer (e2e)', () => {
         ticketUuid: ticket.uuid,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining(['The receiving user is already an owner of the ticket']),
@@ -160,7 +160,7 @@ describe('Ticket-transfer (e2e)', () => {
         ticketUuid: ticket.uuid,
       })
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then(async (response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
@@ -210,7 +210,7 @@ describe('Ticket-transfer (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/ticket-transfers/${ticketTransfer.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual('Ticket transfer not found');
         expect(response.status).toBe(HttpStatus.NOT_FOUND);
@@ -233,7 +233,7 @@ describe('Ticket-transfer (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/ticket-transfers/${ticketTransfer.uuid}`)
       .set('Accept', 'application/json')
-      .set('api-token', token)
+      .set('Api-Key', token)
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
