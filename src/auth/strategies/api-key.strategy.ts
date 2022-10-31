@@ -13,7 +13,7 @@ export class ApiKeyStrategy extends PassportStrategy(UniqueTokenStrategy, 'Api-K
   }
 
   async validate(token: string): Promise<any> {
-    const ticketProvider = await this.authService.validateTicketProvider(token);
+    const ticketProvider = await this.authService.validateByApiKey(token);
 
     if (!ticketProvider) {
       throw new UnauthorizedException();

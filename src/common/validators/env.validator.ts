@@ -74,6 +74,10 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   KAFKA_PASSWORD: string;
+
+  @IsString()
+  @MinLength(64)
+  JWT_SECRET: string;
 }
 
 export function validate(config: Record<string, unknown>) {

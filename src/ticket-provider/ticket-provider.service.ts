@@ -13,4 +13,12 @@ export class TicketProviderService {
   async findMany(id: number): Promise<TicketProvider[]> {
     return this.ticketProviderRepository.findMany(id);
   }
+
+  async findByEmail(email: string): Promise<TicketProvider> {
+    return this.ticketProviderRepository.findOneBy({ email });
+  }
+
+  async findByUuid(uuid: string): Promise<TicketProvider> {
+    return this.ticketProviderRepository.findOneBy({ uuid });
+  }
 }

@@ -17,6 +17,7 @@ import { ProducerModule } from './producer/producer.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import kafkaConfig from './config/kafka.config';
+import jwtConfig from './config/jwt.config';
 
 EnvHelper.verifyNodeEnv();
 
@@ -25,7 +26,7 @@ EnvHelper.verifyNodeEnv();
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
-      load: [appConfig, databaseConfig, kafkaConfig],
+      load: [appConfig, databaseConfig, kafkaConfig, jwtConfig],
       validate: validate,
     }),
     TypeOrmModule.forRootAsync({
