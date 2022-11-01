@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-provider-api-token.entity';
+import { TicketProviderRefreshToken } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
 import { Ticket } from '@src/ticket/ticket.entity';
 import { User } from '@src/user/user.entity';
 import { Exclude } from 'class-transformer';
@@ -65,4 +66,11 @@ export class TicketProvider {
   @OneToMany(() => User, (user) => user.ticketProvider)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
   users: User[];
+
+  @OneToMany(
+    () => TicketProviderRefreshToken,
+    (ticketProviderRefreshToken) => ticketProviderRefreshToken.ticketProvider,
+  )
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
+  refreshTokens: TicketProviderRefreshToken[];
 }

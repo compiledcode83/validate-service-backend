@@ -78,6 +78,22 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(64)
   JWT_SECRET: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_REFRESH_TOKEN_COOKIE_DOMAIN: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_REFRESH_TOKEN_DURATION_DAYS: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_REFRESH_TOKEN_MAX_SESSIONS: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_ACCESS_TOKEN_DURATION_MINUTES: string;
 }
 
 export function validate(config: Record<string, unknown>) {
