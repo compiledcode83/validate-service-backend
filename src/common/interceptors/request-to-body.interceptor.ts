@@ -14,7 +14,7 @@ export class RequestToBodyInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
 
-    if (Object.prototype.hasOwnProperty.call(request, this.requestAttributeName)) {
+    if (this.requestAttributeName in request) {
       request.body[this.bodyAttributeName] = request[this.requestAttributeName];
     }
 

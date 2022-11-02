@@ -4,8 +4,9 @@ import { json } from 'express';
 import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 import { InternalServerErrorExceptionsFilter } from './common/filters/internal-server-error-exceptions.filter';
-import { ApiKeyGuard } from './auth/guards/api-token.guard';
 import { Reflector } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
+import { ApiKeyOrJwtGuard } from './auth/guards/api-key-or-jwt.guard';
 
 export class AppBootstrapManager {
   static getTestingModuleBuilder(): TestingModuleBuilder {
@@ -21,8 +22,9 @@ export class AppBootstrapManager {
 
     app
       .use(json({ limit: '50mb' }))
+      .use(cookieParser())
       .setGlobalPrefix('api/v1')
-      .useGlobalGuards(new ApiKeyGuard(reflector))
+      .useGlobalGuards(new ApiKeyOrJwtGuard(reflector))
       .useGlobalFilters(new InternalServerErrorExceptionsFilter())
       .useGlobalPipes(
         new ValidationPipe({
@@ -33,7 +35,12 @@ export class AppBootstrapManager {
           stopAtFirstError: true,
           forbidNonWhitelisted: true,
         }),
-      );
+      )
+      .enableCors({
+        origin: ['https://valicit.com'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        credentials: true,
+      });
 
     return app;
   }

@@ -7,5 +7,6 @@ import { TicketProviderRepository } from './ticket-provider.repository';
 @Module({
   imports: [TypeOrmModule.forFeature([TicketProvider])],
   providers: [TicketProviderService, TicketProviderRepository],
+  exports: [TicketProviderService],
 })
 export class TicketProviderModule {}

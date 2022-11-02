@@ -52,7 +52,7 @@ class EnvironmentVariables {
   TYPEORM_POOL_SIZE: number;
 
   @IsIn(['true', 'false'])
-  MYSQL_TLS: string;
+  MYSQL_TLS: 'true' | 'false';
 
   @IsString()
   @MinLength(1)
@@ -63,7 +63,7 @@ class EnvironmentVariables {
   KAFKA_CONSUMER_GROUP: string;
 
   @IsIn(['true', 'false'])
-  KAFKA_SSL: string;
+  KAFKA_SSL: 'true' | 'false';
 
   @ValidateIf((o) => o.NODE_ENV === Environment.Production)
   @IsString()
@@ -74,6 +74,34 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   KAFKA_PASSWORD: string;
+
+  @IsString()
+  @MinLength(64)
+  JWT_SECRET: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_REFRESH_TOKEN_COOKIE_DOMAIN: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_REFRESH_TOKEN_DURATION_DAYS: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_REFRESH_TOKEN_MAX_SESSIONS: string;
+
+  @IsString()
+  @MinLength(1)
+  JWT_ACCESS_TOKEN_DURATION_MINUTES: string;
+
+  @IsString()
+  @IsIn(['true', 'false'])
+  JWT_REFRESH_TOKEN_COOKIE_SECURE: 'true' | 'false';
+
+  @IsString()
+  @IsIn(['true', 'false'])
+  JWT_REFRESH_TOKEN_COOKIE_HTTPONLY: 'true' | 'false';
 }
 
 export function validate(config: Record<string, unknown>) {

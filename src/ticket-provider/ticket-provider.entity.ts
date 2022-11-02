@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-provider-api-token.entity';
+import { TicketProviderRefreshToken } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
 import { Ticket } from '@src/ticket/ticket.entity';
 import { User } from '@src/user/user.entity';
+import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
 import {
   TicketProviderSecurityLevel,
@@ -49,6 +51,10 @@ export class TicketProvider {
   @Column({ type: 'tinyint', default: 1 })
   securityLevel: TicketProviderSecurityLevel;
 
+  @Exclude()
+  @Column({ type: 'varchar', length: '255' })
+  password: string;
+
   @OneToMany(() => TicketProviderApiToken, (ticketProviderApiToken) => ticketProviderApiToken.ticketProvider)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
   apiTokens: TicketProviderApiToken[];
@@ -60,4 +66,11 @@ export class TicketProvider {
   @OneToMany(() => User, (user) => user.ticketProvider)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
   users: User[];
+
+  @OneToMany(
+    () => TicketProviderRefreshToken,
+    (ticketProviderRefreshToken) => ticketProviderRefreshToken.ticketProvider,
+  )
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticket_provider_id' })
+  refreshTokens: TicketProviderRefreshToken[];
 }
