@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 import { RefreshTokenValidator } from '../validators/refresh-token.validator';
 import { IncomingHttpHeaders } from 'node:http';
+import { HeadersValidator } from '../validators/headers.validator';
 
 export class RefreshTokensDto {
   @ApiProperty({ example: 'fingerprint', required: true, minLength: 8, maxLength: 64 })
@@ -17,7 +18,7 @@ export class RefreshTokensDto {
   @Validate(RefreshTokenValidator)
   refreshToken: string;
 
-  @Allow()
+  @Validate(HeadersValidator)
   headers: IncomingHttpHeaders;
 
   @Allow()

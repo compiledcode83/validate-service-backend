@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Allow, IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import { Allow, IsEmail, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 import { IncomingHttpHeaders } from 'node:http';
+import { HeadersValidator } from '../validators/headers.validator';
 
 export class LoginDto {
   @ApiProperty({ example: 'email@example.com', required: true })
@@ -19,7 +20,7 @@ export class LoginDto {
   @MaxLength(64)
   fingerprint: string;
 
-  @Allow()
+  @Validate(HeadersValidator)
   headers: IncomingHttpHeaders;
 
   @Allow()

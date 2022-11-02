@@ -59,7 +59,7 @@ export class CreateRefreshTokenTable1667220224226 implements MigrationInterface 
     );
 
     await queryRunner.createIndex(
-      'refresh_token',
+      'ticket_provider_refresh_token',
       new TableIndex({
         name: 'idx_ticket_provider_refresh_token_token',
         columnNames: ['token'],
@@ -68,7 +68,7 @@ export class CreateRefreshTokenTable1667220224226 implements MigrationInterface 
     );
 
     await queryRunner.createIndex(
-      'refresh_token',
+      'ticket_provider_refresh_token',
       new TableIndex({
         name: 'idx_ticket_provider_refresh_token_tp_id',
         columnNames: ['ticket_provider_id'],

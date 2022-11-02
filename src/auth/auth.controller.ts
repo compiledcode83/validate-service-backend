@@ -23,7 +23,6 @@ import { TokensResponseDto } from './dto/tokens-response.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
 import { ConfigService } from '@nestjs/config';
-import { LogoutDto } from './dto/logout.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -35,8 +34,17 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   @Post('login')
-  async login(@Req() req: AuthRequest, @Body() body: LoginDto) {
-    return this.authService.login(req.ticketProvider, body);
+  async login(@Req() req: AuthRequest, @Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
+    const authData = await this.authService.login(req.ticketProvider, body);
+
+    res.cookie('refreshToken', authData.refreshToken, {
+      httpOnly: this.configService.get('jwtConfig.refreshTokenCookieHttpOnly'),
+      secure: this.configService.get('jwtConfig.refreshTokenCookieSecure'),
+      maxAge: this.configService.get('jwtConfig.refreshTokenDurationDays') * 1000 * 60 * 60 * 24,
+      domain: this.configService.get('jwtConfig.refreshTokenCookieDomain'),
+    });
+
+    return { accessToken: authData.accessToken };
   }
 
   @ApiResponse(ApiResponseHelper.success(TokensResponseDto, HttpStatus.OK))
@@ -48,16 +56,12 @@ export class AuthController {
   )
   @HttpCode(HttpStatus.CREATED)
   @Post('refresh-tokens')
-  async refreshTokens(
-    @Req() req: GuestRequest,
-    @Body() params: RefreshTokensDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<any> {
+  async refreshTokens(@Body() params: RefreshTokensDto, @Res({ passthrough: true }) res: Response): Promise<any> {
     const authData = await this.authService.refreshTokens(params);
 
     res.cookie('refreshToken', authData.refreshToken, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: this.configService.get('jwtConfig.refreshTokenCookieHttpOnly'),
+      secure: this.configService.get('jwtConfig.refreshTokenCookieSecure'),
       maxAge: this.configService.get('jwtConfig.refreshTokenDurationDays') * 1000 * 60 * 60 * 24,
       domain: this.configService.get('jwtConfig.refreshTokenCookieDomain'),
     });
@@ -69,13 +73,13 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('logout')
-  async logout(@Req() req: AuthRequest, @Body() params: LogoutDto): Promise<void> {
-    const { refreshToken } = req.cookies || {};
+  async logout(@Req() req: AuthRequest): Promise<void> {
+    const { refreshToken } = req.cookies || null;
 
     if (!refreshToken) {
       throw new BadRequestException('Refresh token is missing');
     }
 
-    return this.authService.logout(params);
+    return this.authService.logout(String(refreshToken));
   }
 }

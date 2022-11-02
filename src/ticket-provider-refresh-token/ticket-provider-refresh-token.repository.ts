@@ -18,7 +18,6 @@ export class TicketProviderRefreshTokenRepository extends Repository<TicketProvi
     ticketProvider: TicketProvider,
     params: RefreshTokensDto | LoginDto,
   ): Promise<TicketProviderRefreshToken> {
-    console.log(params);
     const refreshToken = this.create({
       ticketProviderId: ticketProvider.id,
       token: randomBytes(32).toString('hex'),

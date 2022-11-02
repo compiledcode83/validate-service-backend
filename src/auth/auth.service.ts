@@ -10,7 +10,6 @@ import { RefreshTokensDto } from './dto/refresh-tokens.dto';
 import { TicketProviderRefreshToken } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
 import { TokensResponseDto } from './dto/tokens-response.dto';
 import { LoginDto } from './dto/login.dto';
-import { LogoutDto } from './dto/logout.dto';
 
 @Injectable()
 export class AuthService {
@@ -59,8 +58,8 @@ export class AuthService {
     };
   }
 
-  async logout(params: LogoutDto): Promise<void> {
-    await this.ticketProviderRefreshTokenService.deleteByToken(params.refreshToken);
+  async logout(refreshToken: string): Promise<void> {
+    await this.ticketProviderRefreshTokenService.deleteByToken(refreshToken);
   }
 
   private async createAccessToken(ticketProvider: TicketProvider): Promise<string> {

@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { TicketProviderRefreshTokenService } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.service';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { RefreshTokensDto } from '../dto/refresh-tokens.dto';
@@ -10,7 +11,7 @@ export class RefreshTokenValidator implements ValidatorConstraintInterface {
     const { fingerprint } = args.object as RefreshTokensDto;
     const refreshToken = await this.ticketProviderRefreshTokenService.findOneBy({ token, fingerprint });
 
-    return refreshToken && refreshToken.expireAt.getUTCSeconds() > Date.now();
+    return refreshToken && DateTime.fromJSDate(refreshToken.expireAt) > DateTime.now();
   }
 
   defaultMessage() {
