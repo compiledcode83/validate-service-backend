@@ -35,7 +35,12 @@ export class AppBootstrapManager {
           stopAtFirstError: true,
           forbidNonWhitelisted: true,
         }),
-      );
+      )
+      .enableCors({
+        origin: ['https://valicit.com'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        credentials: true,
+      });
 
     return app;
   }
