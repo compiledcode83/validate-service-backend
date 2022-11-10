@@ -1,17 +1,15 @@
 import { EncryptedData } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.types';
+import { User } from '@src/user/user.entity';
 import { v4 as uuid } from 'uuid';
+import { Ticket } from '../ticket.entity';
 
-export class TicketMintMessage {
+export class TicketCreateMessage {
   operationUuid: string;
-  ticketUuid: string;
-  userUuid: string;
-  name: string;
-  description: string;
-  image: string;
-  additionalData: Record<string, any>;
-  user?: EncryptedData;
+  ticket: Ticket;
+  user: User;
+  encryptedData: EncryptedData;
 
-  constructor(data: Partial<TicketMintMessage>) {
+  constructor(data: Partial<TicketCreateMessage>) {
     Object.assign(this, data);
     this.operationUuid = uuid();
   }

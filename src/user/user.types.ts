@@ -4,5 +4,5 @@ export enum UserStatus {
 }
 
 export enum UserEventPattern {
-  WalletCreate = 'web3.wallet.create',
+  UserCreate = 'user.create',
 }

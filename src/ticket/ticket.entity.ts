@@ -16,6 +16,10 @@ export class Ticket {
   @Column({ type: 'varchar', nullable: false, length: 36 })
   uuid: string;
 
+  @ApiProperty({ description: `Ticket's hash for URL`, maximum: 36 })
+  @Column({ type: 'varchar', nullable: false, length: 36 })
+  hash: string;
+
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'int', nullable: false })
   userId: number;

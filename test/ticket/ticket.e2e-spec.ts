@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+import { DateTime } from 'luxon';
 import { AppBootstrapManager } from '@src/app-bootstrap.manager';
 import { UserFactory } from '@src/database/factories/user.factory';
 import { AppDataSource } from '@src/config/datasource';
@@ -12,7 +13,7 @@ import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { TicketEventPattern, TicketStatus } from '@src/ticket/ticket.types';
 import { ProducerService } from '@src/producer/producer.service';
 import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provider.types';
-import { TicketMintMessage } from '@src/ticket/messages/ticket-mint.message';
+import { TicketCreateMessage } from '@src/ticket/messages/ticket-create.message';
 import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
 import { TicketProviderEncryptionService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.service';
 import { UserStatus } from '@src/user/user.types';
@@ -119,6 +120,9 @@ describe('Ticket (e2e)', () => {
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const ticketData = {
       name: faker.random.words(4),
+      type: faker.random.word(),
+      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       imageUrl: faker.internet.url(),
       additionalData: {
         seats: 4,
@@ -137,6 +141,9 @@ describe('Ticket (e2e)', () => {
           expect.objectContaining({
             uuid: expect.any(String),
             name: ticketData.name,
+            type: ticketData.type,
+            dateStart: ticketData.dateStart,
+            dateEnd: ticketData.dateEnd,
             imageUrl: ticketData.imageUrl,
             additionalData: ticketData.additionalData,
             status: TicketStatus.Creating,
@@ -162,6 +169,9 @@ describe('Ticket (e2e)', () => {
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const ticketData = {
       name: faker.random.words(4),
+      type: faker.random.word(),
+      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       imageUrl: faker.internet.url(),
       additionalData: {
         seats: 4,
@@ -180,6 +190,9 @@ describe('Ticket (e2e)', () => {
           expect.objectContaining({
             uuid: expect.any(String),
             name: ticketData.name,
+            type: ticketData.type,
+            dateStart: ticketData.dateStart,
+            dateEnd: ticketData.dateEnd,
             imageUrl: ticketData.imageUrl,
             additionalData: ticketData.additionalData,
             status: TicketStatus.Creating,
@@ -197,16 +210,12 @@ describe('Ticket (e2e)', () => {
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(user.id);
 
-        const expectedMintMessage = new TicketMintMessage({
-          ticketUuid: newTicket.uuid,
-          userUuid: user.uuid,
-          name: newTicket.name,
-          description: newTicket.name,
-          image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
-          additionalData: newTicket.additionalData,
+        const expectedMintMessage = new TicketCreateMessage({
+          ticket: expect.objectContaining({ ...newTicket }),
+          user: expect.objectContaining({ ...user }),
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Mint, {
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Create, {
           ...expectedMintMessage,
           operationUuid: expect.any(String),
         });
@@ -223,6 +232,9 @@ describe('Ticket (e2e)', () => {
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const ticketData = {
       name: faker.random.words(4),
+      type: faker.random.word(),
+      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       imageUrl: faker.internet.url(),
       additionalData: {
         seats: 4,
@@ -241,6 +253,9 @@ describe('Ticket (e2e)', () => {
           expect.objectContaining({
             uuid: expect.any(String),
             name: ticketData.name,
+            type: ticketData.type,
+            dateStart: ticketData.dateStart,
+            dateEnd: ticketData.dateEnd,
             imageUrl: ticketData.imageUrl,
             additionalData: ticketData.additionalData,
             status: TicketStatus.Creating,
@@ -258,19 +273,15 @@ describe('Ticket (e2e)', () => {
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(user.id);
 
-        const expectedMintMessage = new TicketMintMessage({
-          ticketUuid: newTicket.uuid,
-          userUuid: user.uuid,
-          name: newTicket.name,
-          description: newTicket.name,
-          image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
-          additionalData: newTicket.additionalData,
+        const expectedMintMessage = new TicketCreateMessage({
+          ticket: expect.objectContaining({ ...newTicket }),
+          user: expect.objectContaining({ ...user }),
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Mint, {
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Create, {
           ...expectedMintMessage,
           operationUuid: expect.any(String),
-          user: {
+          encryptedData: {
             iv: expect.any(String),
             content: expect.any(String),
             version: encryptionKey.version,
@@ -278,8 +289,8 @@ describe('Ticket (e2e)', () => {
         });
 
         const [, data] = mockedEmit.mock.lastCall;
-        const { user: encryptedUser } = data;
-        const decryptedUser = ticketProviderEncryptionService.decrypt(encryptedUser, encryptionKey.secretKey);
+        const { encryptedData } = data;
+        const decryptedUser = ticketProviderEncryptionService.decrypt(encryptedData, encryptionKey.secretKey);
 
         expect(JSON.parse(decryptedUser)).toEqual({
           name: user.name,
@@ -564,7 +575,7 @@ describe('Ticket (e2e)', () => {
           tokenId: deletedTicket.tokenId,
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Burn, {
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Delete, {
           ...expectedMessage,
           operationUuid: expect.any(String),
         });

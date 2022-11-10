@@ -39,7 +39,7 @@ export class TicketTransferService {
 
     if (transfer) {
       await this.producerService.emit(
-        TicketTransferEventPattern.Transfer,
+        TicketTransferEventPattern.TicketTransfer,
         new TicketTransferMessage({
           transferUuid: transfer.uuid,
           userUuidFrom: ticket.user.uuid,

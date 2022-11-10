@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { TicketTransferService } from '@src/ticket-transfer/ticket-transfer.service';
 import { TicketService } from '@src/ticket/ticket.service';
 import { UserService } from '@src/user/user.service';
-import { NftBurnReplyMessage } from './messages/nft-burn-reply.message';
-import { NftMintReplyMessage } from './messages/nft-mint-reply.message';
-import { NftTransferReplyMessage } from './messages/nft-transfer-reply.message';
-import { WalletCreateReplyMessage } from './messages/wallet-created-reply.message';
+import { TicketDeleteReplyMessage } from './messages/ticket-delete-reply.message';
+import { TicketCreateReplyMessage } from './messages/ticket-create-reply.message';
+import { TicketTransferReplyMessage } from './messages/ticket-transfer-reply.message';
+import { UserCreateReplyMessage } from './messages/user-create-reply.message';
 
 @Injectable()
 export class ConsumerService {
@@ -15,39 +15,39 @@ export class ConsumerService {
     private readonly ticketTransferService: TicketTransferService,
   ) {}
 
-  async handleWalletCreateReply(message: WalletCreateReplyMessage) {
-    if (message?.errorMessage) {
-      return this.userService.completeWithError(message.userUuid, message.errorMessage);
+  async handleUserCreateReply(message: UserCreateReplyMessage) {
+    if (message?.user?.errorData) {
+      return this.userService.completeWithError(message.user.uuid, message.user.errorData);
     }
 
-    await this.userService.completeWithSuccess(message.userUuid, message.walletAddress);
+    await this.userService.completeWithSuccess(message.user.uuid, message.user.walletAddress);
   }
 
-  async handleNftMintReply(message: NftMintReplyMessage) {
-    if (message?.errorMessage) {
-      return this.ticketService.setError(message.ticketUuid, message.errorMessage);
+  async handleTicketCreateReply(message: TicketCreateReplyMessage) {
+    if (message?.ticket?.errorData) {
+      return this.ticketService.setError(message.ticket.uuid, message.ticket.errorData);
     }
 
     await this.ticketService.activate(
-      message.ticketUuid,
-      message.contractAddress,
-      message.tokenId,
-      message.metadataUri,
-      message.transactionHash,
+      message.ticket.uuid,
+      message.ticket.contractId,
+      message.ticket.tokenId,
+      message.ticket.ipfsUri,
+      message.ticket.transactionHash,
     );
   }
 
-  async handleNftTransferReply(message: NftTransferReplyMessage) {
-    if (message?.errorMessage) {
-      return this.ticketTransferService.setError(message.transferUuid, message.errorMessage);
+  async handleTicketTransferReply(message: TicketTransferReplyMessage) {
+    if (message?.errorData) {
+      return this.ticketTransferService.setError(message.transferUuid, message.errorData);
     }
 
     await this.ticketTransferService.complete(message.transferUuid, message.transactionHash);
   }
 
-  async handleNftBurnReply(message: NftBurnReplyMessage) {
-    if (message?.errorMessage) {
-      return this.ticketService.setError(message.ticketUuid, message.errorMessage);
+  async handleTicketDeleteReply(message: TicketDeleteReplyMessage) {
+    if (message?.errorData) {
+      return this.ticketService.setError(message.ticketUuid, message.errorData);
     }
 
     return;

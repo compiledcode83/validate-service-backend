@@ -5,7 +5,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserEventPattern, UserStatus } from './user.types';
-import { WalletCreateMessage } from './messages/wallet-create.message';
+import { UserCreateMessage } from './messages/user-create.message';
 
 @Injectable()
 export class UserService {
@@ -36,15 +36,16 @@ export class UserService {
     };
 
     const user = await this.userRepository.save(userEntity, { reload: false });
+    const savedUser = await this.findByUuid(user.uuid);
 
     await this.producerService.emit(
-      UserEventPattern.WalletCreate,
-      new WalletCreateMessage({
-        userUuid: user.uuid,
+      UserEventPattern.UserCreate,
+      new UserCreateMessage({
+        user: savedUser,
       }),
     );
 
-    return this.findByUuid(user.uuid);
+    return savedUser;
   }
 
   async completeWithSuccess(uuid: string, walletAddress: string): Promise<void> {

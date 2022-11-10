@@ -11,7 +11,7 @@ import { faker } from '@faker-js/faker';
 import { User } from '@src/user/user.entity';
 import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provider.types';
 import { ProducerService } from '@src/producer/producer.service';
-import { WalletCreateMessage } from '@src/user/messages/wallet-create.message';
+import { UserCreateMessage } from '@src/user/messages/user-create.message';
 
 describe('User (e2e)', () => {
   let app: INestApplication;
@@ -187,11 +187,11 @@ describe('User (e2e)', () => {
 
         expect(newUser.ticketProviderId).toEqual(ticketProvider.id);
 
-        const expectedMessage = new WalletCreateMessage({
-          userUuid: newUser.uuid,
+        const expectedMessage = new UserCreateMessage({
+          user: newUser,
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(UserEventPattern.WalletCreate, {
+        expect(producerService.emit).toHaveBeenCalledWith(UserEventPattern.UserCreate, {
           ...expectedMessage,
           operationUuid: expect.any(String),
         });

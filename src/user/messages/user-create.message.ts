@@ -1,10 +1,11 @@
 import { v4 as uuid } from 'uuid';
+import { User } from '../user.entity';
 
-export class WalletCreateMessage {
+export class UserCreateMessage {
   operationUuid: string;
-  userUuid: string;
+  user: User;
 
-  constructor(data: Partial<WalletCreateMessage>) {
+  constructor(data: Partial<UserCreateMessage>) {
     Object.assign(this, data);
     this.operationUuid = uuid();
   }
