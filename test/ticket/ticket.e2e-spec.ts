@@ -351,7 +351,7 @@ describe('Ticket (e2e)', () => {
     });
 
     await request(app.getHttpServer())
-      .post(`/api/v1/tickets/search`)
+      .get(`/api/v1/tickets`)
       .send({
         userUuid: user.uuid,
       })
@@ -364,44 +364,6 @@ describe('Ticket (e2e)', () => {
               uuid: ticket.uuid,
             }),
             expect.not.objectContaining({
-              uuid: ticket2.uuid,
-            }),
-          ]),
-        );
-        expect(response.status).toBe(HttpStatus.OK);
-      });
-  });
-
-  it(`should get a list of tickets filtered by seed phrase`, async () => {
-    const ticketProvider = await TicketProviderFactory.create();
-    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
-    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const user2 = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({
-      ticketProviderId: ticketProvider.id,
-      userId: user.id,
-      status: TicketStatus.Active,
-    });
-    const ticket2 = await TicketFactory.create({
-      ticketProviderId: ticketProvider.id,
-      userId: user2.id,
-      status: TicketStatus.Active,
-    });
-
-    await request(app.getHttpServer())
-      .post(`/api/v1/tickets/search`)
-      .send({
-        seedPhrase: user2.seedPhrase,
-      })
-      .set('Accept', 'application/json')
-      .set('Api-Key', token)
-      .then((response) => {
-        expect(response.body.data).toEqual(
-          expect.arrayContaining([
-            expect.not.objectContaining({
-              uuid: ticket.uuid,
-            }),
-            expect.objectContaining({
               uuid: ticket2.uuid,
             }),
           ]),
@@ -426,10 +388,7 @@ describe('Ticket (e2e)', () => {
     });
 
     await request(app.getHttpServer())
-      .post(`/api/v1/tickets/search`)
-      .send({
-        seedPhrase: user.seedPhrase,
-      })
+      .get(`/api/v1/tickets`)
       .set('Accept', 'application/json')
       .set('Api-Key', token)
       .then((response) => {
@@ -447,9 +406,8 @@ describe('Ticket (e2e)', () => {
       });
 
     await request(app.getHttpServer())
-      .post(`/api/v1/tickets/search`)
-      .send({
-        seedPhrase: user.seedPhrase,
+      .get(`/api/v1/tickets`)
+      .query({
         status: TicketStatus.Validated,
       })
       .set('Accept', 'application/json')

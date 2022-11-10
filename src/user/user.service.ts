@@ -15,10 +15,6 @@ export class UserService {
     return this.userRepository.findOne({ where: { uuid, ticketProviderId } });
   }
 
-  async findBySeedPhraseAndProvider(seedPhrase: string, ticketProviderId: number): Promise<User> {
-    return this.userRepository.findOne({ where: { seedPhrase, ticketProviderId } });
-  }
-
   async findByIdentifierAndProvider(propertyName: keyof User, value: string, ticketProviderId: number): Promise<User> {
     return this.userRepository.findOne({ where: { [propertyName]: value, ticketProviderId } });
   }

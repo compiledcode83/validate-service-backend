@@ -28,6 +28,18 @@ export class Ticket {
   @Column({ type: 'varchar', nullable: false, length: 255 })
   name: string;
 
+  @ApiProperty({ description: 'Type of the ticket', maximum: 64, minimum: 1, required: true })
+  @Column({ type: 'varchar', nullable: false, length: 64 })
+  type: string;
+
+  @ApiProperty({ description: 'Ticket start date', required: true })
+  @Column({ type: 'varchar', nullable: false, length: 64 })
+  dateStart: Date;
+
+  @ApiProperty({ description: 'Ticket end date', required: false })
+  @Column({ type: 'varchar', nullable: true, length: 64 })
+  dateEnd: Date;
+
   @ApiProperty({ description: 'Image of the ticket', maximum: 255, required: false })
   @Column({ type: 'varchar', nullable: true, length: 255 })
   imageUrl: string;
@@ -101,7 +113,7 @@ export class Ticket {
   @Column({ type: 'text', nullable: true })
   errorData: string;
 
-  @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.apiTokens)
+  @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.tickets)
   ticketProvider: TicketProvider;
 
   @ManyToOne(() => User, (user) => user.tickets)

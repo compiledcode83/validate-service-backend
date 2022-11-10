@@ -3,7 +3,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  HttpCode,
   HttpStatus,
   NotFoundException,
   Param,
@@ -19,7 +18,6 @@ import { ParamToBodyInterceptor } from '@src/common/interceptors/param-to-body.i
 import { RequestToBodyInterceptor } from '@src/common/interceptors/request-to-body.interceptor';
 import { AuthRequest } from '@src/common/types/auth.request';
 import { CreateUserDto } from './dto/create-user.dto';
-import { FindUserBySeedPhraseDto } from './dto/find-user-by-seed-phrase.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
@@ -37,23 +35,6 @@ export class UserController {
   @Get(':uuid')
   async findOneByUuid(@Param('uuid', ParseUUIDPipe) uuid: string, @Req() req: AuthRequest): Promise<User> {
     const user = await this.userService.findByUuidAndProvider(uuid, req.ticketProvider.id);
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
-  }
-
-  @ApiOperation({ description: `Get user by seed phrase` })
-  @ApiResponse(ApiResponseHelper.success(User))
-  @ApiResponse(ApiResponseHelper.notFound('User not found'))
-  @ApiResponse(ApiResponseHelper.validationErrors(['Seed phrase must be a string']))
-  @UseInterceptors(ClassSerializerInterceptor)
-  @HttpCode(HttpStatus.OK)
-  @Post('seed-phrase')
-  async findOneBySeedPhrase(@Body() body: FindUserBySeedPhraseDto, @Req() req: AuthRequest): Promise<User> {
-    const user = await this.userService.findBySeedPhraseAndProvider(body.seedPhrase, req.ticketProvider.id);
 
     if (!user) {
       throw new NotFoundException('User not found');

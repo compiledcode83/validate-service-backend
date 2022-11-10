@@ -3,7 +3,6 @@ import { IsEnum, IsIn, IsInt, IsOptional, IsUUID, Max, Min } from 'class-validat
 import { CursorFilterDto } from '@src/common/pagination/cursor-filter.dto';
 import { Ticket } from '../ticket.entity';
 import { Type } from 'class-transformer';
-import { IsSeedPhrase } from '@src/common/decorators/is-seed-phrase.decorator';
 import { TicketStatus } from '../ticket.types';
 
 export class FindTicketsDto extends CursorFilterDto {
@@ -11,11 +10,6 @@ export class FindTicketsDto extends CursorFilterDto {
   @IsOptional()
   @IsUUID()
   userUuid: string;
-
-  @ApiProperty({ example: '8c0d1e373c994bcc0ba983394ba9198236e80a1cd221d89686dfcd31066598d1', required: false })
-  @IsOptional()
-  @IsSeedPhrase()
-  seedPhrase: string;
 
   @ApiProperty({ example: TicketStatus.Active, enum: TicketStatus, required: false })
   @IsOptional()
