@@ -10,6 +10,8 @@ export enum TicketStatus {
 }
 
 export enum TicketEventPattern {
-  Mint = 'web3.nft.mint',
-  Burn = 'web3.nft.burn',
+  Create = 'ticket.create',
+  Delete = 'ticket.delete',
 }
+
+export const DATE_FORMAT = 'yyyy-MM-dd';

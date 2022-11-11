@@ -7,7 +7,7 @@ import { FindTicketsDto } from './dto/find-tickets.dto';
 import { Ticket } from './ticket.entity';
 import { TicketRepository } from './ticket.repository';
 import { TicketEventPattern, TicketStatus } from './ticket.types';
-import { TicketMintMessage } from './messages/ticket-mint.message';
+import { TicketCreateMessage } from './messages/ticket-create.message';
 import { TicketProviderEncryptionKeyService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
 import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provider.types';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
@@ -46,24 +46,23 @@ export class TicketService {
         ...this.ticketRepository.create(body),
         ticketProviderId: ticketProvider.id,
         userId: user.id,
+        imageUrl:
+          body.imageUrl || 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
       },
       { reload: false },
     );
+    const savedTicket = await this.findByUuid(ticket.uuid);
 
     await this.producerService.emit(
-      TicketEventPattern.Mint,
-      new TicketMintMessage({
-        ticketUuid: ticket.uuid,
-        userUuid: user.uuid,
-        name: ticket.name,
-        description: ticket.name,
-        image: 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
-        additionalData: ticket.additionalData,
+      TicketEventPattern.Create,
+      new TicketCreateMessage({
+        ticket: savedTicket,
+        user,
         ...encryptedUserData,
       }),
     );
 
-    return this.findByUuid(ticket.uuid);
+    return savedTicket;
   }
 
   async validate(body: ValidateTicketDto): Promise<Ticket> {
@@ -75,7 +74,7 @@ export class TicketService {
 
     await this.ticketRepository.update({ uuid: body.uuid }, { status: TicketStatus.Deleted, deletedAt: new Date() });
     await this.producerService.emit(
-      TicketEventPattern.Burn,
+      TicketEventPattern.Delete,
       new TicketDeleteMessage({
         ticketUuid: ticket.uuid,
         tokenId: ticket.tokenId,
@@ -103,13 +102,13 @@ export class TicketService {
   private async getEncryptedUserData(
     user: User,
     ticketProvider: TicketProvider,
-  ): Promise<Pick<TicketMintMessage, 'user'>> {
+  ): Promise<Pick<TicketCreateMessage, 'encryptedData'>> {
     if (ticketProvider.securityLevel !== TicketProviderSecurityLevel.Level2) {
       return;
     }
 
     return {
-      user: await this.ticketProviderEncryptionKeyService.encryptTicketUserData(user),
+      encryptedData: await this.ticketProviderEncryptionKeyService.encryptTicketUserData(user),
     };
   }
 }

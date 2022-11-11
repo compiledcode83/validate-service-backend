@@ -11,7 +11,7 @@ import { faker } from '@faker-js/faker';
 import { User } from '@src/user/user.entity';
 import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provider.types';
 import { ProducerService } from '@src/producer/producer.service';
-import { WalletCreateMessage } from '@src/user/messages/wallet-create.message';
+import { UserCreateMessage } from '@src/user/messages/user-create.message';
 
 describe('User (e2e)', () => {
   let app: INestApplication;
@@ -187,11 +187,11 @@ describe('User (e2e)', () => {
 
         expect(newUser.ticketProviderId).toEqual(ticketProvider.id);
 
-        const expectedMessage = new WalletCreateMessage({
-          userUuid: newUser.uuid,
+        const expectedMessage = new UserCreateMessage({
+          user: newUser,
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(UserEventPattern.WalletCreate, {
+        expect(producerService.emit).toHaveBeenCalledWith(UserEventPattern.UserCreate, {
           ...expectedMessage,
           operationUuid: expect.any(String),
         });
@@ -327,52 +327,6 @@ describe('User (e2e)', () => {
 
     await request(app.getHttpServer())
       .get(`/api/v1/users/${user.uuid}`)
-      .set('Accept', 'application/json')
-      .set('Api-Key', token)
-      .then((response) => {
-        expect(response.body).toEqual(
-          expect.objectContaining({
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            status: user.status,
-            walletAddress: user.walletAddress,
-          }),
-        );
-        expect(response.status).toBe(HttpStatus.OK);
-      });
-  });
-
-  it(`should not get user by seed phrase, because it belongs to another ticket provider`, async () => {
-    const ticketProvider = await TicketProviderFactory.create();
-    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
-    const ticketProviderSecond = await TicketProviderFactory.create();
-    const user = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
-
-    await request(app.getHttpServer())
-      .post(`/api/v1/users/seed-phrase`)
-      .send({
-        seedPhrase: user.seedPhrase,
-      })
-      .set('Accept', 'application/json')
-      .set('Api-Key', token)
-      .then((response) => {
-        expect(response.body.message).toEqual('User not found');
-        expect(response.status).toBe(HttpStatus.NOT_FOUND);
-      });
-  });
-
-  it(`should get user by seed phrase`, async () => {
-    const ticketProvider = await TicketProviderFactory.create();
-    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
-    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-
-    await request(app.getHttpServer())
-      .post(`/api/v1/users/seed-phrase`)
-      .send({
-        seedPhrase: user.seedPhrase,
-      })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
       .then((response) => {

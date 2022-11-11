@@ -21,10 +21,6 @@ export class TicketRepository extends Repository<Ticket> {
       queryBuilder.andWhere({ status: searchParams.status });
     }
 
-    if ('seedPhrase' in searchParams) {
-      queryBuilder.leftJoin('ticket.user', 'user').andWhere({ user: { seedPhrase: searchParams.seedPhrase } });
-    }
-
     if ('userUuid' in searchParams) {
       queryBuilder.leftJoin('ticket.user', 'user').andWhere({ user: { uuid: searchParams.userUuid } });
     }

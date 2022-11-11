@@ -4,6 +4,6 @@ export enum TicketTransferStatus {
 }
 
 export enum TicketTransferEventPattern {
-  Transfer = 'web3.nft.transfer',
-  TransferReply = 'web3.nft.transfer.reply',
+  TicketTransfer = 'ticket.transfer',
+  TicketTransferReply = 'ticket.transfer.reply',
 }

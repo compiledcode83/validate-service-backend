@@ -186,7 +186,7 @@ describe('Ticket-transfer (e2e)', () => {
           tokenId: ticket.tokenId,
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketTransferEventPattern.Transfer, {
+        expect(producerService.emit).toHaveBeenCalledWith(TicketTransferEventPattern.TicketTransfer, {
           ...expectedMessage,
           operationUuid: expect.any(String),
         });

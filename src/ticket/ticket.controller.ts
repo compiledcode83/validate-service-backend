@@ -10,6 +10,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   Req,
   UseInterceptors,
 } from '@nestjs/common';
@@ -37,8 +38,11 @@ export class TicketController {
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.OK)
-  @Post('search')
-  async findAllPaginated(@Body() searchParams: FindTicketsDto, @Req() req: AuthRequest): Promise<PagingResult<Ticket>> {
+  @Get()
+  async findAllPaginated(
+    @Query() searchParams: FindTicketsDto,
+    @Req() req: AuthRequest,
+  ): Promise<PagingResult<Ticket>> {
     return this.ticketService.findAllPaginated(searchParams, req.ticketProvider.id);
   }
 
