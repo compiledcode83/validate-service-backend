@@ -10,9 +10,16 @@ import { TicketIsValidatableValidator } from './validators/ticket-is-validatable
 import { ProducerModule } from '@src/producer/producer.module';
 import { TicketProviderEncryptionKeyModule } from '@src/ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import { TicketIsDeletableValidator } from './validators/ticket-is-deletable.validator';
+import { EventModule } from '@src/event/event.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Ticket]), UserModule, ProducerModule, TicketProviderEncryptionKeyModule],
+  imports: [
+    TypeOrmModule.forFeature([Ticket]),
+    UserModule,
+    ProducerModule,
+    TicketProviderEncryptionKeyModule,
+    EventModule,
+  ],
   providers: [
     TicketService,
     TicketRepository,

@@ -11,6 +11,10 @@ export class TicketRepository extends Repository<Ticket> {
     super(Ticket, dataSource.manager);
   }
 
+  async createTicket(data: Partial<Ticket>) {
+    return this.save(data, { reload: false });
+  }
+
   async getPaginatedQueryBuilder(
     searchParams: FindTicketsDto,
     ticketProviderId: number,

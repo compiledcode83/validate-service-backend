@@ -1,4 +1,35 @@
-import { Controller } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Query,
+  Req,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { AuthRequest } from '@src/auth/auth.types';
+import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
+import { PaginatedResult } from '@src/common/pagination/pagination.types';
+import { FindEventsDto } from './dto/find-events.dto';
+import { Event } from './event.entity';
+import { EventService } from './event.service';
 
-@Controller('event')
-export class EventController {}
+@ApiResponse(ApiResponseHelper.unauthorized())
+@Controller('events')
+export class EventController {
+  constructor(private readonly eventService: EventService) {}
+
+  @ApiOperation({ description: `Find events` })
+  @ApiResponse(ApiResponseHelper.success(PaginatedResult<Event>))
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
+  @Get()
+  async findAllPaginated(
+    @Query() searchParams: FindEventsDto,
+    @Req() req: AuthRequest,
+  ): Promise<PaginatedResult<Event>> {
+    return this.eventService.findAllPaginated(searchParams, req.ticketProvider.id);
+  }
+}
