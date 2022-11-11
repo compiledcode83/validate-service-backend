@@ -15,6 +15,7 @@ import { User } from '@src/user/user.entity';
 import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { TicketDeleteMessage } from './messages/ticket-delete.message';
+import { EventService } from '@src/event/event.service';
 
 @Injectable()
 export class TicketService {
@@ -23,6 +24,7 @@ export class TicketService {
     private readonly userService: UserService,
     private readonly producerService: ProducerService,
     private readonly ticketProviderEncryptionKeyService: TicketProviderEncryptionKeyService,
+    private readonly eventService: EventService,
   ) {}
 
   async findAllPaginated(searchParams: FindTicketsDto, ticketProviderId: number): Promise<PagingResult<Ticket>> {
@@ -51,6 +53,9 @@ export class TicketService {
       },
       { reload: false },
     );
+
+    await this.eventService.createOrInsert(ticket.name, ticket.type, ticket.ticketProviderId);
+
     const savedTicket = await this.findByUuid(ticket.uuid);
 
     await this.producerService.emit(
