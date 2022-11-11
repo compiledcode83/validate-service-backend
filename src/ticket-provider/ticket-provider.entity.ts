@@ -13,7 +13,6 @@ import {
 
 @Entity('ticket_provider')
 export class TicketProvider {
-  @Exclude({ toPlainOnly: true })
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
