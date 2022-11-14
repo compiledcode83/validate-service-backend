@@ -215,7 +215,7 @@ describe('Ticket (e2e)', () => {
           user: expect.objectContaining({ ...user }),
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Create, {
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
           ...expectedMintMessage,
           operationUuid: expect.any(String),
         });
@@ -278,7 +278,7 @@ describe('Ticket (e2e)', () => {
           user: expect.objectContaining({ ...user }),
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Create, {
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
           ...expectedMintMessage,
           operationUuid: expect.any(String),
           encryptedData: {
@@ -575,7 +575,7 @@ describe('Ticket (e2e)', () => {
           tokenId: deletedTicket.tokenId,
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.Delete, {
+        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketDelete, {
           ...expectedMessage,
           operationUuid: expect.any(String),
         });
