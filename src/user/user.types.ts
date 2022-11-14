@@ -5,4 +5,5 @@ export enum UserStatus {
 
 export enum UserEventPattern {
   UserCreate = 'user.create',
+  UserCreateReply = 'user.create.reply',
 }

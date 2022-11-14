@@ -45,8 +45,8 @@ services:
       - 9093:9093
     environment:
       - KRAFT_CONTAINER_HOST_NAME=kafka
-      - KRAFT_CREATE_TOPICS=healthcheck,web3.wallet.create,web3.nft.mint,web3.nft.transfer,web3.wallet.create.reply,web3.nft.mint.reply,web3.nft.transfer.reply,web3.nft.burn,web3.nft.burn.reply
-      - KRAFT_PARTITIONS_PER_TOPIC=3
+      - KRAFT_CREATE_TOPICS=healthcheck,user.create,user.create.reply,ticket.create,ticket.create.reply,ticket.transfer,ticket.transfer.reply,ticket.delete,ticket.delete.reply
+      - KRAFT_PARTITIONS_PER_TOPIC=1
     restart: "no"
     networks:
       - validate-network

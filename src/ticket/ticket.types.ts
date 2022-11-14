@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { PaginatedResultCursor } from "@src/common/pagination/pagination.types";
-import { Ticket } from "./ticket.entity";
+import { ApiProperty } from '@nestjs/swagger';
+import { PaginatedResultCursor } from '@src/common/pagination/pagination.types';
+import { Ticket } from './ticket.entity';
 
 export class TicketAdditionalData {
   [key: string]: string | number;
@@ -14,8 +14,10 @@ export enum TicketStatus {
 }
 
 export enum TicketEventPattern {
-  Create = 'ticket.create',
-  Delete = 'ticket.delete',
+  TicketCreate = 'ticket.create',
+  TicketCreateReply = 'ticket.create.reply',
+  TicketDelete = 'ticket.delete',
+  TicketDeleteReply = 'ticket.delete.reply',
 }
 
 export const DATE_FORMAT = 'yyyy-MM-dd';

@@ -16,6 +16,7 @@ import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { TicketDeleteMessage } from './messages/ticket-delete.message';
 import { EventService } from '@src/event/event.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TicketService {
@@ -25,6 +26,7 @@ export class TicketService {
     private readonly producerService: ProducerService,
     private readonly ticketProviderEncryptionKeyService: TicketProviderEncryptionKeyService,
     private readonly eventService: EventService,
+    private readonly configService: ConfigService,
   ) {}
 
   async findAllPaginated(searchParams: FindTicketsDto, ticketProviderId: number): Promise<PagingResult<Ticket>> {
@@ -59,7 +61,7 @@ export class TicketService {
     const savedTicket = await this.findByUuid(ticket.uuid);
 
     await this.producerService.emit(
-      TicketEventPattern.Create,
+      TicketEventPattern.TicketCreate,
       new TicketCreateMessage({
         ticket: savedTicket,
         user,
@@ -79,7 +81,7 @@ export class TicketService {
 
     await this.ticketRepository.update({ uuid: body.uuid }, { status: TicketStatus.Deleted, deletedAt: new Date() });
     await this.producerService.emit(
-      TicketEventPattern.Delete,
+      TicketEventPattern.TicketDelete,
       new TicketDeleteMessage({
         ticketUuid: ticket.uuid,
         tokenId: ticket.tokenId,
