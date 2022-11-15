@@ -17,25 +17,25 @@ export class ConsumerController {
 
   @EventPattern(UserEventPattern.UserCreateReply)
   async handleUserCreateReply(@Payload() message: UserCreateReplyMessage) {
-    this.consumerService.handleUserCreateReply(message);
+    await this.consumerService.handleUserCreateReply(message);
     this.logger.log(`Updated wallet for user ${message.user.uuid}: ${message.user.walletAddress}`);
   }
 
   @EventPattern(TicketEventPattern.TicketCreateReply)
   async handleTicketCreateReply(@Payload() message: TicketCreateReplyMessage) {
-    this.consumerService.handleTicketCreateReply(message);
+    await this.consumerService.handleTicketCreateReply(message);
     this.logger.log(`Updated nft data for ticket ${message.ticket.uuid}`);
   }
 
   @EventPattern(TicketTransferEventPattern.TicketTransferReply)
   async handleTicketTransferReply(@Payload() message: TicketTransferReplyMessage) {
-    this.consumerService.handleTicketTransferReply(message);
+    await this.consumerService.handleTicketTransferReply(message);
     this.logger.log(`Updated nft transfer data for transfer ${message.transferUuid}`);
   }
 
   @EventPattern(TicketEventPattern.TicketDeleteReply)
   async handleTicketDeleteReply(@Payload() message: TicketDeleteReplyMessage) {
-    this.consumerService.handleTicketDeleteReply(message);
+    await this.consumerService.handleTicketDeleteReply(message);
     this.logger.log(`Saved nft burn data for ticket ${message.ticketUuid}`);
   }
 }
