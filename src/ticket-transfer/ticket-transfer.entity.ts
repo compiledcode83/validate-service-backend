@@ -3,7 +3,7 @@ import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { Ticket } from '@src/ticket/ticket.entity';
 import { User } from '@src/user/user.entity';
 import { Exclude } from 'class-transformer';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { TicketTransferStatus } from './ticket-transfer.types';
 
 @Entity('ticket_transfer')
@@ -45,7 +45,7 @@ export class TicketTransfer {
   status: TicketTransferStatus;
 
   @ApiProperty({
-    description: 'Ticket creation transaction hash',
+    description: 'Ticket transfer transaction hash',
     example: '0xeBA05C5521a3B81e23d15ae9B2d07524BC453561',
     required: false,
     maximum: 66,
@@ -64,8 +64,10 @@ export class TicketTransfer {
   ticket: Ticket;
 
   @OneToOne(() => User, (user) => user.ticketTransfersFrom)
+  @JoinColumn({ name: 'user_id_from', referencedColumnName: 'id' })
   userFrom: User;
 
   @OneToOne(() => User, (user) => user.ticketTransfersTo)
+  @JoinColumn({ name: 'user_id_to', referencedColumnName: 'id' })
   userTo: User;
 }

@@ -1,5 +1,6 @@
+import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
+
 export class TicketTransferReplyMessage {
-  transferUuid: string;
-  transactionHash?: string;
+  transfer: TicketTransfer;
   errorData?: string;
 }
