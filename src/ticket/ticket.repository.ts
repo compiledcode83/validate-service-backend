@@ -19,14 +19,16 @@ export class TicketRepository extends Repository<Ticket> {
     searchParams: FindTicketsDto,
     ticketProviderId: number,
   ): Promise<PagingResult<Ticket>> {
-    const queryBuilder = this.createQueryBuilder('ticket').where({ ticketProviderId });
+    const queryBuilder = this.createQueryBuilder('ticket')
+      .leftJoinAndSelect('ticket.user', 'user')
+      .where({ ticketProviderId });
 
     if ('status' in searchParams) {
       queryBuilder.andWhere({ status: searchParams.status });
     }
 
     if ('userUuid' in searchParams) {
-      queryBuilder.leftJoin('ticket.user', 'user').andWhere({ user: { uuid: searchParams.userUuid } });
+      queryBuilder.andWhere({ user: { uuid: searchParams.userUuid } });
     }
 
     const paginator = buildPaginator({

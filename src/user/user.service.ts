@@ -6,6 +6,7 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserEventPattern, UserStatus } from './user.types';
 import { UserCreateMessage } from './messages/user-create.message';
+import { CreateTicketUserDto } from '@src/ticket/dto/create-ticket-user.dto';
 
 @Injectable()
 export class UserService {
@@ -30,12 +31,14 @@ export class UserService {
   }
 
   async create(body: CreateUserDto, ticketProviderId: number): Promise<User> {
-    const userEntity: Partial<User> = {
-      ...this.userRepository.create(body),
-      ticketProviderId,
-    };
-
-    const user = await this.userRepository.save(userEntity, { reload: false });
+    const { ticketProvider, ...userData } = body;
+    const user = await this.userRepository.save(
+      {
+        ...this.userRepository.create(userData),
+        ticketProviderId,
+      },
+      { reload: false },
+    );
     const savedUser = await this.findByUuid(user.uuid);
 
     await this.producerService.emit(
@@ -46,6 +49,19 @@ export class UserService {
     );
 
     return savedUser;
+  }
+
+  async findOrCreate(user: CreateTicketUserDto): Promise<User> {
+    if (user?.uuid) {
+      return this.findByUuid(user.uuid);
+    }
+
+    const { ticketProvider, ...userData } = user;
+
+    return this.userRepository.save({
+      ...this.userRepository.create(userData),
+      ticketProviderId: user.ticketProvider.id,
+    });
   }
 
   async completeWithSuccess(uuid: string, walletAddress: string): Promise<void> {

@@ -37,19 +37,19 @@ export class TicketService {
     return this.ticketRepository.findOne({ where: { uuid, ticketProviderId } });
   }
 
-  async findByUuid(uuid: string, relations?: string[]): Promise<Ticket> {
+  async findByUuid(uuid: string, relations: string[] = ['user']): Promise<Ticket> {
     return this.ticketRepository.findOne({ where: { uuid }, relations });
   }
 
   async create(body: CreateTicketDto): Promise<Ticket> {
-    const user = await this.userService.findByUuid(body.userUuid);
-    const { ticketProvider } = body;
-    const encryptedUserData = await this.getEncryptedUserData(user, ticketProvider);
+    const { ticketProvider, user, ...ticketData } = body;
+    const ticketUser = await this.userService.findOrCreate(user);
+    const encryptedUserData = await this.getEncryptedUserData(ticketUser, ticketProvider);
     const ticket = await this.ticketRepository.save(
       {
-        ...this.ticketRepository.create(body),
+        ...this.ticketRepository.create(ticketData),
         ticketProviderId: ticketProvider.id,
-        userId: user.id,
+        userId: ticketUser.id,
         imageUrl:
           body.imageUrl || 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
       },
@@ -64,7 +64,7 @@ export class TicketService {
       TicketEventPattern.TicketCreate,
       new TicketCreateMessage({
         ticket: savedTicket,
-        user,
+        user: ticketUser,
         ...encryptedUserData,
       }),
     );
