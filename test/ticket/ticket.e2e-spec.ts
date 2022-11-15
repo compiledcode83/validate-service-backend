@@ -18,6 +18,8 @@ import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/tick
 import { TicketProviderEncryptionService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.service';
 import { UserStatus } from '@src/user/user.types';
 import { TicketDeleteMessage } from '@src/ticket/messages/ticket-delete.message';
+import { User } from '@src/user/user.entity';
+import { MoreThan } from 'typeorm';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
@@ -78,43 +80,21 @@ describe('Ticket (e2e)', () => {
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
-            'userUuid must be a UUID',
-            'User not found',
             'name must be shorter than or equal to 255 characters',
             'imageUrl must be an URL address',
             'additionalData must be an object',
+            'type must be shorter than or equal to 64 characters',
+            'Acceptable date format is yyyy-MM-dd.',
+            'user.name must be shorter than or equal to 128 characters',
+            'user.email must be shorter than or equal to 255 characters',
+            'user.phoneNumber must be a valid phone number',
           ]),
         );
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
   });
 
-  it(`should not create a new ticket if user is not yet active`, async () => {
-    const ticketProvider = await TicketProviderFactory.create();
-    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
-    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
-    const ticketData = {
-      name: faker.random.words(4),
-      imageUrl: faker.internet.url(),
-      additionalData: {
-        seats: 4,
-        type: 'Adult',
-      },
-      userUuid: user.uuid,
-    };
-
-    await request(app.getHttpServer())
-      .post('/api/v1/tickets')
-      .send(ticketData)
-      .set('Accept', 'application/json')
-      .set('Api-Key', token)
-      .then(async (response) => {
-        expect(response.body.message).toEqual(expect.arrayContaining(['User is not yet active']));
-        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      });
-  });
-
-  it(`should successfully create a new ticket`, async () => {
+  it(`should successfully create a new ticket for existing user`, async () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
@@ -128,7 +108,9 @@ describe('Ticket (e2e)', () => {
         seats: 4,
         type: 'Adult',
       },
-      userUuid: user.uuid,
+      user: {
+        uuid: user.uuid,
+      },
     };
 
     await request(app.getHttpServer())
@@ -160,6 +142,64 @@ describe('Ticket (e2e)', () => {
 
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(user.id);
+      });
+  });
+
+  it(`should successfully create a new ticket and a new user`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const ticketData = {
+      name: faker.random.words(4),
+      type: faker.random.word(),
+      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+      imageUrl: faker.internet.url(),
+      additionalData: {
+        seats: 4,
+        type: 'Adult',
+      },
+      user: {
+        name: faker.name.fullName(),
+        email: faker.internet.email(),
+        phoneNumber: faker.phone.number('+4891#######'),
+      },
+    };
+
+    await request(app.getHttpServer())
+      .post('/api/v1/tickets')
+      .send(ticketData)
+      .set('Accept', 'application/json')
+      .set('Api-Key', token)
+      .then(async (response) => {
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            uuid: expect.any(String),
+            name: ticketData.name,
+            type: ticketData.type,
+            dateStart: ticketData.dateStart,
+            dateEnd: ticketData.dateEnd,
+            imageUrl: ticketData.imageUrl,
+            additionalData: ticketData.additionalData,
+            status: TicketStatus.Creating,
+            contractId: null,
+            ipfsUri: null,
+            tokenId: null,
+            user: expect.objectContaining({
+              uuid: expect.any(String),
+              ...ticketData.user,
+            }),
+          }),
+        );
+        expect(response.status).toBe(HttpStatus.CREATED);
+
+        const newTicket = await AppDataSource.manager
+          .getRepository(Ticket)
+          .findOne({ where: { uuid: response.body.uuid } });
+
+        const newUser = await AppDataSource.manager.getRepository(User).findOne({ where: { id: MoreThan(0) } });
+
+        expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
+        expect(newTicket.userId).toEqual(newUser.id);
       });
   });
 
@@ -177,7 +217,9 @@ describe('Ticket (e2e)', () => {
         seats: 4,
         type: 'Adult',
       },
-      userUuid: user.uuid,
+      user: {
+        uuid: user.uuid,
+      },
     };
 
     await request(app.getHttpServer())
@@ -210,13 +252,13 @@ describe('Ticket (e2e)', () => {
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(user.id);
 
-        const expectedMintMessage = new TicketCreateMessage({
+        const expectedCreateTicketMessage = new TicketCreateMessage({
           ticket: expect.objectContaining({ ...newTicket }),
           user: expect.objectContaining({ ...user }),
         });
 
         expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
-          ...expectedMintMessage,
+          ...expectedCreateTicketMessage,
           operationUuid: expect.any(String),
         });
       });
@@ -240,7 +282,9 @@ describe('Ticket (e2e)', () => {
         seats: 4,
         type: 'Adult',
       },
-      userUuid: user.uuid,
+      user: {
+        uuid: user.uuid,
+      },
     };
 
     await request(app.getHttpServer())
@@ -373,6 +417,9 @@ describe('Ticket (e2e)', () => {
           expect.arrayContaining([
             expect.objectContaining({
               uuid: ticket.uuid,
+              user: expect.objectContaining({
+                uuid: user.uuid,
+              }),
             }),
             expect.not.objectContaining({
               uuid: ticket2.uuid,
@@ -407,6 +454,9 @@ describe('Ticket (e2e)', () => {
           expect.arrayContaining([
             expect.objectContaining({
               uuid: ticket.uuid,
+              user: expect.objectContaining({
+                uuid: user.uuid,
+              }),
             }),
             expect.not.objectContaining({
               uuid: ticket2.uuid,

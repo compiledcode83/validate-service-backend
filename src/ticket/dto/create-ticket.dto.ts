@@ -1,19 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DateValidator } from '@src/common/validators/date.validator';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
-import { Allow, IsObject, IsOptional, IsString, IsUrl, IsUUID, MaxLength, MinLength, Validate } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  Allow,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MaxLength,
+  MinLength,
+  Validate,
+  ValidateNested,
+} from 'class-validator';
 import { TicketAdditionalData } from '../ticket.types';
-import { TicketUserExistsAndActiveValidator } from '../validators/ticket-user-exists-and-active.validator';
+import { CreateTicketUserDto } from './create-ticket-user.dto';
 
 export class CreateTicketDto {
   @ApiProperty({
-    example: '5e9d96f9-7103-4b8b-b3c6-c37608e38305',
+    example: { name: 'John doe', phoneNumber: '+17951110000', email: 'user@example.com' },
     required: true,
-    description: `Ticket user's uuid`,
+    description: `Create new user with the ticket`,
   })
-  @IsUUID()
-  @Validate(TicketUserExistsAndActiveValidator)
-  userUuid: string;
+  @Type(() => CreateTicketUserDto)
+  @ValidateNested()
+  user: CreateTicketUserDto;
 
   @ApiProperty({
     example: 'Abu Dhabi Full-Day Trip with Louvre',

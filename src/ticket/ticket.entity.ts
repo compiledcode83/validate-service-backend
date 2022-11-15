@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
 import { User } from '@src/user/user.entity';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { TicketAdditionalData, TicketStatus } from './ticket.types';
 
@@ -120,6 +120,7 @@ export class Ticket {
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.tickets)
   ticketProvider: TicketProvider;
 
+  @Expose()
   @ManyToOne(() => User, (user) => user.tickets)
   user: User;
 

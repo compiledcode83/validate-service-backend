@@ -85,7 +85,11 @@ export class TicketController {
   @ApiOperation({ description: `Create a new ticket` })
   @ApiResponse(ApiResponseHelper.success(Ticket, HttpStatus.CREATED))
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
-  @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'))
+  @UseInterceptors(
+    ClassSerializerInterceptor,
+    new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'),
+    new RequestToBodyInterceptor('ticketProvider', 'user.ticketProvider'),
+  )
   @Post()
   async create(@Body() body: CreateTicketDto): Promise<Ticket> {
     return this.ticketService.create(body);
