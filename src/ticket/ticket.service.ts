@@ -77,14 +77,14 @@ export class TicketService {
   }
 
   async delete(body: DeleteTicketDto): Promise<void> {
+    await this.ticketRepository.update({ uuid: body.uuid }, { status: TicketStatus.Deleted, deletedAt: new Date() });
+
     const ticket = await this.findByUuid(body.uuid);
 
-    await this.ticketRepository.update({ uuid: body.uuid }, { status: TicketStatus.Deleted, deletedAt: new Date() });
     await this.producerService.emit(
       TicketEventPattern.TicketDelete,
       new TicketDeleteMessage({
-        ticketUuid: ticket.uuid,
-        tokenId: ticket.tokenId,
+        ticket,
       }),
     );
   }

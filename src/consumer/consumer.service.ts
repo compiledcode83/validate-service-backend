@@ -39,15 +39,15 @@ export class ConsumerService {
 
   async handleTicketTransferReply(message: TicketTransferReplyMessage) {
     if (message?.errorData) {
-      return this.ticketTransferService.setError(message.transferUuid, message.errorData);
+      return this.ticketTransferService.setError(message.transfer.uuid, message.errorData);
     }
 
-    await this.ticketTransferService.complete(message.transferUuid, message.transactionHash);
+    await this.ticketTransferService.complete(message.transfer.uuid, message.transfer.transactionHash);
   }
 
   async handleTicketDeleteReply(message: TicketDeleteReplyMessage) {
     if (message?.errorData) {
-      return this.ticketService.setError(message.ticketUuid, message.errorData);
+      return this.ticketService.setError(message.ticket.uuid, message.errorData);
     }
 
     return;

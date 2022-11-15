@@ -7,7 +7,7 @@ export class TicketCreateMessage {
   operationUuid: string;
   ticket: Ticket;
   user: User;
-  encryptedData: EncryptedData;
+  encryptedData?: EncryptedData;
 
   constructor(data: Partial<TicketCreateMessage>) {
     Object.assign(this, data);

@@ -1,5 +1,7 @@
+import { Ticket } from '@src/ticket/ticket.entity';
+
 export class TicketDeleteReplyMessage {
-  ticketUuid: string;
+  ticket: Ticket;
   transactionHash?: string;
   errorData?: string;
 }

@@ -21,33 +21,29 @@ export class TicketTransferService {
     return this.ticketTransferRepository.findOne({ where: { uuid, ticketProviderId } });
   }
 
-  async findByUuid(uuid: string): Promise<TicketTransfer> {
-    return this.ticketTransferRepository.findOne({ where: { uuid } });
+  async findByUuid(uuid: string, relations: string[] = []): Promise<TicketTransfer> {
+    return this.ticketTransferRepository.findOne({ where: { uuid }, relations });
   }
 
   async create(body: CreateTicketTransferDto, ticketProviderId: number): Promise<TicketTransfer> {
     const userTo = await this.userService.findByUuid(body.userUuid);
     const ticket = await this.ticketService.findByUuid(body.ticketUuid, ['user']);
-    const entity: Partial<TicketTransfer> = {
-      ticketProviderId,
-      ticketId: ticket.id,
-      userIdFrom: ticket.userId,
-      userIdTo: userTo.id,
-    };
+    const newTransfer = await this.ticketTransferRepository.save(
+      this.ticketTransferRepository.create({
+        ticketProviderId,
+        ticketId: ticket.id,
+        userIdFrom: ticket.userId,
+        userIdTo: userTo.id,
+      }),
+    );
+    const transfer = await this.findByUuid(newTransfer.uuid, ['userFrom', 'userTo', 'ticket']);
 
-    const transfer = await this.ticketTransferRepository.save(entity, { reload: false });
-
-    if (transfer) {
-      await this.producerService.emit(
-        TicketTransferEventPattern.TicketTransfer,
-        new TicketTransferMessage({
-          transferUuid: transfer.uuid,
-          userUuidFrom: ticket.user.uuid,
-          userUuidTo: body.userUuid,
-          tokenId: ticket.tokenId,
-        }),
-      );
-    }
+    await this.producerService.emit(
+      TicketTransferEventPattern.TicketTransfer,
+      new TicketTransferMessage({
+        transfer,
+      }),
+    );
 
     return this.findByUuid(transfer.uuid);
   }

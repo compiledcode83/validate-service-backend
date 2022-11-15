@@ -172,18 +172,30 @@ describe('Ticket-transfer (e2e)', () => {
 
         const ticketTransfer = await AppDataSource.manager
           .getRepository(TicketTransfer)
-          .findOne({ where: { uuid: response.body.uuid } });
+          .findOne({ where: { uuid: response.body.uuid }, relations: ['userFrom', 'userTo', 'ticket'] });
 
         expect(ticketTransfer.userIdFrom).toEqual(userFrom.id);
         expect(ticketTransfer.userIdTo).toEqual(userTo.id);
         expect(ticketTransfer.ticketId).toEqual(ticket.id);
         expect(ticketTransfer.ticketProviderId).toEqual(ticketProvider.id);
+        expect(ticketTransfer.userFrom).not.toBeNull();
+        expect(ticketTransfer.userTo).not.toBeNull();
+        expect(ticketTransfer.ticket).not.toBeNull();
 
         const expectedMessage = new TicketTransferMessage({
-          transferUuid: ticketTransfer.uuid,
-          userUuidFrom: userFrom.uuid,
-          userUuidTo: userTo.uuid,
-          tokenId: ticket.tokenId,
+          transfer: expect.objectContaining({
+            uuid: ticketTransfer.uuid,
+            userFrom: expect.objectContaining({
+              uuid: ticketTransfer.userFrom.uuid,
+            }),
+            userTo: expect.objectContaining({
+              uuid: ticketTransfer.userTo.uuid,
+            }),
+            ticket: expect.objectContaining({
+              uuid: ticketTransfer.ticket.uuid,
+              tokenId: ticketTransfer.ticket.tokenId,
+            }),
+          }),
         });
 
         expect(producerService.emit).toHaveBeenCalledWith(TicketTransferEventPattern.TicketTransfer, {

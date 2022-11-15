@@ -1,11 +1,9 @@
 import { v4 as uuid } from 'uuid';
+import { TicketTransfer } from '../ticket-transfer.entity';
 
 export class TicketTransferMessage {
   operationUuid: string;
-  transferUuid: string;
-  userUuidFrom: string;
-  userUuidTo: string;
-  tokenId: number;
+  transfer: TicketTransfer;
 
   constructor(data: Partial<TicketTransferMessage>) {
     Object.assign(this, data);

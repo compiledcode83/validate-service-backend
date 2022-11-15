@@ -571,8 +571,9 @@ describe('Ticket (e2e)', () => {
         expect(deletedTicket.deletedAt).not.toBeNull();
 
         const expectedMessage = new TicketDeleteMessage({
-          ticketUuid: deletedTicket.uuid,
-          tokenId: deletedTicket.tokenId,
+          ticket: expect.objectContaining({
+            ...deletedTicket,
+          }),
         });
 
         expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketDelete, {
