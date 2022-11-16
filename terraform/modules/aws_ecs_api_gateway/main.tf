@@ -43,7 +43,7 @@ resource "aws_ecs_task_definition" "api_gateway_ecs_task_definition" {
     {
       command : ["npm", "run", "start:prod"],
       environment : local.env_vars,
-      memory : 384
+      memory : 800
       essential : true,
       image : "${var.api_gateway_erc_url}@${data.aws_ecr_image.api_gateway_image.image_digest}",
       name : "api_gateway",
@@ -77,7 +77,7 @@ resource "aws_launch_configuration" "api_gateway_launch_config" {
 #!/bin/bash
 echo ECS_CLUSTER=${aws_ecs_cluster.api_gateway_cluster.name} >> /etc/ecs/ecs.config
 EOF
-  instance_type               = "t3.micro"
+  instance_type               = "t3.small"
 
   lifecycle {
     create_before_destroy = true
