@@ -19,7 +19,7 @@ test:
     command: ["--tls=false"]
   script:
     - docker-compose up -d kafka --wait
-    - bash create-kafka-topics.sh
+    - sh create-kafka-topics.sh
     - docker-compose run --rm api sh -c "npm run migration:run:ci && npm run test:ci"
   artifacts:
     when: always
