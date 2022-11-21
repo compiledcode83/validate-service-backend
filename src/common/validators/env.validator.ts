@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsIn, IsInt, IsString, Min, MinLength, ValidateIf, validateSync } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsOptional, IsString, Min, MinLength, ValidateIf, validateSync } from 'class-validator';
 
 export enum Environment {
   Development = 'development',
@@ -102,6 +102,21 @@ class EnvironmentVariables {
   @IsString()
   @IsIn(['true', 'false'])
   JWT_REFRESH_TOKEN_COOKIE_HTTPONLY: 'true' | 'false';
+
+  @IsString()
+  @MinLength(1)
+  REDIS_HOST: string;
+
+  @IsString()
+  @MinLength(1)
+  REDIS_PORT: string;
+
+  @IsString()
+  @IsOptional()
+  REDIS_PASSWORD: string;
+
+  @IsIn(['true', 'false'])
+  REDIS_TLS: 'true' | 'false';
 }
 
 export function validate(config: Record<string, unknown>) {

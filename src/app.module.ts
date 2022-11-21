@@ -20,6 +20,8 @@ import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import kafkaConfig from './config/kafka.config';
 import jwtConfig from './config/jwt.config';
+import { RedisModule } from './redis/redis.module';
+import redisConfig from './config/redis.config';
 
 EnvHelper.verifyNodeEnv();
 
@@ -28,7 +30,7 @@ EnvHelper.verifyNodeEnv();
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
-      load: [appConfig, databaseConfig, kafkaConfig, jwtConfig],
+      load: [appConfig, databaseConfig, kafkaConfig, jwtConfig, redisConfig],
       validate: validate,
     }),
     TypeOrmModule.forRootAsync({
@@ -54,6 +56,7 @@ EnvHelper.verifyNodeEnv();
     ProducerModule,
     TicketProviderRefreshTokenModule,
     EventModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
