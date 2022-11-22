@@ -12,13 +12,10 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      kafka:
-        condition: service_healthy
       redis:
         condition: service_healthy
     links:
       - mysql:mysql
-      - kafka:kafka
       - redis:redis
     command: sh -c "npm run test"
     networks:
@@ -39,26 +36,6 @@ services:
       timeout: 5s
       retries: 10
     restart: "no"
-    networks:
-      - validate-network
-  
-  kafka:
-    container_name: validate-kafka
-    image: validate-kafka:latest
-    build:
-      context: docker/images/kafka
-      dockerfile: Dockerfile
-    ports:
-      - 9093:9093
-    environment:
-      - KRAFT_CONTAINER_HOST_NAME=kafka
-      - KRAFT_PARTITIONS_PER_TOPIC=1
-    restart: "no"
-    healthcheck:
-      test: ["CMD-SHELL", "kafkacat -b localhost:9093 -L | grep \"9 topics\""]
-      interval: 60s
-      timeout: 5s
-      retries: 10
     networks:
       - validate-network
 
