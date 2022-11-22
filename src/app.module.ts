@@ -16,11 +16,11 @@ import { TicketProviderEncryptionKeyModule } from './ticket-provider-encryption-
 import { ProducerModule } from './producer/producer.module';
 import { TicketProviderRefreshTokenModule } from './ticket-provider-refresh-token/ticket-provider-refresh-token.module';
 import { EventModule } from './event/event.module';
+import { RedisModule } from './redis/redis.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import kafkaConfig from './config/kafka.config';
 import jwtConfig from './config/jwt.config';
-import { RedisModule } from './redis/redis.module';
 import redisConfig from './config/redis.config';
 
 EnvHelper.verifyNodeEnv();

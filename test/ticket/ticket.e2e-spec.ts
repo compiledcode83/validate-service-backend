@@ -16,16 +16,17 @@ import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provide
 import { TicketCreateMessage } from '@src/ticket/messages/ticket-create.message';
 import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
 import { TicketProviderEncryptionService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.service';
-import { UserStatus } from '@src/user/user.types';
 import { TicketDeleteMessage } from '@src/ticket/messages/ticket-delete.message';
 import { User } from '@src/user/user.entity';
 import { MoreThan } from 'typeorm';
+import { RedisService } from '@src/redis/redis.service';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
   let producerService: ProducerService;
+  let redisService: RedisService;
   let mockedEmit: jest.SpyInstance;
   let ticketProviderEncryptionService: TicketProviderEncryptionService;
 
@@ -33,6 +34,7 @@ describe('Ticket (e2e)', () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
     moduleFixture = await testingModuleBuilder.compile();
     producerService = moduleFixture.get<ProducerService>(ProducerService);
+    redisService = moduleFixture.get<RedisService>(RedisService);
     ticketProviderEncryptionService = moduleFixture.get<TicketProviderEncryptionService>(
       TicketProviderEncryptionService,
     );
@@ -497,9 +499,15 @@ describe('Ticket (e2e)', () => {
       userId: user.id,
       status: TicketStatus.Validated,
     });
+    const hash = faker.random.alphaNumeric(16);
+
+    await redisService.set(hash, ticket.uuid, 10);
 
     await request(app.getHttpServer())
-      .post(`/api/v1/tickets/${ticket.uuid}/validate`)
+      .post(`/api/v1/tickets/validate`)
+      .send({
+        hash,
+      })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
       .then((response) => {
@@ -518,13 +526,44 @@ describe('Ticket (e2e)', () => {
       userId: user.id,
       status: TicketStatus.Active,
     });
+    const hash = faker.random.alphaNumeric(16);
+
+    await redisService.set(hash, ticket.uuid, 10);
 
     await request(app.getHttpServer())
-      .post(`/api/v1/tickets/${ticket.uuid}/validate`)
+      .post(`/api/v1/tickets/validate`)
+      .send({
+        hash,
+      })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(expect.arrayContaining(['Ticket is already used or not created yet']));
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
+  it(`doesn't allow to validate the ticket if hash is not present in redis`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const ticketProviderSecond = await TicketProviderFactory.create();
+    const user = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
+    await TicketFactory.create({
+      ticketProviderId: ticketProviderSecond.id,
+      userId: user.id,
+      status: TicketStatus.Active,
+    });
+    const hash = faker.random.alphaNumeric(16);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/tickets/validate`)
+      .send({
+        hash,
+      })
+      .set('Accept', 'application/json')
+      .set('Api-Key', token)
+      .then((response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['Hash value was not found']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
   });
@@ -538,9 +577,15 @@ describe('Ticket (e2e)', () => {
       userId: user.id,
       status: TicketStatus.Active,
     });
+    const hash = faker.random.alphaNumeric(16);
+
+    await redisService.set(hash, ticket.uuid, 10);
 
     await request(app.getHttpServer())
-      .post(`/api/v1/tickets/${ticket.uuid}/validate`)
+      .post(`/api/v1/tickets/validate`)
+      .send({
+        hash,
+      })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
       .then((response) => {
