@@ -18,6 +18,7 @@ test:
   - name: docker:20-dind
     command: ["--tls=false"]
   script:
+    - apk add bash
     - docker-compose up -d kafka --wait
     - sh create-kafka-topics.sh
     - docker-compose run --rm api sh -c "npm run migration:run:ci && npm run test:ci"
