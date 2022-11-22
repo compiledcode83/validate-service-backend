@@ -5,7 +5,7 @@ import { UserService } from '@src/user/user.service';
 import { CreateTicketTransferDto } from './dto/create-ticket-transfer.dto';
 import { TicketTransfer } from './ticket-transfer.entity';
 import { TicketTransferRepository } from './ticket-transfer.repository';
-import { TicketTransferEventPattern, TicketTransferStatus } from './ticket-transfer.types';
+import { TicketTransferEventPattern } from './ticket-transfer.types';
 import { TicketTransferMessage } from '@src/ticket-transfer/messages/ticket-transfer.message';
 
 @Injectable()
@@ -49,10 +49,7 @@ export class TicketTransferService {
   }
 
   async complete(uuid: string, transactionHash: string): Promise<void> {
-    await this.ticketTransferRepository.update(
-      { uuid },
-      { status: TicketTransferStatus.Completed, transactionHash, finishedAt: new Date(), errorData: null },
-    );
+    await this.ticketTransferRepository.complete(uuid, transactionHash);
   }
 
   async setError(uuid: string, errorData: string): Promise<void> {

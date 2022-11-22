@@ -63,7 +63,7 @@ export class TicketRepository extends Repository<Ticket> {
       }
 
       await queryRunner.manager
-        .createQueryBuilder()
+        .createQueryBuilder(Ticket, 'ticket')
         .update(Ticket)
         .where({ uuid })
         .set({ status: TicketStatus.Validated, validatedAt: new Date() })
