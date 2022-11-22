@@ -7,11 +7,20 @@ import { InternalServerErrorExceptionsFilter } from './common/filters/internal-s
 import { Reflector } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { ApiKeyOrJwtGuard } from './auth/guards/api-key-or-jwt.guard';
+import { ConsumerModule } from './consumer/consumer.module';
+import kafkaConfig from './config/kafka.config';
+import appConfig from './config/app.config';
 
 export class AppBootstrapManager {
   static getTestingModuleBuilder(): TestingModuleBuilder {
     return Test.createTestingModule({
       imports: [AppModule],
+    });
+  }
+
+  static getConsumerTestingModuleBuilder(): TestingModuleBuilder {
+    return Test.createTestingModule({
+      imports: [ConsumerModule],
     });
   }
 

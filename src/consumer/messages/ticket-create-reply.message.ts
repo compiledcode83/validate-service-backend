@@ -6,4 +6,8 @@ export class TicketCreateReplyMessage {
   ticket: Ticket;
   user: User;
   errorData?: string;
+
+  constructor(data: Partial<TicketCreateReplyMessage>) {
+    Object.assign(this, data);
+  }
 }

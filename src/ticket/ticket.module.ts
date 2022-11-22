@@ -11,6 +11,7 @@ import { ProducerModule } from '@src/producer/producer.module';
 import { TicketProviderEncryptionKeyModule } from '@src/ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import { TicketIsDeletableValidator } from './validators/ticket-is-deletable.validator';
 import { EventModule } from '@src/event/event.module';
+import { RedisModule } from '@src/redis/redis.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EventModule } from '@src/event/event.module';
     ProducerModule,
     TicketProviderEncryptionKeyModule,
     EventModule,
+    RedisModule,
   ],
   providers: [
     TicketService,
