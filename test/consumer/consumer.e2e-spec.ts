@@ -119,6 +119,8 @@ describe('Consumer microservice (e2e)', () => {
         );
       });
 
+      await new Promise((fulfill) => setTimeout(fulfill, 1000));
+
       const updatedTicket = await AppDataSource.manager.getRepository(Ticket).findOneBy({ uuid: ticket.uuid });
 
       expect(updatedTicket).toEqual(
@@ -164,6 +166,8 @@ describe('Consumer microservice (e2e)', () => {
         );
       });
 
+      await new Promise((fulfill) => setTimeout(fulfill, 1000));
+
       const updatedTicket = await AppDataSource.manager.getRepository(Ticket).findOneBy({ uuid: ticket.uuid });
 
       expect(updatedTicket).toEqual(
@@ -205,6 +209,8 @@ describe('Consumer microservice (e2e)', () => {
           }),
         );
       });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 1000));
 
       const updatedTicket = await AppDataSource.manager.getRepository(Ticket).findOneBy({ uuid: ticket.uuid });
 
@@ -249,6 +255,8 @@ describe('Consumer microservice (e2e)', () => {
           }),
         );
       });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 1000));
 
       const updatedTicket = await AppDataSource.manager.getRepository(Ticket).findOneBy({ uuid: ticket.uuid });
       const updatedTicketTransfer = await AppDataSource.manager
@@ -302,6 +310,8 @@ describe('Consumer microservice (e2e)', () => {
         );
       });
 
+      await new Promise((fulfill) => setTimeout(fulfill, 1000));
+
       const notUpdatedTicket = await AppDataSource.manager.getRepository(Ticket).findOneBy({ uuid: ticket.uuid });
       const updatedTicketTransfer = await AppDataSource.manager
         .getRepository(TicketTransfer)
@@ -346,6 +356,8 @@ describe('Consumer microservice (e2e)', () => {
         );
       });
 
+      await new Promise((fulfill) => setTimeout(fulfill, 1000));
+
       const updatedUser = await AppDataSource.manager.getRepository(User).findOneBy({ uuid: user.uuid });
 
       expect(updatedUser).toEqual(
@@ -378,6 +390,8 @@ describe('Consumer microservice (e2e)', () => {
           }),
         );
       });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 1000));
 
       const updatedUser = await AppDataSource.manager.getRepository(User).findOneBy({ uuid: user.uuid });
 
