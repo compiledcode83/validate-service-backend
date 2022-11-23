@@ -9,6 +9,8 @@ export class TicketFactory {
     const ticket = new Ticket();
     ticket.uuid = uuid();
     ticket.name = faker.name.firstName();
+    ticket.type = faker.random.word();
+    ticket.dateStart = faker.date.future();
     ticket.contractId = faker.finance.ethereumAddress();
     ticket.ipfsUri = faker.internet.url();
     ticket.imageUrl = faker.internet.url();

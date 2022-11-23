@@ -16,16 +16,16 @@ export class ConsumerService {
   ) {}
 
   async handleUserCreateReply(message: UserCreateReplyMessage) {
-    if (message?.user?.errorData) {
-      return this.userService.completeWithError(message.user.uuid, message.user.errorData);
+    if (message?.errorData) {
+      return this.userService.completeWithError(message.user.uuid, message.errorData);
     }
 
     await this.userService.completeWithSuccess(message.user.uuid, message.user.walletAddress);
   }
 
   async handleTicketCreateReply(message: TicketCreateReplyMessage) {
-    if (message?.ticket?.errorData) {
-      return this.ticketService.setError(message.ticket.uuid, message.ticket.errorData);
+    if (message?.errorData) {
+      return this.ticketService.setError(message.ticket.uuid, message.errorData);
     }
 
     await this.ticketService.activate(

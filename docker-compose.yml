@@ -12,11 +12,11 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      kafka:
-        condition: service_started
+      redis:
+        condition: service_healthy
     links:
       - mysql:mysql
-      - kafka:kafka
+      - redis:redis
     command: sh -c "npm run test"
     networks:
       - validate-network
@@ -26,7 +26,7 @@ services:
     container_name: validate-mysql
     environment:
       - MYSQL_ROOT_PASSWORD=mysql
-      - MYSQL_DATABASE=validate-test
+      - MYSQL_DATABASE=validate-backend-test
     ports:
       - 3306:3306
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_buffer_pool_size=128m --max_connections=100 --innodb_log_file_size=64M --default-authentication-plugin=mysql_native_password
@@ -38,16 +38,19 @@ services:
     restart: "no"
     networks:
       - validate-network
-  
-  kafka:
-    image: moeenz/docker-kafka-kraft:latest
+
+  redis:
+    container_name: validate-backend-redis
+    image: redis:6.2
+    command: redis-server --save 5 1
     ports:
-      - 9093:9093
-    environment:
-      - KRAFT_CONTAINER_HOST_NAME=kafka
-      - KRAFT_CREATE_TOPICS=healthcheck,user.create,user.create.reply,ticket.create,ticket.create.reply,ticket.transfer,ticket.transfer.reply,ticket.delete,ticket.delete.reply
-      - KRAFT_PARTITIONS_PER_TOPIC=1
-    restart: "no"
+      - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    restart: always
     networks:
       - validate-network
 

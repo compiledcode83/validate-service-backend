@@ -25,7 +25,7 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        clientId: 'web3-reply-consumer',
+        clientId: 'api-gateway-consumer',
         brokers: kafkaOptions.brokerUrl.split(','),
         ssl: kafkaOptions.ssl,
         ...saslConfig,

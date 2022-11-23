@@ -1,17 +1,18 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { json } from 'express';
+import * as cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
+import { Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { InternalServerErrorExceptionsFilter } from './common/filters/internal-server-error-exceptions.filter';
-import { Reflector } from '@nestjs/core';
-import * as cookieParser from 'cookie-parser';
 import { ApiKeyOrJwtGuard } from './auth/guards/api-key-or-jwt.guard';
+import { ConsumerModule } from './consumer/consumer.module';
 
 export class AppBootstrapManager {
   static getTestingModuleBuilder(): TestingModuleBuilder {
     return Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, ConsumerModule],
     });
   }
 

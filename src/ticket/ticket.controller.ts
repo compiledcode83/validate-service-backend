@@ -71,7 +71,7 @@ export class TicketController {
     new ParamToBodyInterceptor('uuid', 'uuid'),
   )
   @HttpCode(HttpStatus.OK)
-  @Post(':uuid/validate')
+  @Post('validate')
   async validate(@Body() body: ValidateTicketDto): Promise<Ticket> {
     const validatedTicket = await this.ticketService.validate(body);
 

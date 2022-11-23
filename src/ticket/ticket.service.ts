@@ -73,7 +73,7 @@ export class TicketService {
   }
 
   async validate(body: ValidateTicketDto): Promise<Ticket> {
-    return this.ticketRepository.validate(body.uuid, body.ticketProvider.id);
+    return this.ticketRepository.validate(body.ticketUuid, body.ticketProvider.id);
   }
 
   async delete(body: DeleteTicketDto): Promise<void> {
