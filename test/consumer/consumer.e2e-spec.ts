@@ -49,7 +49,7 @@ describe('Consumer microservice (e2e)', () => {
           ssl: kafkaOptions.ssl,
         },
         consumer: {
-          groupId: kafkaOptions.consumerGroup,
+          groupId: uuid(),
         },
         subscribe: {
           fromBeginning: false,
