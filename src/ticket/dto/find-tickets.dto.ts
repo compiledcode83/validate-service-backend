@@ -14,7 +14,7 @@ export class FindTicketsDto extends CursorFilterDto {
   @ApiProperty({ example: TicketStatus.Active, enum: TicketStatus, required: false })
   @IsOptional()
   @IsEnum(TicketStatus)
-  status: TicketStatus = TicketStatus.Active;
+  status: TicketStatus;
 
   @ApiProperty({ example: 'createdAt', enum: ['createdAt', 'status'], required: false })
   @IsOptional()

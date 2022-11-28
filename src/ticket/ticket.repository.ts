@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { Ticket } from './ticket.entity';
@@ -15,13 +15,17 @@ export class TicketRepository extends Repository<Ticket> {
     return this.save(data, { reload: false });
   }
 
+  async findByUuid(uuid: string, relations: string[] = ['user']): Promise<Ticket> {
+    return this.findOne({ where: { uuid, status: Not(TicketStatus.Deleted) }, relations });
+  }
+
   async getPaginatedQueryBuilder(
     searchParams: FindTicketsDto,
     ticketProviderId: number,
   ): Promise<PagingResult<Ticket>> {
     const queryBuilder = this.createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.user', 'user')
-      .where({ ticketProviderId });
+      .where({ ticketProviderId, status: Not(TicketStatus.Deleted) });
 
     if ('status' in searchParams) {
       queryBuilder.andWhere({ status: searchParams.status });
@@ -71,7 +75,7 @@ export class TicketRepository extends Repository<Ticket> {
 
       await queryRunner.commitTransaction();
 
-      return this.findOne({ where: { uuid } });
+      return this.findByUuid(uuid);
     } catch (err) {
       await queryRunner.rollbackTransaction();
 

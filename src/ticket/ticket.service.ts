@@ -6,7 +6,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { Ticket } from './ticket.entity';
 import { TicketRepository } from './ticket.repository';
-import { TicketEventPattern, TicketStatus } from './ticket.types';
+import { DEFAULT_IMAGE, TicketEventPattern, TicketStatus } from './ticket.types';
 import { TicketCreateMessage } from './messages/ticket-create.message';
 import { TicketProviderEncryptionKeyService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
 import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provider.types';
@@ -16,7 +16,6 @@ import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { TicketDeleteMessage } from './messages/ticket-delete.message';
 import { EventService } from '@src/event/event.service';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TicketService {
@@ -26,7 +25,6 @@ export class TicketService {
     private readonly producerService: ProducerService,
     private readonly ticketProviderEncryptionKeyService: TicketProviderEncryptionKeyService,
     private readonly eventService: EventService,
-    private readonly configService: ConfigService,
   ) {}
 
   async findAllPaginated(searchParams: FindTicketsDto, ticketProviderId: number): Promise<PagingResult<Ticket>> {
@@ -50,8 +48,7 @@ export class TicketService {
         ...this.ticketRepository.create(ticketData),
         ticketProviderId: ticketProvider.id,
         userId: ticketUser.id,
-        imageUrl:
-          body.imageUrl || 'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
+        imageUrl: body.imageUrl || DEFAULT_IMAGE,
       },
       { reload: false },
     );
