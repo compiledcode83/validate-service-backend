@@ -4,10 +4,13 @@ import * as Sentry from '@sentry/node';
 @Catch(InternalServerErrorException)
 export class InternalServerErrorExceptionsFilter implements ExceptionFilter {
   async catch(exception: any, host: ArgumentsHost): Promise<void> {
+    let statusCode;
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
-    const statusCode = exception.getStatus();
+    if (!exception?.getStatus()) {
+      statusCode = exception?.getStatus() || exception.code;
+    }
 
     Sentry.setContext('request', {
       url: request.url,
@@ -20,8 +23,8 @@ export class InternalServerErrorExceptionsFilter implements ExceptionFilter {
     });
     Sentry.captureException(exception);
 
-    response.status(statusCode).json({
-      statusCode,
+    response.status(statusCode || 500).json({
+      statusCode: statusCode || 500,
       message: 'Internal server error',
     });
   }

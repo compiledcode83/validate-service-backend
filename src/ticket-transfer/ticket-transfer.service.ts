@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ProducerService } from '@src/producer/producer.service';
 import { TicketService } from '@src/ticket/ticket.service';
 import { UserService } from '@src/user/user.service';
@@ -26,26 +26,30 @@ export class TicketTransferService {
   }
 
   async create(body: CreateTicketTransferDto, ticketProviderId: number): Promise<TicketTransfer> {
-    const userTo = await this.userService.findByUuid(body.userUuid);
-    const ticket = await this.ticketService.findByUuid(body.ticketUuid, ['user']);
-    const newTransfer = await this.ticketTransferRepository.save(
-      this.ticketTransferRepository.create({
-        ticketProviderId,
-        ticketId: ticket.id,
-        userIdFrom: ticket.userId,
-        userIdTo: userTo.id,
-      }),
-    );
-    const transfer = await this.findByUuid(newTransfer.uuid, ['userFrom', 'userTo', 'ticket']);
+    try {
+      const userTo = await this.userService.findByUuid(body.userUuid);
+      const ticket = await this.ticketService.findByUuid(body.ticketUuid, ['user']);
+      const newTransfer = await this.ticketTransferRepository.save(
+        this.ticketTransferRepository.create({
+          ticketProviderId,
+          ticketId: ticket.id,
+          userIdFrom: ticket.userId,
+          userIdTo: userTo.id,
+        }),
+      );
+      const transfer = await this.findByUuid(newTransfer.uuid, ['userFrom', 'userTo', 'ticket']);
 
-    await this.producerService.emit(
-      TicketTransferEventPattern.TicketTransfer,
-      new TicketTransferMessage({
-        transfer,
-      }),
-    );
+      await this.producerService.emit(
+        TicketTransferEventPattern.TicketTransfer,
+        new TicketTransferMessage({
+          transfer,
+        }),
+      );
 
-    return this.findByUuid(transfer.uuid);
+      return this.findByUuid(transfer.uuid);
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
   }
 
   async complete(uuid: string, transactionHash: string): Promise<void> {
