@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RefreshTokensDto } from '@src/auth/dto/refresh-tokens.dto';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { randomBytes } from 'node:crypto';
@@ -18,21 +18,17 @@ export class TicketProviderRefreshTokenRepository extends Repository<TicketProvi
     ticketProvider: TicketProvider,
     params: RefreshTokensDto | LoginDto,
   ): Promise<TicketProviderRefreshToken> {
-    try {
-      const refreshToken = this.create({
-        ticketProviderId: ticketProvider.id,
-        token: randomBytes(32).toString('hex'),
-        ip: params.ip,
-        userAgent: params.headers?.['user-agent'] || null,
-        fingerprint: params.fingerprint,
-        expireAt: DateTime.now()
-          .plus({ days: this.configService.get('jwtConfig.refreshTokenDurationDays') })
-          .toJSDate(),
-      });
+    const refreshToken = this.create({
+      ticketProviderId: ticketProvider.id,
+      token: randomBytes(32).toString('hex'),
+      ip: params.ip,
+      userAgent: params.headers?.['user-agent'] || null,
+      fingerprint: params.fingerprint,
+      expireAt: DateTime.now()
+        .plus({ days: this.configService.get('jwtConfig.refreshTokenDurationDays') })
+        .toJSDate(),
+    });
 
-      return this.save(refreshToken);
-    } catch (err) {
-      throw new InternalServerErrorException(err);
-    }
+    return this.save(refreshToken);
   }
 }

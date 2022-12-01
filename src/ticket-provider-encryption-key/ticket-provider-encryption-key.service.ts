@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { User } from '@src/user/user.entity';
 import { TicketProviderEncryptionKey } from './ticket-provider-encryption-key.entity';
 import { TicketProviderEncryptionKeyRepository } from './ticket-provider-encryption-key.repository';
@@ -23,21 +23,17 @@ export class TicketProviderEncryptionKeyService {
   }
 
   async create(ticketProviderId: number): Promise<TicketProviderEncryptionKey> {
-    try {
-      const currentVersion = await this.ticketProviderEncryptionKeyRepo.getCurrentVersion(ticketProviderId);
-      const newVersion = Number(currentVersion?.version ?? 0) + 1;
-      const entity: Partial<TicketProviderEncryptionKey> = {
-        ticketProviderId,
-        version: newVersion,
-        secretKey: this.ticketProviderEncryptionService.generateSecretKey(),
-      };
+    const currentVersion = await this.ticketProviderEncryptionKeyRepo.getCurrentVersion(ticketProviderId);
+    const newVersion = Number(currentVersion?.version ?? 0) + 1;
+    const entity: Partial<TicketProviderEncryptionKey> = {
+      ticketProviderId,
+      version: newVersion,
+      secretKey: this.ticketProviderEncryptionService.generateSecretKey(),
+    };
 
-      const encryptionKey = await this.ticketProviderEncryptionKeyRepo.save(entity, { reload: false });
+    const encryptionKey = await this.ticketProviderEncryptionKeyRepo.save(entity, { reload: false });
 
-      return this.findByVersion(encryptionKey.version, ticketProviderId);
-    } catch (err) {
-      throw new InternalServerErrorException(err);
-    }
+    return this.findByVersion(encryptionKey.version, ticketProviderId);
   }
 
   async encryptTicketUserData(user: User): Promise<EncryptedData> {

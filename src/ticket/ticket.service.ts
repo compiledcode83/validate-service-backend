@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ProducerService } from '@src/producer/producer.service';
 import { UserService } from '@src/user/user.service';
 import { PagingResult } from 'typeorm-cursor-pagination';
@@ -40,37 +40,33 @@ export class TicketService {
   }
 
   async create(body: CreateTicketDto): Promise<Ticket> {
-    try {
-      const { ticketProvider, user, ...ticketData } = body;
-      const ticketUser = await this.userService.findOrCreate(user);
-      const encryptedUserData = await this.getEncryptedUserData(ticketUser, ticketProvider);
-      const ticket = await this.ticketRepository.save(
-        {
-          ...this.ticketRepository.create(ticketData),
-          ticketProviderId: ticketProvider.id,
-          userId: ticketUser.id,
-          imageUrl: body.imageUrl || DEFAULT_IMAGE,
-        },
-        { reload: false },
-      );
+    const { ticketProvider, user, ...ticketData } = body;
+    const ticketUser = await this.userService.findOrCreate(user);
+    const encryptedUserData = await this.getEncryptedUserData(ticketUser, ticketProvider);
+    const ticket = await this.ticketRepository.save(
+      {
+        ...this.ticketRepository.create(ticketData),
+        ticketProviderId: ticketProvider.id,
+        userId: ticketUser.id,
+        imageUrl: body.imageUrl || DEFAULT_IMAGE,
+      },
+      { reload: false },
+    );
 
-      await this.eventService.createOrInsert(ticket.name, ticket.type, ticket.ticketProviderId);
+    await this.eventService.createOrInsert(ticket.name, ticket.type, ticket.ticketProviderId);
 
-      const savedTicket = await this.findByUuid(ticket.uuid);
+    const savedTicket = await this.findByUuid(ticket.uuid);
 
-      await this.producerService.emit(
-        TicketEventPattern.TicketCreate,
-        new TicketCreateMessage({
-          ticket: savedTicket,
-          user: ticketUser,
-          ...encryptedUserData,
-        }),
-      );
+    await this.producerService.emit(
+      TicketEventPattern.TicketCreate,
+      new TicketCreateMessage({
+        ticket: savedTicket,
+        user: ticketUser,
+        ...encryptedUserData,
+      }),
+    );
 
-      return savedTicket;
-    } catch (err) {
-      throw new InternalServerErrorException(err);
-    }
+    return savedTicket;
   }
 
   async validate(body: ValidateTicketDto): Promise<Ticket> {

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ProducerService } from '@src/producer/producer.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -31,28 +31,24 @@ export class UserService {
   }
 
   async create(body: CreateUserDto, ticketProviderId: number): Promise<User> {
-    try {
-      const { ticketProvider, ...userData } = body;
-      const user = await this.userRepository.save(
-        {
-          ...this.userRepository.create(userData),
-          ticketProviderId,
-        },
-        { reload: false },
-      );
-      const savedUser = await this.findByUuid(user.uuid);
+    const { ticketProvider, ...userData } = body;
+    const user = await this.userRepository.save(
+      {
+        ...this.userRepository.create(userData),
+        ticketProviderId,
+      },
+      { reload: false },
+    );
+    const savedUser = await this.findByUuid(user.uuid);
 
-      await this.producerService.emit(
-        UserEventPattern.UserCreate,
-        new UserCreateMessage({
-          user: savedUser,
-        }),
-      );
+    await this.producerService.emit(
+      UserEventPattern.UserCreate,
+      new UserCreateMessage({
+        user: savedUser,
+      }),
+    );
 
-      return savedUser;
-    } catch (err) {
-      throw new InternalServerErrorException(err);
-    }
+    return savedUser;
   }
 
   async findOrCreate(user: CreateTicketUserDto): Promise<User> {
