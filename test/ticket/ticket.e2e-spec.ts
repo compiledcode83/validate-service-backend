@@ -134,6 +134,7 @@ describe('Ticket (e2e)', () => {
             contractId: null,
             ipfsUri: null,
             tokenId: null,
+            eventId: expect.any(Number),
           }),
         );
         expect(response.status).toBe(HttpStatus.CREATED);
