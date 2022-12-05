@@ -104,6 +104,9 @@ export class Ticket {
   @Column({ type: 'enum', nullable: false, enum: TicketStatus })
   status: TicketStatus;
 
+  @Column({ type: 'int', nullable: false })
+  eventId: number;
+
   @ApiProperty({
     description: 'Ticket creation transaction hash',
     example: '0xeBA05C5521a3B81e23d15ae9B2d07524BC453561',
