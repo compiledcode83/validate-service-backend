@@ -43,17 +43,18 @@ export class TicketService {
     const { ticketProvider, user, ...ticketData } = body;
     const ticketUser = await this.userService.findOrCreate(user);
     const encryptedUserData = await this.getEncryptedUserData(ticketUser, ticketProvider);
+    const event = await this.eventService.createOrInsert(body.name, body.type, ticketProvider.id);
+
     const ticket = await this.ticketRepository.save(
       {
         ...this.ticketRepository.create(ticketData),
         ticketProviderId: ticketProvider.id,
         userId: ticketUser.id,
         imageUrl: body.imageUrl || DEFAULT_IMAGE,
+        eventId: event.id,
       },
       { reload: false },
     );
-
-    await this.eventService.createOrInsert(ticket.name, ticket.type, ticket.ticketProviderId);
 
     const savedTicket = await this.findByUuid(ticket.uuid);
 
