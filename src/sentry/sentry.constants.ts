@@ -1,0 +1,1 @@
+export const SENTRY_CLIENT_TOKEN = 'SENTRY_CLIENT';

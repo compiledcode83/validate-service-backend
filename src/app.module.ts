@@ -56,7 +56,7 @@ EnvHelper.verifyNodeEnv();
     TicketProviderRefreshTokenModule,
     EventModule,
     RedisModule,
-    OutboxModule,
+    SentryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
