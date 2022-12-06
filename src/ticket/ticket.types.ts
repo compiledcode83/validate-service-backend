@@ -18,6 +18,7 @@ export enum TicketEventPattern {
   TicketCreateReply = 'ticket.create.reply',
   TicketDelete = 'ticket.delete',
   TicketDeleteReply = 'ticket.delete.reply',
+  TicketValidate = 'ticket.validate',
 }
 
 export const DATE_FORMAT = 'yyyy-MM-dd';

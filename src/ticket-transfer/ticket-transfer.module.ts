@@ -7,11 +7,11 @@ import { UserModule } from '@src/user/user.module';
 import { TicketModule } from '@src/ticket/ticket.module';
 import { TicketTransferRepository } from './ticket-transfer.repository';
 import { TicketExistsAndActiveValidator } from './validators/ticket-exists-and-active.validator';
-import { ProducerModule } from '@src/producer/producer.module';
 import { TicketTransferReceiverValidator } from './validators/ticket-transfer-receiver.validator';
+import { OutboxModule } from '@src/outbox/outbox.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TicketTransfer]), UserModule, TicketModule, ProducerModule],
+  imports: [TypeOrmModule.forFeature([TicketTransfer]), UserModule, TicketModule, OutboxModule],
   providers: [
     TicketTransferService,
     TicketTransferRepository,

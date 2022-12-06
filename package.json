@@ -26,7 +26,9 @@
     "migration:create": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:create --",
     "repl": "npm run start -- --entryFile repl",
     "consumer": "npm run start -- --entryFile consumer",
-    "consumer:dev": "npm run start -- --watch --entryFile consumer"
+    "consumer:dev": "npm run start -- --watch --entryFile consumer",
+    "producer": "npm run start -- --entryFile producer",
+    "producer:dev": "npm run start -- --watch --entryFile producer"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",

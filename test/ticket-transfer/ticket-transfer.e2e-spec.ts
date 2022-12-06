@@ -9,23 +9,22 @@ import { TestHelper } from '@test/helpers/test.helper';
 import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
 import { TicketTransferFactory } from '@src/database/factories/ticket-transfer.factory';
-import { ProducerService } from '@src/producer/producer.service';
 import { UserStatus } from '@src/user/user.types';
 import { TicketStatus } from '@src/ticket/ticket.types';
 import { TicketTransferMessage } from '@src/ticket-transfer/messages/ticket-transfer.message';
 import { TicketTransferEventPattern } from '@src/ticket-transfer/ticket-transfer.types';
+import { Outbox } from '@src/outbox/outbox.entity';
+import { MoreThan } from 'typeorm';
+import { OutboxStatus } from '@src/outbox/outbox.types';
 
 describe('Ticket-transfer (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
-  let producerService: ProducerService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
     moduleFixture = await testingModuleBuilder.compile();
-    producerService = moduleFixture.get<ProducerService>(ProducerService);
-    jest.spyOn(producerService, 'emit').mockImplementation(async (): Promise<any> => null);
 
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
@@ -183,25 +182,41 @@ describe('Ticket-transfer (e2e)', () => {
         expect(ticketTransfer.ticket).not.toBeNull();
 
         const expectedMessage = new TicketTransferMessage({
-          transfer: expect.objectContaining({
-            uuid: ticketTransfer.uuid,
-            userFrom: expect.objectContaining({
-              uuid: ticketTransfer.userFrom.uuid,
-            }),
-            userTo: expect.objectContaining({
-              uuid: ticketTransfer.userTo.uuid,
-            }),
-            ticket: expect.objectContaining({
-              uuid: ticketTransfer.ticket.uuid,
-              tokenId: ticketTransfer.ticket.tokenId,
-            }),
-          }),
+          transfer: { ...ticketTransfer },
         });
 
-        expect(producerService.send).toHaveBeenCalledWith(TicketTransferEventPattern.TicketTransfer, {
-          ...expectedMessage,
-          operationUuid: expect.any(String),
-        });
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: TicketTransferEventPattern.TicketTransfer,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            transfer: expect.objectContaining({
+              ...expectedMessage.transfer,
+              createdAt: String(expectedMessage.transfer.createdAt.toJSON()),
+              ticket: {
+                ...expectedMessage.transfer.ticket,
+                createdAt: String(expectedMessage.transfer.ticket.createdAt.toJSON()),
+              },
+              userFrom: {
+                ...expectedMessage.transfer.userFrom,
+                createdAt: String(expectedMessage.transfer.userFrom.createdAt.toJSON()),
+              },
+              userTo: {
+                ...expectedMessage.transfer.userTo,
+                createdAt: String(expectedMessage.transfer.userTo.createdAt.toJSON()),
+              },
+            }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 

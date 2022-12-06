@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindEventsDto } from './dto/find-events.dto';
 import { Event } from './event.entity';
@@ -27,13 +27,25 @@ export class EventRepository extends Repository<Event> {
     return paginator.paginate(queryBuilder);
   }
 
-  async createOrInsert(name: string, ticketType: string, ticketProviderId: number): Promise<Event> {
+  async findOrCreate(
+    queryRunner: QueryRunner,
+    name: string,
+    ticketType: string,
+    ticketProviderId: number,
+  ): Promise<Event> {
     const existingEvent = await this.findOneBy({ name, ticketType, ticketProviderId });
 
-    if (!existingEvent) {
-      return this.save({ name, ticketType, ticketProviderId });
+    if (existingEvent) {
+      return existingEvent;
     }
 
-    return existingEvent;
+    const { generatedMaps } = await queryRunner.manager
+      .createQueryBuilder(Event, 'event')
+      .insert()
+      .values(this.create({ name, ticketType, ticketProviderId }))
+      .execute();
+    const [insertedValues] = generatedMaps;
+
+    return queryRunner.manager.findOneBy(Event, { id: insertedValues.id });
   }
 }

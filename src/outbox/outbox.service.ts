@@ -1,43 +1,28 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import * as Sentry from '@sentry/node';
-import { ProducerService } from '@src/producer/producer.service';
+import { Injectable } from '@nestjs/common';
+import { QueryRunner } from 'typeorm';
+import { Outbox } from './outbox.entity';
 import { OutboxRepository } from './outbox.repository';
+import { OutboxEventName, OutboxPayload } from './outbox.types';
 
 @Injectable()
 export class OutboxService {
-  private readonly logger = new Logger(OutboxService.name);
+  constructor(public readonly outboxRepository: OutboxRepository) {}
 
-  constructor(private readonly producerService: ProducerService, private readonly outboxRepository: OutboxRepository) {}
+  async findAll(batchSize = 100): Promise<Outbox[]> {
+    return this.outboxRepository.findAll(batchSize);
+  }
 
-  @Cron(CronExpression.EVERY_SECOND)
-  async produceMessages() {
-    try {
-      const startTime = performance.now();
-      const messages = await this.outboxRepository.findAll();
+  async setAsSent(id: number[]): Promise<void> {
+    await this.outboxRepository.setAsSent(id);
+  }
 
-      if (messages.length > 0) {
-        const batch = messages.map((message) => ({
-          topic: message.eventName,
-          messages: [
-            {
-              value: JSON.stringify(message.payload),
-            },
-          ],
-        }));
-
-        await this.producerService.sendBatch(batch);
-        await this.outboxRepository.setAsSent(messages.map((message) => message.id));
-
-        this.logger.log(`Produced ${messages.length} messages in ${Math.floor(performance.now() - startTime)}ms`);
-      }
-    } catch (err) {
-      this.logger.error(`Error producing messages: ${err?.message}`);
-
-      Sentry.captureException(err);
-
-      process.exitCode = 1;
-      process.exit(1);
-    }
+  async create(queryRunner: QueryRunner, eventName: OutboxEventName, payload: OutboxPayload): Promise<Outbox> {
+    return queryRunner.manager.save(
+      this.outboxRepository.create({
+        eventName,
+        payload: JSON.stringify(payload),
+        operationUuid: payload.operationUuid,
+      }),
+    );
   }
 }

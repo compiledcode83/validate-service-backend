@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ProducerService } from '@src/producer/producer.service';
 import { TicketService } from '@src/ticket/ticket.service';
 import { UserService } from '@src/user/user.service';
 import { CreateTicketTransferDto } from './dto/create-ticket-transfer.dto';
@@ -7,6 +6,7 @@ import { TicketTransfer } from './ticket-transfer.entity';
 import { TicketTransferRepository } from './ticket-transfer.repository';
 import { TicketTransferEventPattern } from './ticket-transfer.types';
 import { TicketTransferMessage } from '@src/ticket-transfer/messages/ticket-transfer.message';
+import { OutboxService } from '@src/outbox/outbox.service';
 
 @Injectable()
 export class TicketTransferService {
@@ -14,7 +14,7 @@ export class TicketTransferService {
     private readonly ticketTransferRepository: TicketTransferRepository,
     private readonly userService: UserService,
     private readonly ticketService: TicketService,
-    private readonly producerService: ProducerService,
+    private readonly outboxService: OutboxService,
   ) {}
 
   async findByUuidAndProvider(uuid: string, ticketProviderId: number): Promise<TicketTransfer> {
@@ -26,26 +26,41 @@ export class TicketTransferService {
   }
 
   async create(body: CreateTicketTransferDto, ticketProviderId: number): Promise<TicketTransfer> {
-    const userTo = await this.userService.findByUuid(body.userUuid);
-    const ticket = await this.ticketService.findByUuid(body.ticketUuid, ['user']);
-    const newTransfer = await this.ticketTransferRepository.save(
-      this.ticketTransferRepository.create({
-        ticketProviderId,
-        ticketId: ticket.id,
-        userIdFrom: ticket.userId,
-        userIdTo: userTo.id,
-      }),
-    );
-    const transfer = await this.findByUuid(newTransfer.uuid, ['userFrom', 'userTo', 'ticket']);
+    const queryRunner = this.ticketTransferRepository.dataSource.createQueryRunner();
 
-    await this.producerService.send(
-      TicketTransferEventPattern.TicketTransfer,
-      new TicketTransferMessage({
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const userTo = await this.userService.findByUuid(body.userUuid);
+      const ticket = await this.ticketService.findByUuid(body.ticketUuid, ['user']);
+      const newTransfer = await queryRunner.manager.save(
+        this.ticketTransferRepository.create({
+          ticketProviderId,
+          ticketId: ticket.id,
+          userIdFrom: ticket.userId,
+          userIdTo: userTo.id,
+        }),
+      );
+      const transfer = await queryRunner.manager.findOne(TicketTransfer, {
+        where: { uuid: newTransfer.uuid },
+        relations: ['userFrom', 'userTo', 'ticket'],
+      });
+      const payload = new TicketTransferMessage({
         transfer,
-      }),
-    );
+      });
 
-    return this.findByUuid(transfer.uuid);
+      await this.outboxService.create(queryRunner, TicketTransferEventPattern.TicketTransfer, payload);
+      await queryRunner.commitTransaction();
+
+      return this.findByUuid(transfer.uuid);
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async complete(uuid: string, transactionHash: string): Promise<void> {

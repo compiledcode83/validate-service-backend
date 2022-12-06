@@ -8,11 +8,12 @@ import { AppModule } from './app.module';
 import { InternalServerErrorExceptionsFilter } from './common/filters/internal-server-error-exceptions.filter';
 import { ApiKeyOrJwtGuard } from './auth/guards/api-key-or-jwt.guard';
 import { ConsumerModule } from './consumer/consumer.module';
+import { ProducerModule } from './producer/producer.module';
 
 export class AppBootstrapManager {
   static getTestingModuleBuilder(): TestingModuleBuilder {
     return Test.createTestingModule({
-      imports: [AppModule, ConsumerModule],
+      imports: [AppModule, ConsumerModule, ProducerModule],
     });
   }
 

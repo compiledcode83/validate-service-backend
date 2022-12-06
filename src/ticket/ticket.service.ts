@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { ProducerService } from '@src/producer/producer.service';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '@src/user/user.service';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -16,15 +15,17 @@ import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { TicketDeleteMessage } from './messages/ticket-delete.message';
 import { EventService } from '@src/event/event.service';
+import { OutboxService } from '@src/outbox/outbox.service';
+import { TicketValidateMessage } from './messages/ticket-validate.message';
 
 @Injectable()
 export class TicketService {
   constructor(
     private readonly ticketRepository: TicketRepository,
     private readonly userService: UserService,
-    private readonly producerService: ProducerService,
     private readonly ticketProviderEncryptionKeyService: TicketProviderEncryptionKeyService,
     private readonly eventService: EventService,
+    private readonly outboxService: OutboxService,
   ) {}
 
   async findAllPaginated(searchParams: FindTicketsDto, ticketProviderId: number): Promise<PagingResult<Ticket>> {
@@ -40,50 +41,119 @@ export class TicketService {
   }
 
   async create(body: CreateTicketDto): Promise<Ticket> {
-    const { ticketProvider, user, ...ticketData } = body;
-    const ticketUser = await this.userService.findOrCreate(user);
-    const encryptedUserData = await this.getEncryptedUserData(ticketUser, ticketProvider);
-    const ticket = await this.ticketRepository.save(
-      {
-        ...this.ticketRepository.create(ticketData),
-        ticketProviderId: ticketProvider.id,
-        userId: ticketUser.id,
-        imageUrl: body.imageUrl || DEFAULT_IMAGE,
-      },
-      { reload: false },
-    );
+    const queryRunner = this.ticketRepository.dataSource.createQueryRunner();
 
-    await this.eventService.createOrInsert(ticket.name, ticket.type, ticket.ticketProviderId);
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
-    const savedTicket = await this.findByUuid(ticket.uuid);
-
-    await this.producerService.send(
-      TicketEventPattern.TicketCreate,
-      new TicketCreateMessage({
-        ticket: savedTicket,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { ticketProvider, user, ...ticketData } = body;
+      const ticketUser = await this.userService.findOrCreate(queryRunner, user);
+      const ticketEvent = await this.eventService.findOrCreate(
+        queryRunner,
+        body.name,
+        body.type,
+        body.ticketProvider.id,
+      );
+      const encryptedUserData = await this.getEncryptedUserData(ticketUser, ticketProvider);
+      const createdTicket = await this.ticketRepository.createTicket(
+        queryRunner,
+        this.ticketRepository.create({
+          ...this.ticketRepository.create(ticketData),
+          ticketProviderId: ticketProvider.id,
+          userId: ticketUser.id,
+          imageUrl: body.imageUrl || DEFAULT_IMAGE,
+          eventId: ticketEvent.id,
+        }),
+      );
+      const ticket = await queryRunner.manager.findOneBy(Ticket, { id: createdTicket.id });
+      const payload = new TicketCreateMessage({
+        ticket,
         user: ticketUser,
         ...encryptedUserData,
-      }),
-    );
+      });
+      await this.outboxService.create(queryRunner, TicketEventPattern.TicketCreate, payload);
+      await queryRunner.commitTransaction();
 
-    return savedTicket;
+      return this.findByUuid(ticket.uuid);
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async validate(body: ValidateTicketDto): Promise<Ticket> {
-    return this.ticketRepository.validate(body.ticketUuid, body.ticketProvider.id);
+    const queryRunner = this.ticketRepository.dataSource.createQueryRunner();
+
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const ticket = await queryRunner.manager
+        .createQueryBuilder(Ticket, 'ticket')
+        .setLock('pessimistic_write')
+        .where({ uuid: body.ticketUuid, ticketProviderId: body.ticketProvider.id, status: TicketStatus.Active })
+        .getOne();
+
+      if (!ticket) {
+        throw new BadRequestException('Ticket not found');
+      }
+
+      await queryRunner.manager
+        .createQueryBuilder(Ticket, 'ticket')
+        .update(Ticket)
+        .where({ uuid: body.ticketUuid })
+        .set({ status: TicketStatus.Validated, validatedAt: new Date() })
+        .execute();
+
+      const validatedTicket = await queryRunner.manager.findOneBy(Ticket, { uuid: body.ticketUuid });
+      const payload = new TicketValidateMessage({
+        ticket: validatedTicket,
+      });
+      await this.outboxService.create(queryRunner, TicketEventPattern.TicketValidate, payload);
+      await queryRunner.commitTransaction();
+
+      return validatedTicket;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async delete(body: DeleteTicketDto): Promise<void> {
-    await this.ticketRepository.update({ uuid: body.uuid }, { status: TicketStatus.Deleted, deletedAt: new Date() });
+    const queryRunner = this.ticketRepository.dataSource.createQueryRunner();
 
-    const ticket = await this.findByUuid(body.uuid);
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
-    await this.producerService.send(
-      TicketEventPattern.TicketDelete,
-      new TicketDeleteMessage({
-        ticket,
-      }),
-    );
+      await queryRunner.manager
+        .createQueryBuilder(Ticket, 'ticket')
+        .update(Ticket)
+        .where({ uuid: body.uuid })
+        .set({ status: TicketStatus.Deleted, deletedAt: new Date() })
+        .execute();
+
+      const deletedTicket = await queryRunner.manager.findOneBy(Ticket, { uuid: body.uuid });
+      const payload = new TicketDeleteMessage({
+        ticket: deletedTicket,
+      });
+      await this.outboxService.create(queryRunner, TicketEventPattern.TicketDelete, payload);
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async activate(

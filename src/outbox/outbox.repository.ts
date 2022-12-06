@@ -9,7 +9,7 @@ export class OutboxRepository extends Repository<Outbox> {
     super(Outbox, dataSource.manager);
   }
 
-  async findAll(batchSize = 100): Promise<Outbox[]> {
+  async findAll(batchSize: number): Promise<Outbox[]> {
     return this.find({ where: { status: OutboxStatus.Created }, take: batchSize });
   }
 

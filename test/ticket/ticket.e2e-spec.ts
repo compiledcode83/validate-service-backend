@@ -11,7 +11,6 @@ import { faker } from '@faker-js/faker';
 import { Ticket } from '@src/ticket/ticket.entity';
 import { TicketFactory } from '@src/database/factories/ticket.factory';
 import { TicketEventPattern, TicketStatus } from '@src/ticket/ticket.types';
-import { ProducerService } from '@src/producer/producer.service';
 import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provider.types';
 import { TicketCreateMessage } from '@src/ticket/messages/ticket-create.message';
 import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/ticket-provider-encryption-key.factory';
@@ -20,26 +19,24 @@ import { TicketDeleteMessage } from '@src/ticket/messages/ticket-delete.message'
 import { User } from '@src/user/user.entity';
 import { MoreThan } from 'typeorm';
 import { RedisService } from '@src/redis/redis.service';
+import { Outbox } from '@src/outbox/outbox.entity';
+import { OutboxStatus } from '@src/outbox/outbox.types';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
-  let producerService: ProducerService;
   let redisService: RedisService;
-  let mockedEmit: jest.SpyInstance;
   let ticketProviderEncryptionService: TicketProviderEncryptionService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
     moduleFixture = await testingModuleBuilder.compile();
-    producerService = moduleFixture.get<ProducerService>(ProducerService);
     redisService = moduleFixture.get<RedisService>(RedisService);
     ticketProviderEncryptionService = moduleFixture.get<TicketProviderEncryptionService>(
       TicketProviderEncryptionService,
     );
 
-    mockedEmit = jest.spyOn(producerService, 'emit').mockImplementation(async (): Promise<any> => null);
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
     testHelper = new TestHelper(moduleFixture, jest);
@@ -255,14 +252,31 @@ describe('Ticket (e2e)', () => {
         expect(newTicket.userId).toEqual(user.id);
 
         const expectedCreateTicketMessage = new TicketCreateMessage({
-          ticket: expect.objectContaining({ ...newTicket }),
-          user: expect.objectContaining({ ...user }),
+          ticket: { ...newTicket },
+          user: { ...user },
         });
 
-        expect(producerService.send).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
-          ...expectedCreateTicketMessage,
-          operationUuid: expect.any(String),
-        });
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: TicketEventPattern.TicketCreate,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            ticket: expect.objectContaining({
+              ...expectedCreateTicketMessage.ticket,
+              createdAt: String(newTicket.createdAt.toJSON()),
+            }),
+            user: expect.objectContaining({ ...expectedCreateTicketMessage.user }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 
@@ -319,24 +333,38 @@ describe('Ticket (e2e)', () => {
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(user.id);
 
-        const expectedMintMessage = new TicketCreateMessage({
-          ticket: expect.objectContaining({ ...newTicket }),
-          user: expect.objectContaining({ ...user }),
+        const expectedCreateTicketMessage = new TicketCreateMessage({
+          ticket: { ...newTicket },
+          user: { ...user },
         });
 
-        expect(producerService.send).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
-          ...expectedMintMessage,
-          operationUuid: expect.any(String),
-          encryptedData: {
-            iv: expect.any(String),
-            content: expect.any(String),
-            version: encryptionKey.version,
-          },
-        });
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
 
-        const [, data] = mockedEmit.mock.lastCall;
-        const { encryptedData } = data;
-        const decryptedUser = ticketProviderEncryptionService.decrypt(encryptedData, encryptionKey.secretKey);
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: TicketEventPattern.TicketCreate,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            ticket: expect.objectContaining({
+              ...expectedCreateTicketMessage.ticket,
+              createdAt: String(newTicket.createdAt.toJSON()),
+            }),
+            user: expect.objectContaining({ ...expectedCreateTicketMessage.user }),
+            operationUuid: expect.any(String),
+            encryptedData: expect.any(Object),
+          }),
+        );
+
+        const decryptedUser = ticketProviderEncryptionService.decrypt(
+          payloadObject.encryptedData,
+          encryptionKey.secretKey,
+        );
 
         expect(JSON.parse(decryptedUser)).toEqual({
           name: user.name,
@@ -714,15 +742,31 @@ describe('Ticket (e2e)', () => {
         expect(deletedTicket.deletedAt).not.toBeNull();
 
         const expectedMessage = new TicketDeleteMessage({
-          ticket: expect.objectContaining({
-            ...deletedTicket,
-          }),
+          ticket: { ...deletedTicket },
         });
 
-        expect(producerService.send).toHaveBeenCalledWith(TicketEventPattern.TicketDelete, {
-          ...expectedMessage,
-          operationUuid: expect.any(String),
-        });
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: TicketEventPattern.TicketDelete,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            ticket: expect.objectContaining({
+              ...expectedMessage.ticket,
+              createdAt: String(expectedMessage.ticket.createdAt.toJSON()),
+              updatedAt: String(expectedMessage.ticket.updatedAt.toJSON()),
+              deletedAt: String(expectedMessage.ticket.deletedAt.toJSON()),
+            }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 });

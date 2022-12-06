@@ -1,19 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as Sentry from '@sentry/node';
+import { OutboxService } from '@src/outbox/outbox.service';
 import { ProducerService } from '@src/producer/producer.service';
 
 @Injectable()
 export class ProducerTasks {
   private readonly logger = new Logger(ProducerTasks.name);
 
-  constructor(private readonly producerService: ProducerService) {}
+  constructor(private readonly producerService: ProducerService, private readonly outboxService: OutboxService) {}
 
   @Cron(CronExpression.EVERY_SECOND)
   async produceMessages() {
     try {
       const startTime = performance.now();
-      const messages = await this.outboxRepository.findAll();
+      const messages = await this.outboxService.findAll();
 
       if (messages.length > 0) {
         const batch = messages.map((message) => ({
@@ -26,7 +27,7 @@ export class ProducerTasks {
         }));
 
         await this.producerService.sendBatch(batch);
-        await this.outboxRepository.setAsSent(messages.map((message) => message.id));
+        await this.outboxService.setAsSent(messages.map((message) => message.id));
 
         this.logger.log(`Produced ${messages.length} messages in ${Math.floor(performance.now() - startTime)}ms`);
       }

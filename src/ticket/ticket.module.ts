@@ -7,20 +7,20 @@ import { TicketRepository } from './ticket.repository';
 import { UserModule } from '@src/user/user.module';
 import { TicketUserExistsAndActiveValidator } from './validators/ticket-user-exists-and-active.validator';
 import { TicketIsValidatableValidator } from './validators/ticket-is-validatable.validator';
-import { ProducerModule } from '@src/producer/producer.module';
 import { TicketProviderEncryptionKeyModule } from '@src/ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import { TicketIsDeletableValidator } from './validators/ticket-is-deletable.validator';
 import { EventModule } from '@src/event/event.module';
 import { RedisModule } from '@src/redis/redis.module';
+import { OutboxModule } from '@src/outbox/outbox.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Ticket]),
     UserModule,
-    ProducerModule,
     TicketProviderEncryptionKeyModule,
     EventModule,
     RedisModule,
+    OutboxModule,
   ],
   providers: [
     TicketService,

@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { DataSource, Not, Repository } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { DataSource, Not, QueryRunner, Repository } from 'typeorm';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { Ticket } from './ticket.entity';
@@ -7,12 +7,12 @@ import { TicketStatus } from './ticket.types';
 
 @Injectable()
 export class TicketRepository extends Repository<Ticket> {
-  constructor(private readonly dataSource: DataSource) {
+  constructor(public readonly dataSource: DataSource) {
     super(Ticket, dataSource.manager);
   }
 
-  async createTicket(data: Partial<Ticket>) {
-    return this.save(data, { reload: false });
+  async createTicket(queryRunner: QueryRunner, data: Partial<Ticket>) {
+    return queryRunner.manager.save(this.create(data));
   }
 
   async findByUuid(uuid: string, relations: string[] = ['user']): Promise<Ticket> {
@@ -47,41 +47,5 @@ export class TicketRepository extends Repository<Ticket> {
     });
 
     return paginator.paginate(queryBuilder);
-  }
-
-  async validate(uuid: string, ticketProviderId: number): Promise<Ticket> {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    try {
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-
-      const ticket = await queryRunner.manager
-        .createQueryBuilder(Ticket, 'ticket')
-        .setLock('pessimistic_write')
-        .where({ uuid, ticketProviderId, status: TicketStatus.Active })
-        .getOne();
-
-      if (!ticket) {
-        throw new BadRequestException('Ticket not found');
-      }
-
-      await queryRunner.manager
-        .createQueryBuilder(Ticket, 'ticket')
-        .update(Ticket)
-        .where({ uuid })
-        .set({ status: TicketStatus.Validated, validatedAt: new Date() })
-        .execute();
-
-      await queryRunner.commitTransaction();
-
-      return this.findByUuid(uuid);
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
   }
 }
