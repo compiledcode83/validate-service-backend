@@ -13,10 +13,10 @@ import { TicketProviderApiTokenModule } from './ticket-provider-api-token/ticket
 import { TicketModule } from './ticket/ticket.module';
 import { TicketTransferModule } from './ticket-transfer/ticket-transfer.module';
 import { TicketProviderEncryptionKeyModule } from './ticket-provider-encryption-key/ticket-provider-encryption-key.module';
-import { ProducerModule } from './producer/producer.module';
 import { TicketProviderRefreshTokenModule } from './ticket-provider-refresh-token/ticket-provider-refresh-token.module';
 import { EventModule } from './event/event.module';
 import { RedisModule } from './redis/redis.module';
+import { OutboxModule } from './outbox/outbox.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import kafkaConfig from './config/kafka.config';
@@ -53,10 +53,10 @@ EnvHelper.verifyNodeEnv();
     TicketModule,
     TicketTransferModule,
     TicketProviderEncryptionKeyModule,
-    ProducerModule,
     TicketProviderRefreshTokenModule,
     EventModule,
     RedisModule,
+    OutboxModule,
   ],
   controllers: [AppController],
   providers: [AppService],

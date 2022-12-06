@@ -41,7 +41,7 @@ export class UserService {
     );
     const savedUser = await this.findByUuid(user.uuid);
 
-    await this.producerService.emit(
+    await this.producerService.send(
       UserEventPattern.UserCreate,
       new UserCreateMessage({
         user: savedUser,

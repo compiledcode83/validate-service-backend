@@ -259,7 +259,7 @@ describe('Ticket (e2e)', () => {
           user: expect.objectContaining({ ...user }),
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
+        expect(producerService.send).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
           ...expectedCreateTicketMessage,
           operationUuid: expect.any(String),
         });
@@ -324,7 +324,7 @@ describe('Ticket (e2e)', () => {
           user: expect.objectContaining({ ...user }),
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
+        expect(producerService.send).toHaveBeenCalledWith(TicketEventPattern.TicketCreate, {
           ...expectedMintMessage,
           operationUuid: expect.any(String),
           encryptedData: {
@@ -568,6 +568,54 @@ describe('Ticket (e2e)', () => {
       });
   });
 
+  it(`doesn't allow to validate the same hash more than once`, async () => {
+    const ticketProvider = await TicketProviderFactory.create();
+    const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      status: TicketStatus.Active,
+    });
+    const hash = faker.random.alphaNumeric(16);
+
+    await redisService.set(hash, ticket.uuid, 10);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/tickets/validate`)
+      .send({
+        hash,
+      })
+      .set('Accept', 'application/json')
+      .set('Api-Key', token)
+      .then((response) => {
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            uuid: ticket.uuid,
+            status: TicketStatus.Validated,
+            validatedAt: expect.any(String),
+          }),
+        );
+        expect(response.status).toBe(HttpStatus.OK);
+      });
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/tickets/validate`)
+      .send({
+        hash,
+      })
+      .set('Accept', 'application/json')
+      .set('Api-Key', token)
+      .then((response) => {
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            message: ['Ticket is already used or not created yet'],
+          }),
+        );
+        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      });
+  });
+
   it(`validates active ticket successfully`, async () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
@@ -671,7 +719,7 @@ describe('Ticket (e2e)', () => {
           }),
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(TicketEventPattern.TicketDelete, {
+        expect(producerService.send).toHaveBeenCalledWith(TicketEventPattern.TicketDelete, {
           ...expectedMessage,
           operationUuid: expect.any(String),
         });

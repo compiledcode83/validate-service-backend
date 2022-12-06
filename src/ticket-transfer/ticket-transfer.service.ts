@@ -38,7 +38,7 @@ export class TicketTransferService {
     );
     const transfer = await this.findByUuid(newTransfer.uuid, ['userFrom', 'userTo', 'ticket']);
 
-    await this.producerService.emit(
+    await this.producerService.send(
       TicketTransferEventPattern.TicketTransfer,
       new TicketTransferMessage({
         transfer,

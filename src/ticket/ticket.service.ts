@@ -57,7 +57,7 @@ export class TicketService {
 
     const savedTicket = await this.findByUuid(ticket.uuid);
 
-    await this.producerService.emit(
+    await this.producerService.send(
       TicketEventPattern.TicketCreate,
       new TicketCreateMessage({
         ticket: savedTicket,
@@ -78,7 +78,7 @@ export class TicketService {
 
     const ticket = await this.findByUuid(body.uuid);
 
-    await this.producerService.emit(
+    await this.producerService.send(
       TicketEventPattern.TicketDelete,
       new TicketDeleteMessage({
         ticket,

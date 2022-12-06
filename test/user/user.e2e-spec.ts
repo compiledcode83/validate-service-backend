@@ -191,7 +191,7 @@ describe('User (e2e)', () => {
           user: newUser,
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(UserEventPattern.UserCreate, {
+        expect(producerService.send).toHaveBeenCalledWith(UserEventPattern.UserCreate, {
           ...expectedMessage,
           operationUuid: expect.any(String),
         });

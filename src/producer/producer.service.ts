@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Producer, RecordMetadata } from 'kafkajs';
+import { Producer, RecordMetadata, TopicMessages } from 'kafkajs';
 import { KAFKA_PRODUCER_TOKEN } from './producer.types';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class ProducerService implements OnModuleInit, OnModuleDestroy {
 
   constructor(@Inject(KAFKA_PRODUCER_TOKEN) private kafka: Producer) {}
 
-  async emit(pattern: any, data: any): Promise<RecordMetadata> {
+  async send(pattern: any, data: any): Promise<RecordMetadata> {
     const [response] = await this.kafka.send({
       topic: pattern,
       messages: [
@@ -23,6 +23,20 @@ export class ProducerService implements OnModuleInit, OnModuleDestroy {
     }
 
     return response;
+  }
+
+  async sendBatch(topicMessages: TopicMessages[]): Promise<RecordMetadata[]> {
+    const responses = await this.kafka.sendBatch({
+      topicMessages,
+    });
+
+    responses.forEach((response) => {
+      if (response.errorCode !== 0) {
+        throw new Error(`Kafka responded with an error code ${response.errorCode} for topic ${response.topicName}`);
+      }
+    });
+
+    return responses;
   }
 
   async healthCheck() {
