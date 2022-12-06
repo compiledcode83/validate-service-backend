@@ -26,7 +26,9 @@
     "migration:create": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:create --",
     "repl": "npm run start -- --entryFile repl",
     "consumer": "npm run start -- --entryFile consumer",
-    "consumer:dev": "npm run start -- --watch --entryFile consumer"
+    "consumer:dev": "npm run start -- --watch --entryFile consumer",
+    "producer": "npm run start -- --entryFile producer",
+    "producer:dev": "npm run start -- --watch --entryFile producer"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -36,6 +38,7 @@
     "@nestjs/microservices": "^9.1.4",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/schedule": "^2.1.0",
     "@nestjs/swagger": "^6.1.2",
     "@nestjs/typeorm": "^9.0.1",
     "@sentry/integrations": "^7.13.0",
@@ -75,6 +78,7 @@
     "@sentry/types": "^7.13.0",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
+    "@types/cron": "^2.0.0",
     "@types/express": "^4.17.13",
     "@types/ioredis": "^5.0.0",
     "@types/jest": "28.1.8",

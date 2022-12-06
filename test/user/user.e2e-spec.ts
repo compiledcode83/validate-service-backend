@@ -10,20 +10,19 @@ import { UserEventPattern, UserStatus } from '@src/user/user.types';
 import { faker } from '@faker-js/faker';
 import { User } from '@src/user/user.entity';
 import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provider.types';
-import { ProducerService } from '@src/producer/producer.service';
 import { UserCreateMessage } from '@src/user/messages/user-create.message';
+import { Outbox } from '@src/outbox/outbox.entity';
+import { MoreThan } from 'typeorm';
+import { OutboxStatus } from '@src/outbox/outbox.types';
 
 describe('User (e2e)', () => {
   let app: INestApplication;
   let moduleFixture: TestingModule;
   let testHelper: TestHelper;
-  let producerService: ProducerService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
     moduleFixture = await testingModuleBuilder.compile();
-    producerService = moduleFixture.get<ProducerService>(ProducerService);
-    jest.spyOn(producerService, 'emit').mockImplementation(async (): Promise<any> => null);
 
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app);
@@ -191,10 +190,26 @@ describe('User (e2e)', () => {
           user: newUser,
         });
 
-        expect(producerService.emit).toHaveBeenCalledWith(UserEventPattern.UserCreate, {
-          ...expectedMessage,
-          operationUuid: expect.any(String),
-        });
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: UserEventPattern.UserCreate,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            user: expect.objectContaining({
+              ...expectedMessage.user,
+              createdAt: String(expectedMessage.user.createdAt.toJSON()),
+            }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 

@@ -7,7 +7,7 @@ export class AddEventIdColumnToTicketTable1670104310377 implements MigrationInte
       new TableColumn({
         name: 'event_id',
         type: 'int',
-        isNullable: false,
+        isNullable: true,
       }),
     );
   }

@@ -6,7 +6,7 @@ import { TicketTransferStatus } from './ticket-transfer.types';
 
 @Injectable()
 export class TicketTransferRepository extends Repository<TicketTransfer> {
-  constructor(private readonly dataSource: DataSource) {
+  constructor(public readonly dataSource: DataSource) {
     super(TicketTransfer, dataSource.manager);
   }
 

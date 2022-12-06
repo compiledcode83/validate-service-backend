@@ -7,7 +7,6 @@ import { AppBootstrapManager } from '@src/app-bootstrap.manager';
 import { AppDataSource } from '@src/config/datasource';
 import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { ProducerService } from '@src/producer/producer.service';
 import { TicketProviderRefreshTokenFactory } from '@src/database/factories/ticket-provider-refresh-token.factory';
 import { TicketProviderService } from '@src/ticket-provider/ticket-provider.service';
 import { UserFactory } from '@src/database/factories/user.factory';
@@ -24,10 +23,6 @@ describe('Auth (e2e)', () => {
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-
-    testingModuleBuilder.overrideProvider(ProducerService).useValue({
-      emit: () => jest.fn().mockImplementation(() => Promise.resolve()),
-    });
 
     moduleFixture = await testingModuleBuilder.compile();
 

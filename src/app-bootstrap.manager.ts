@@ -9,11 +9,12 @@ import { InternalServerErrorExceptionsFilter } from './common/filters/internal-s
 import { QueryFailedErrorExceptionsFilter } from './common/filters/query-failed-error-exception.filter';
 import { ApiKeyOrJwtGuard } from './auth/guards/api-key-or-jwt.guard';
 import { ConsumerModule } from './consumer/consumer.module';
+import { ProducerModule } from './producer/producer.module';
 
 export class AppBootstrapManager {
   static getTestingModuleBuilder(): TestingModuleBuilder {
     return Test.createTestingModule({
-      imports: [AppModule, ConsumerModule],
+      imports: [AppModule, ConsumerModule, ProducerModule],
     });
   }
 

@@ -1,14 +1,49 @@
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Producer, RecordMetadata } from 'kafkajs';
+import * as Sentry from '@sentry/node';
+import { OutboxService } from '@src/outbox/outbox.service';
+import { Producer, RecordMetadata, TopicMessages } from 'kafkajs';
 import { KAFKA_PRODUCER_TOKEN } from './producer.types';
 
 @Injectable()
 export class ProducerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(ProducerService.name);
 
-  constructor(@Inject(KAFKA_PRODUCER_TOKEN) private kafka: Producer) {}
+  constructor(@Inject(KAFKA_PRODUCER_TOKEN) private kafka: Producer, private readonly outboxService: OutboxService) {}
 
-  async emit(pattern: any, data: any): Promise<RecordMetadata> {
+  async produceMessages(): Promise<TopicMessages[]> {
+    try {
+      const startTime = performance.now();
+      const messages = await this.outboxService.findAll();
+      let batch: TopicMessages[] = [];
+
+      if (messages.length > 0) {
+        batch = messages.map((message) => ({
+          topic: message.eventName,
+          messages: [
+            {
+              value: message.payload,
+            },
+          ],
+        }));
+
+        await this.sendBatch(batch);
+        await this.outboxService.setAsSent(messages.map((message) => message.id));
+
+        this.logger.log(`Produced ${messages.length} messages in ${Math.floor(performance.now() - startTime)}ms`);
+      }
+
+      return batch;
+    } catch (err) {
+      this.logger.error(`Error producing messages: ${err?.message}`);
+
+      Sentry.captureException(err);
+
+      process.exitCode = 1;
+      process.exit(1);
+    }
+  }
+
+  async send(pattern: any, data: any): Promise<RecordMetadata> {
     const [response] = await this.kafka.send({
       topic: pattern,
       messages: [
@@ -23,6 +58,20 @@ export class ProducerService implements OnModuleInit, OnModuleDestroy {
     }
 
     return response;
+  }
+
+  async sendBatch(topicMessages: TopicMessages[]): Promise<RecordMetadata[]> {
+    const responses = await this.kafka.sendBatch({
+      topicMessages,
+    });
+
+    responses.forEach((response) => {
+      if (response.errorCode !== 0) {
+        throw new Error(`Kafka responded with an error code ${response.errorCode} for topic ${response.topicName}`);
+      }
+    });
+
+    return responses;
   }
 
   async healthCheck() {
@@ -44,5 +93,9 @@ export class ProducerService implements OnModuleInit, OnModuleDestroy {
   async onModuleDestroy() {
     await this.kafka.disconnect();
     this.logger.log('Kafka producer disconnected successfully');
+  }
+
+  get client(): Producer {
+    return this.kafka;
   }
 }

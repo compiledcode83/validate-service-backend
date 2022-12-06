@@ -109,7 +109,7 @@ describe('Consumer microservice (e2e)', () => {
         operationUuid: uuid(),
       });
 
-      await producerService.emit(TicketEventPattern.TicketCreateReply, replyMessage);
+      await producerService.send(TicketEventPattern.TicketCreateReply, replyMessage);
 
       await waitForExpect(() => {
         expect(consumerService.handleTicketCreateReply).toHaveBeenLastCalledWith(
@@ -156,7 +156,7 @@ describe('Consumer microservice (e2e)', () => {
         operationUuid: uuid(),
       });
 
-      await producerService.emit(TicketEventPattern.TicketCreateReply, replyMessage);
+      await producerService.send(TicketEventPattern.TicketCreateReply, replyMessage);
 
       await waitForExpect(() => {
         expect(consumerService.handleTicketCreateReply).toHaveBeenLastCalledWith(
@@ -200,7 +200,7 @@ describe('Consumer microservice (e2e)', () => {
         errorData: JSON.stringify({ message: 'Something went wrong' }),
       });
 
-      await producerService.emit(TicketEventPattern.TicketDeleteReply, replyMessage);
+      await producerService.send(TicketEventPattern.TicketDeleteReply, replyMessage);
 
       await waitForExpect(() => {
         expect(consumerService.handleTicketDeleteReply).toHaveBeenLastCalledWith(
@@ -244,7 +244,7 @@ describe('Consumer microservice (e2e)', () => {
         },
       });
 
-      await producerService.emit(TicketTransferEventPattern.TicketTransferReply, replyMessage);
+      await producerService.send(TicketTransferEventPattern.TicketTransferReply, replyMessage);
 
       await waitForExpect(() => {
         expect(consumerService.handleTicketTransferReply).toHaveBeenLastCalledWith(
@@ -298,7 +298,7 @@ describe('Consumer microservice (e2e)', () => {
         errorData: JSON.stringify({ message: 'Error' }),
       });
 
-      await producerService.emit(TicketTransferEventPattern.TicketTransferReply, replyMessage);
+      await producerService.send(TicketTransferEventPattern.TicketTransferReply, replyMessage);
 
       await waitForExpect(() => {
         expect(consumerService.handleTicketTransferReply).toHaveBeenLastCalledWith(
@@ -344,7 +344,7 @@ describe('Consumer microservice (e2e)', () => {
         },
       });
 
-      await producerService.emit(UserEventPattern.UserCreateReply, replyMessage);
+      await producerService.send(UserEventPattern.UserCreateReply, replyMessage);
 
       await waitForExpect(() => {
         expect(consumerService.handleUserCreateReply).toHaveBeenLastCalledWith(
@@ -379,7 +379,7 @@ describe('Consumer microservice (e2e)', () => {
         errorData: JSON.stringify({ message: 'Error' }),
       });
 
-      await producerService.emit(UserEventPattern.UserCreateReply, replyMessage);
+      await producerService.send(UserEventPattern.UserCreateReply, replyMessage);
 
       await waitForExpect(() => {
         expect(consumerService.handleUserCreateReply).toHaveBeenLastCalledWith(

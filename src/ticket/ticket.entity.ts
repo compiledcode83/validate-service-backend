@@ -100,12 +100,12 @@ export class Ticket {
   @Column({ type: 'varchar', nullable: true, length: 128 })
   ipfsUri: string;
 
+  @Column({ type: 'int', nullable: true })
+  eventId: number;
+
   @ApiProperty({ description: 'Ticket status', example: TicketStatus.Creating, required: true })
   @Column({ type: 'enum', nullable: false, enum: TicketStatus })
   status: TicketStatus;
-
-  @Column({ type: 'int', nullable: false })
-  eventId: number;
 
   @ApiProperty({
     description: 'Ticket creation transaction hash',

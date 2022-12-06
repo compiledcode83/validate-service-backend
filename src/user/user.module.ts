@@ -6,10 +6,10 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserExistsByUuidValidator } from './validators/user-exists-by-uuid.validator';
 import { UserExistsByIdentifierValidator } from './validators/user-exists-by-identifier.validator';
-import { ProducerModule } from '@src/producer/producer.module';
+import { OutboxModule } from '@src/outbox/outbox.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ProducerModule],
+  imports: [TypeOrmModule.forFeature([User]), OutboxModule],
   providers: [UserService, UserRepository, UserExistsByUuidValidator, UserExistsByIdentifierValidator],
   controllers: [UserController],
   exports: [UserService],
