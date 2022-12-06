@@ -17,6 +17,7 @@ import { TicketProviderRefreshTokenModule } from './ticket-provider-refresh-toke
 import { EventModule } from './event/event.module';
 import { RedisModule } from './redis/redis.module';
 import { OutboxModule } from './outbox/outbox.module';
+import { SentryModule } from './sentry/sentry.module';
 import appConfig from './config/app.config';
 import databaseConfig from './config/database.config';
 import kafkaConfig from './config/kafka.config';
@@ -57,6 +58,7 @@ EnvHelper.verifyNodeEnv();
     EventModule,
     RedisModule,
     SentryModule,
+    OutboxModule,
   ],
   controllers: [AppController],
   providers: [AppService],
