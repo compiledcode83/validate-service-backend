@@ -29,10 +29,6 @@ export class Ticket {
   @Column({ type: 'int', nullable: false })
   ticketProviderId: number;
 
-  @ApiProperty({ description: 'Name of the ticket', maximum: 255, minimum: 1, required: true })
-  @Column({ type: 'varchar', nullable: false, length: 255 })
-  name: string;
-
   @ApiProperty({ description: 'Ticket type ID', example: 1, required: true })
   @Column({ type: 'int', nullable: false })
   ticketTypeId: number;

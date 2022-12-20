@@ -27,12 +27,7 @@ export class EventRepository extends Repository<Event> {
     return paginator.paginate(queryBuilder);
   }
 
-  async findOrCreate(
-    queryRunner: QueryRunner,
-    name: string,
-    ticketType: string,
-    ticketProviderId: number,
-  ): Promise<Event> {
+  async findOrCreate(queryRunner: QueryRunner, name: string, ticketProviderId: number): Promise<Event> {
     const existingEvent = await this.findOneBy({ name, ticketProviderId });
 
     if (existingEvent) {

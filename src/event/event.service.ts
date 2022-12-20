@@ -34,13 +34,8 @@ export class EventService {
     return this.eventRepository.getPaginatedQueryBuilder(searchParams, ticketProviderId);
   }
 
-  async findOrCreate(
-    queryRunner: QueryRunner,
-    name: string,
-    ticketType: string,
-    ticketProviderId: number,
-  ): Promise<Event> {
-    return this.eventRepository.findOrCreate(queryRunner, name, ticketType, ticketProviderId);
+  async findOrCreate(queryRunner: QueryRunner, name: string, ticketProviderId: number): Promise<Event> {
+    return this.eventRepository.findOrCreate(queryRunner, name, ticketProviderId);
   }
 
   async create(body: CreateEventDto): Promise<Event> {

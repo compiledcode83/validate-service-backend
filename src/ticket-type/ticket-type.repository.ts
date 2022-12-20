@@ -28,25 +28,26 @@ export class TicketTypeRepository extends Repository<TicketType> {
     return paginator.paginate(queryBuilder);
   }
 
-  // async findOrCreate(
-  //   queryRunner: QueryRunner,
-  //   name: string,
-  //   ticketType: string,
-  //   ticketProviderId: number,
-  // ): Promise<Event> {
-  //   const existingEvent = await this.findOneBy({ name, ticketType, ticketProviderId });
+  async findOrCreate(
+    queryRunner: QueryRunner,
+    eventId: number,
+    name: string,
+    ticketDateStart: any,
+    ticketDateEnd?: any,
+  ): Promise<TicketType> {
+    const existingTicketType = await this.findOneBy({ name, ticketDateStart, ticketDateEnd, eventId });
 
-  //   if (existingEvent) {
-  //     return existingEvent;
-  //   }
+    if (existingTicketType) {
+      return existingTicketType;
+    }
 
-  //   const { generatedMaps } = await queryRunner.manager
-  //     .createQueryBuilder(Event, 'event')
-  //     .insert()
-  //     .values(this.create({ name, ticketType, ticketProviderId }))
-  //     .execute();
-  //   const [insertedValues] = generatedMaps;
+    const { generatedMaps } = await queryRunner.manager
+      .createQueryBuilder(TicketType, 'ticket_type')
+      .insert()
+      .values(this.create({ name, ticketDateStart, ticketDateEnd, eventId }))
+      .execute();
+    const [insertedValues] = generatedMaps;
 
-  //   return queryRunner.manager.findOneBy(Event, { id: insertedValues.id });
-  // }
+    return queryRunner.manager.findOneBy(TicketType, { id: insertedValues.id });
+  }
 }

@@ -17,6 +17,7 @@ import { TicketDeleteMessage } from './messages/ticket-delete.message';
 import { EventService } from '@src/event/event.service';
 import { OutboxService } from '@src/outbox/outbox.service';
 import { TicketValidateMessage } from './messages/ticket-validate.message';
+import { TicketTypeService } from '@src/ticket-type/ticket-type.service';
 
 @Injectable()
 export class TicketService {
@@ -26,6 +27,7 @@ export class TicketService {
     private readonly ticketProviderEncryptionKeyService: TicketProviderEncryptionKeyService,
     private readonly eventService: EventService,
     private readonly outboxService: OutboxService,
+    private readonly ticketTypeService: TicketTypeService,
   ) {}
 
   async findAllPaginated(searchParams: FindTicketsDto, ticketProviderId: number): Promise<PagingResult<Ticket>> {
@@ -36,7 +38,7 @@ export class TicketService {
     return this.ticketRepository.findOne({ where: { uuid, ticketProviderId } });
   }
 
-  async findByUuid(uuid: string, relations: string[] = ['user']): Promise<Ticket> {
+  async findByUuid(uuid: string, relations: string[] = ['user', 'ticketType', 'ticketType.event']): Promise<Ticket> {
     return this.ticketRepository.findOne({ where: { uuid }, relations });
   }
 
@@ -48,14 +50,17 @@ export class TicketService {
       await queryRunner.startTransaction();
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { ticketProvider, user, ...ticketData } = body;
+      const { ticketProvider, user, event, ticketType, ...ticketData } = body;
       const ticketUser = await this.userService.findOrCreate(queryRunner, user);
-      const ticketEvent = await this.eventService.findOrCreate(
+      const ticketEvent = await this.eventService.findOrCreate(queryRunner, body.event.name, body.ticketProvider.id);
+      const ticketTicketType = await this.ticketTypeService.findOrCreate(
         queryRunner,
-        body.name,
-        body.type,
-        body.ticketProvider.id,
+        ticketEvent.id,
+        body.ticketType.name,
+        body.ticketType.ticketDateStart,
+        body.ticketType?.ticketDateEnd,
       );
+
       const encryptedUserData = await this.getEncryptedUserData(ticketUser, ticketProvider);
       const createdTicket = await this.ticketRepository.createTicket(
         queryRunner,
@@ -65,8 +70,10 @@ export class TicketService {
           userId: ticketUser.id,
           imageUrl: body.imageUrl || DEFAULT_IMAGE,
           eventId: ticketEvent.id,
+          ticketTypeId: ticketTicketType.id,
         }),
       );
+
       const ticket = await queryRunner.manager.findOneBy(Ticket, { id: createdTicket.id });
       const payload = new TicketCreateMessage({
         ticket,

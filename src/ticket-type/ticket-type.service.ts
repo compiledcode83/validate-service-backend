@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { PaginatedResult } from '@src/common/pagination/pagination.types';
 import { EventService } from '@src/event/event.service';
-import { Not } from 'typeorm';
+import { Not, QueryRunner } from 'typeorm';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
@@ -27,8 +27,14 @@ export class TicketTypeService {
     });
   }
 
-  async findByNameAndEvent(name: string, eventId: number, excludeUuid?: string): Promise<TicketType> {
-    const findParams = { name, eventId };
+  async findByNameAndEvent(
+    name: string,
+    eventId: number,
+    ticketDateStart: any,
+    ticketDateEnd: any,
+    excludeUuid?: string,
+  ): Promise<TicketType> {
+    const findParams = { name, eventId, ticketDateStart, ticketDateEnd: ticketDateEnd ?? null };
 
     if (excludeUuid) {
       findParams['uuid'] = Not(excludeUuid);
@@ -59,5 +65,15 @@ export class TicketTypeService {
     );
 
     return this.findByUuid(uuid);
+  }
+
+  async findOrCreate(
+    queryRunner: QueryRunner,
+    eventId: number,
+    name: string,
+    ticketDateStart: any,
+    ticketDateEnd?: any,
+  ): Promise<TicketType> {
+    return this.ticketTypeRepository.findOrCreate(queryRunner, eventId, name, ticketDateStart, ticketDateEnd);
   }
 }

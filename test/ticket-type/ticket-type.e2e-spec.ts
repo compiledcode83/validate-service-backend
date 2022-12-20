@@ -105,16 +105,17 @@ describe('Ticket-types (e2e)', () => {
   it('should check for ticket type duplicates when creating a new item', async () => {
     const ticketProvider = await TicketProviderFactory.create({ userIdentifier: TicketProviderUserIdentifier.Email });
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
+    const date = DateTime.now().plus({ days: 10 }).toFormat(DATE_FORMAT);
     const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
     const event2 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id, ticketDateStart: date as any });
 
     await request(app.getHttpServer())
       .post('/api/v1/ticket-types')
       .send({
         eventUuid: event.uuid,
         name: ticketType.name,
-        ticketDateStart: DateTime.now().toFormat(DATE_FORMAT),
+        ticketDateStart: date,
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
@@ -128,7 +129,7 @@ describe('Ticket-types (e2e)', () => {
       .send({
         eventUuid: event2.uuid,
         name: ticketType.name,
-        ticketDateStart: DateTime.now().toFormat(DATE_FORMAT),
+        ticketDateStart: DateTime.now().plus({ month: 1 }).toFormat(DATE_FORMAT),
         saleEnabled: 1,
         saleEnabledFromDate: DateTime.now().toISO(),
         saleEnabledToDate: DateTime.now().toISO(),
@@ -145,14 +146,15 @@ describe('Ticket-types (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create({ userIdentifier: TicketProviderUserIdentifier.Email });
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
-    const ticketType2 = await TicketTypeFactory.create({ eventId: event.id });
+    const date = DateTime.now().plus({ days: 10 }).toFormat(DATE_FORMAT);
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id, ticketDateStart: date as any });
+    const ticketType2 = await TicketTypeFactory.create({ eventId: event.id, ticketDateStart: date as any });
 
     await request(app.getHttpServer())
       .patch(`/api/v1/ticket-types/${ticketType.uuid}`)
       .send({
         name: ticketType2.name,
-        ticketDateStart: DateTime.now().toFormat(DATE_FORMAT),
+        ticketDateStart: date,
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
@@ -167,7 +169,7 @@ describe('Ticket-types (e2e)', () => {
       .patch(`/api/v1/ticket-types/${ticketType.uuid}`)
       .send({
         name: newName,
-        ticketDateStart: DateTime.now().toFormat(DATE_FORMAT),
+        ticketDateStart: date,
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)

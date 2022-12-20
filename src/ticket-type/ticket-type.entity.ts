@@ -24,11 +24,11 @@ export class TicketType {
   name: string;
 
   @ApiProperty({ description: 'Ticket date start', required: true })
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'date', nullable: true })
   ticketDateStart: Date;
 
   @ApiProperty({ description: 'Ticket date end', required: false })
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'date', nullable: true })
   ticketDateEnd: Date;
 
   @ApiProperty({ description: 'Is sale enabled', example: TicketTypeSaleStatus.Disabled, required: true })

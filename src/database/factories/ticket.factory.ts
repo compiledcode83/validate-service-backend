@@ -12,7 +12,6 @@ export class TicketFactory {
     const event = new Event();
 
     ticket.uuid = uuid();
-    ticket.name = faker.name.firstName();
     ticket.contractId = faker.finance.ethereumAddress();
     ticket.ipfsUri = faker.internet.url();
     ticket.imageUrl = faker.internet.url();
@@ -20,7 +19,7 @@ export class TicketFactory {
     ticket.additionalData = { seat: 10 };
     ticket.status = TicketStatus.Active;
 
-    event.name = ticket.name;
+    event.name = faker.random.word();
     event.ticketProviderId = data.ticketProviderId;
 
     const eventRepo = AppDataSource.manager.getRepository(Event);

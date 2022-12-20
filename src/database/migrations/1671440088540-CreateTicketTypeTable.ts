@@ -33,12 +33,12 @@ export class CreateTicketTypeTable1671440088540 implements MigrationInterface {
           },
           {
             name: 'ticket_date_start',
-            type: 'datetime',
+            type: 'date',
             isNullable: true,
           },
           {
             name: 'ticket_date_end',
-            type: 'datetime',
+            type: 'date',
             isNullable: true,
           },
           {

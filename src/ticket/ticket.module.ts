@@ -12,6 +12,7 @@ import { TicketIsDeletableValidator } from './validators/ticket-is-deletable.val
 import { EventModule } from '@src/event/event.module';
 import { RedisModule } from '@src/redis/redis.module';
 import { OutboxModule } from '@src/outbox/outbox.module';
+import { TicketTypeModule } from '@src/ticket-type/ticket-type.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { OutboxModule } from '@src/outbox/outbox.module';
     EventModule,
     RedisModule,
     OutboxModule,
+    TicketTypeModule,
   ],
   providers: [
     TicketService,

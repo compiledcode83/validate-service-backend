@@ -10,18 +10,29 @@ export class TicketTypeDuplicateValidator implements ValidatorConstraintInterfac
 
   async validate(name: string, args: ValidationArguments): Promise<boolean> {
     if ('eventUuid' in args.object) {
-      const { eventUuid } = args.object as CreateTicketTypeDto;
+      const { eventUuid, ticketDateStart, ticketDateEnd } = args.object as CreateTicketTypeDto;
       const event = await this.eventService.findByUuid(eventUuid);
-      const ticketType = await this.ticketTypeService.findByNameAndEvent(name, event.id);
+      const ticketType = await this.ticketTypeService.findByNameAndEvent(
+        name,
+        event.id,
+        ticketDateStart,
+        ticketDateEnd,
+      );
 
       return ticketType === null;
     }
 
     if ('uuid' in args.object) {
-      const { uuid, ticketProvider } = args.object as UpdateTicketTypeDto;
+      const { uuid, ticketProvider, ticketDateStart, ticketDateEnd } = args.object as UpdateTicketTypeDto;
       const currentTicketType = await this.ticketTypeService.findByUuidAndTicketProvider(uuid, ticketProvider.id);
 
-      const ticketType = await this.ticketTypeService.findByNameAndEvent(name, currentTicketType.eventId, uuid);
+      const ticketType = await this.ticketTypeService.findByNameAndEvent(
+        name,
+        currentTicketType.eventId,
+        ticketDateStart,
+        ticketDateEnd,
+        uuid,
+      );
 
       return ticketType === null;
     }
