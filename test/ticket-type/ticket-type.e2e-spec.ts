@@ -10,7 +10,13 @@ import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provid
 import { TicketTypeFactory } from '@src/database/factories/ticket-type.factory';
 import { EventFactory } from '@src/database/factories/event.factory';
 import { DateTime } from 'luxon';
-import { DATE_FORMAT } from '@src/ticket-type/ticket-type.types';
+import { DATE_FORMAT, TicketTypeEventPattern } from '@src/ticket-type/ticket-type.types';
+import { TicketType } from '@src/ticket-type/ticket-type.entity';
+import { TicketTypeCreateMessage } from '@src/ticket-type/messages/ticket-type-create.message';
+import { Outbox } from '@src/outbox/outbox.entity';
+import { MoreThan } from 'typeorm';
+import { OutboxStatus } from '@src/outbox/outbox.types';
+import { TicketTypeUpdateMessage } from '@src/ticket-type/messages/ticket-type-update.message';
 
 describe('Ticket-types (e2e)', () => {
   let app: INestApplication;
@@ -137,8 +143,39 @@ describe('Ticket-types (e2e)', () => {
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
-      .then((response) => {
+      .then(async (response) => {
         expect(response.status).toBe(HttpStatus.CREATED);
+
+        const newTicketType = await AppDataSource.manager
+          .getRepository(TicketType)
+          .findOne({ where: { uuid: response.body.uuid } });
+
+        const expectedTicketTypeCreateMessage = new TicketTypeCreateMessage({
+          ticketType: newTicketType,
+        });
+
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: TicketTypeEventPattern.Create,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            ticketType: expect.objectContaining({
+              ...expectedTicketTypeCreateMessage.ticketType,
+              createdAt: String(newTicketType.createdAt.toJSON()),
+              saleEnabledFromDate: String(newTicketType.saleEnabledFromDate.toJSON()),
+              saleEnabledToDate: String(newTicketType.saleEnabledToDate.toJSON()),
+            }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 
@@ -173,9 +210,38 @@ describe('Ticket-types (e2e)', () => {
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
-      .then((response) => {
+      .then(async (response) => {
         expect(response.body).toEqual(expect.objectContaining({ name: newName }));
         expect(response.status).toBe(HttpStatus.OK);
+
+        const updatedTicketType = await AppDataSource.manager
+          .getRepository(TicketType)
+          .findOne({ where: { uuid: ticketType.uuid } });
+        const expectedTicketTypeUpdateMessage = new TicketTypeUpdateMessage({
+          ticketType: updatedTicketType,
+        });
+
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: TicketTypeEventPattern.Update,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            ticketType: expect.objectContaining({
+              ...expectedTicketTypeUpdateMessage.ticketType,
+              createdAt: String(updatedTicketType.createdAt.toJSON()),
+              updatedAt: String(updatedTicketType.updatedAt.toJSON()),
+            }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 

@@ -9,3 +9,8 @@ export class EventPaginatedResult {
   @ApiProperty()
   cursor: PaginatedResultCursor;
 }
+
+export enum EventEventPattern {
+  Create = 'event.create',
+  Update = 'event.update',
+}

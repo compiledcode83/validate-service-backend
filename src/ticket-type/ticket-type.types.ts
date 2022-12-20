@@ -21,3 +21,8 @@ export class TicketTypePaginatedResult {
   @ApiProperty()
   cursor: PaginatedResultCursor;
 }
+
+export enum TicketTypeEventPattern {
+  Create = 'ticket.type.create',
+  Update = 'ticket.type.update',
+}

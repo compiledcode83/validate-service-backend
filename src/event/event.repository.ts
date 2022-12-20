@@ -6,7 +6,7 @@ import { Event } from './event.entity';
 
 @Injectable()
 export class EventRepository extends Repository<Event> {
-  constructor(private readonly dataSource: DataSource) {
+  constructor(public readonly dataSource: DataSource) {
     super(Event, dataSource.manager);
   }
 

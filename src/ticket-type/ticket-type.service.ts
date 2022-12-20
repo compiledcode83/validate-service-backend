@@ -2,18 +2,23 @@
 import { Injectable } from '@nestjs/common';
 import { PaginatedResult } from '@src/common/pagination/pagination.types';
 import { EventService } from '@src/event/event.service';
+import { OutboxService } from '@src/outbox/outbox.service';
 import { Not, QueryRunner } from 'typeorm';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
+import { TicketTypeCreateMessage } from './messages/ticket-type-create.message';
+import { TicketTypeUpdateMessage } from './messages/ticket-type-update.message';
 import { TicketType } from './ticket-type.entity';
 import { TicketTypeRepository } from './ticket-type.repository';
+import { TicketTypeEventPattern } from './ticket-type.types';
 
 @Injectable()
 export class TicketTypeService {
   constructor(
     private readonly ticketTypeRepository: TicketTypeRepository,
     private readonly eventService: EventService,
+    private readonly outboxService: OutboxService,
   ) {}
 
   async findByUuid(uuid: string): Promise<TicketType> {
@@ -52,19 +57,62 @@ export class TicketTypeService {
   async create(body: CreateTicketTypeDto): Promise<TicketType> {
     const { ticketProvider, ...ticketTypeParams } = body;
     const event = await this.eventService.findByUuid(body.eventUuid);
+    const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
 
-    return this.ticketTypeRepository.save(this.ticketTypeRepository.create({ ...ticketTypeParams, eventId: event.id }));
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      const createdTicketType = await queryRunner.manager.save(
+        this.ticketTypeRepository.create({ ...ticketTypeParams, eventId: event.id }),
+      );
+      const ticketType = await queryRunner.manager.findOneBy(TicketType, { id: createdTicketType.id });
+
+      const payload = new TicketTypeCreateMessage({ ticketType });
+      await this.outboxService.create(queryRunner, TicketTypeEventPattern.Create, payload);
+
+      await queryRunner.commitTransaction();
+
+      return this.findByUuid(ticketType.uuid);
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async update(body: UpdateTicketTypeDto): Promise<TicketType> {
     const { ticketProvider, uuid, ...ticketTypeParams } = body;
 
-    await this.ticketTypeRepository.update(
-      { uuid: body.uuid },
-      this.ticketTypeRepository.create({ ...ticketTypeParams }),
-    );
+    const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
 
-    return this.findByUuid(uuid);
+    try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      await queryRunner.manager
+        .createQueryBuilder(TicketType, 'ticket_type')
+        .update(TicketType)
+        .where({ uuid })
+        .set({ ...ticketTypeParams })
+        .execute();
+
+      const updatedTicketType = await queryRunner.manager.findOneBy(TicketType, { uuid });
+      const payload = new TicketTypeUpdateMessage({ ticketType: updatedTicketType });
+
+      await this.outboxService.create(queryRunner, TicketTypeEventPattern.Update, payload);
+      await queryRunner.commitTransaction();
+
+      return this.findByUuid(uuid);
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findOrCreate(

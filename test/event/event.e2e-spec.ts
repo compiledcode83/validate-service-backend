@@ -10,6 +10,12 @@ import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provid
 import { EventFactory } from '@src/database/factories/event.factory';
 import { DateTime } from 'luxon';
 import { DATE_FORMAT } from '@src/ticket-type/ticket-type.types';
+import { EventCreateMessage } from '@src/event/messages/event-create.message';
+import { Outbox } from '@src/outbox/outbox.entity';
+import { MoreThan } from 'typeorm';
+import { EventEventPattern } from '@src/event/event.types';
+import { OutboxStatus } from '@src/outbox/outbox.types';
+import { Event } from '@src/event/event.entity';
 
 describe('Events (e2e)', () => {
   let app: INestApplication;
@@ -87,8 +93,37 @@ describe('Events (e2e)', () => {
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
-      .then((response) => {
+      .then(async (response) => {
         expect(response.status).toBe(HttpStatus.CREATED);
+
+        const newEvent = await AppDataSource.manager
+          .getRepository(Event)
+          .findOne({ where: { uuid: response.body.uuid } });
+
+        const expectedEventCreateMessage = new EventCreateMessage({
+          event: newEvent,
+        });
+
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: EventEventPattern.Create,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            event: expect.objectContaining({
+              ...expectedEventCreateMessage.event,
+              createdAt: String(newEvent.createdAt.toJSON()),
+            }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 
@@ -120,9 +155,36 @@ describe('Events (e2e)', () => {
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
-      .then((response) => {
+      .then(async (response) => {
         expect(response.body).toEqual(expect.objectContaining({ name: newName }));
         expect(response.status).toBe(HttpStatus.OK);
+
+        const updatedEvent = await AppDataSource.manager.getRepository(Event).findOne({ where: { uuid: event.uuid } });
+        const expectedEventUpdateMessage = new EventCreateMessage({
+          event: updatedEvent,
+        });
+
+        const outbox = await AppDataSource.manager.getRepository(Outbox).findOneBy({ id: MoreThan(0) });
+
+        expect(outbox).toEqual(
+          expect.objectContaining({
+            eventName: EventEventPattern.Update,
+            status: OutboxStatus.Created,
+          }),
+        );
+
+        const payloadObject = JSON.parse(outbox.payload);
+
+        expect(payloadObject).toEqual(
+          expect.objectContaining({
+            event: expect.objectContaining({
+              ...expectedEventUpdateMessage.event,
+              createdAt: String(updatedEvent.createdAt.toJSON()),
+              updatedAt: String(updatedEvent.updatedAt.toJSON()),
+            }),
+            operationUuid: expect.any(String),
+          }),
+        );
       });
   });
 
