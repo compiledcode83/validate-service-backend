@@ -33,7 +33,7 @@ export class EventRepository extends Repository<Event> {
     ticketType: string,
     ticketProviderId: number,
   ): Promise<Event> {
-    const existingEvent = await this.findOneBy({ name, ticketType, ticketProviderId });
+    const existingEvent = await this.findOneBy({ name, ticketProviderId });
 
     if (existingEvent) {
       return existingEvent;
@@ -42,7 +42,7 @@ export class EventRepository extends Repository<Event> {
     const { generatedMaps } = await queryRunner.manager
       .createQueryBuilder(Event, 'event')
       .insert()
-      .values(this.create({ name, ticketType, ticketProviderId }))
+      .values(this.create({ name, ticketProviderId }))
       .execute();
     const [insertedValues] = generatedMaps;
 

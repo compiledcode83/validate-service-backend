@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
+import { TicketType } from '@src/ticket-type/ticket-type.entity';
 import { Exclude } from 'class-transformer';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { EventResaleStatus } from './event.types';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 
 @Entity('event')
 export class Event {
@@ -22,29 +22,17 @@ export class Event {
   @Column({ type: 'varchar', nullable: false, length: 255 })
   name: string;
 
-  @ApiProperty({ description: 'Type of the ticket', maximum: 64, minimum: 1, required: true })
-  @Column({ type: 'varchar', nullable: false, length: 64 })
-  ticketType: string;
+  @ApiProperty({ description: 'Description of the event', maximum: 10000, minimum: 1, required: false })
+  @Column({ type: 'text', nullable: true })
+  description: string;
 
-  @ApiProperty({ description: 'Is resale enabled', example: EventResaleStatus.Disabled, required: true })
-  @Column({ type: 'tinyint', default: EventResaleStatus.Disabled })
-  resaleEnabled: EventResaleStatus;
+  @ApiProperty({ description: 'Image URL of the event', maximum: 500, required: false })
+  @Column({ type: 'text', nullable: true })
+  imageUrl: string;
 
-  @ApiProperty({ description: 'Enable resale from date', required: true })
-  @Column({ type: 'datetime', nullable: true })
-  resaleEnabledFromDate: Date;
-
-  @ApiProperty({ description: 'Enable resale until date', required: true })
-  @Column({ type: 'datetime', nullable: true })
-  resaleEnabledToDate: Date;
-
-  @ApiProperty({ description: 'Resale min price', required: true })
-  @Column({ type: 'decimal', nullable: true })
-  resaleMinPrice: number;
-
-  @ApiProperty({ description: 'Resale max price', required: true })
-  @Column({ type: 'decimal', nullable: true })
-  resaleMaxPrice: number;
+  @ApiProperty({ description: 'Website URL of the event', maximum: 500, required: false })
+  @Column({ type: 'text', nullable: true })
+  websiteUrl: string;
 
   @ApiProperty({ description: 'Created at date', required: true })
   @Column({ type: 'datetime', nullable: false })
@@ -56,4 +44,8 @@ export class Event {
 
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.tickets)
   ticketProvider: TicketProvider;
+
+  @OneToMany(() => TicketType, (ticketType) => ticketType.event)
+  @JoinColumn({ name: 'id', referencedColumnName: 'event_id' })
+  ticketTypes: TicketType[];
 }
