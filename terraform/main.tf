@@ -43,7 +43,7 @@ module "api_gateway_ecs" {
   secret_manager_id = module.secrets_manager.aws_secret_manager_id
 }
 
-module "web3_consumer_ecs" {
+module "api_gateway_consumer_ecs" {
   source = "./modules/aws_ecs_consumer"
 
   depends_on = [module.ecr_repository, module.ecs_agent, module.networking, module.secrets_manager]

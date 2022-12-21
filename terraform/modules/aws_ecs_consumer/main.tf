@@ -13,8 +13,8 @@ locals {
   ]
 }
 
-resource "aws_ecs_cluster" "web3_consumer_cluster" {
-  name = "web3_consumer_cluster"
+resource "aws_ecs_cluster" "api_gateway_consumer_cluster" {
+  name = "api_gateway_consumer_cluster"
 }
 
 data "aws_ami" "amz_linux" {
@@ -27,17 +27,17 @@ data "aws_ami" "amz_linux" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "web3_consumer" {
-  name = "web3_consumer"
+resource "aws_cloudwatch_log_group" "api_gateway_consumer" {
+  name = "api_gateway_consumer"
 
   tags = {
     Environment = "production"
-    Application = "Web3 Consumer"
+    Application = "API Gateway Consumer"
   }
 }
 
-resource "aws_ecs_task_definition" "web3_consumer_ecs_task_definition" {
-  family                = "web3_consumer_ecs_task_definition"
+resource "aws_ecs_task_definition" "api_gateway_consumer_ecs_task_definition" {
+  family                = "api_gateway_consumer_ecs_task_definition"
   network_mode          = "bridge"
   container_definitions = jsonencode([
     {
@@ -46,21 +46,21 @@ resource "aws_ecs_task_definition" "web3_consumer_ecs_task_definition" {
       memory : 800
       essential : true,
       image : "${var.api_gateway_erc_url}@${data.aws_ecr_image.api_gateway_image.image_digest}",
-      name : "web3_consumer",
+      name : "api_gateway_consumer",
       logConfiguration: {
         logDriver: "awslogs",
         options: {
-          awslogs-group: aws_cloudwatch_log_group.web3_consumer.name,
+          awslogs-group: aws_cloudwatch_log_group.api_gateway_consumer.name,
           awslogs-region: "eu-west-1",
-          awslogs-stream-prefix: "web3_consumer"
+          awslogs-stream-prefix: "api_gateway_consumer"
         }
       }
     }
   ])
 }
 
-resource "aws_launch_configuration" "web3_consumer_launch_config" {
-  name_prefix                 = "ecs_web3_consumer_"
+resource "aws_launch_configuration" "api_gateway_consumer_launch_config" {
+  name_prefix                 = "ecs_api_gateway_consumer_"
   enable_monitoring           = true
   image_id                    = data.aws_ami.amz_linux.id
   iam_instance_profile        = var.ecs_agent_name
@@ -69,7 +69,7 @@ resource "aws_launch_configuration" "web3_consumer_launch_config" {
   key_name                    = "validate-ec2-key"
   user_data                   = <<EOF
 #!/bin/bash
-echo ECS_CLUSTER=${aws_ecs_cluster.web3_consumer_cluster.name} >> /etc/ecs/ecs.config
+echo ECS_CLUSTER=${aws_ecs_cluster.api_gateway_consumer_cluster.name} >> /etc/ecs/ecs.config
 EOF
   instance_type               = "t3.small"
 
@@ -78,9 +78,9 @@ EOF
   }
 }
 
-resource "aws_autoscaling_group" "web3_consumer_ecs_asg" {
-  name_prefix          = "web3_consumer_asg"
-  launch_configuration = aws_launch_configuration.web3_consumer_launch_config.name
+resource "aws_autoscaling_group" "api_gateway_consumer_ecs_asg" {
+  name_prefix          = "api_gateway_consumer_asg"
+  launch_configuration = aws_launch_configuration.api_gateway_consumer_launch_config.name
   vpc_zone_identifier = [var.private_subnet_a_id, var.private_subnet_b_id]
   
   desired_capacity          = 2
@@ -97,14 +97,14 @@ resource "aws_autoscaling_group" "web3_consumer_ecs_asg" {
   tag {
     key                 = "Name"
     propagate_at_launch = true
-    value               = "Web3 Consumer"
+    value               = "API Gateway Consumer"
   }
 }
 
-resource "aws_ecs_service" "web3_consumer_service" {
-  name            = "web3_consumer_service"
-  cluster         = aws_ecs_cluster.web3_consumer_cluster.id
-  task_definition = aws_ecs_task_definition.web3_consumer_ecs_task_definition.arn
+resource "aws_ecs_service" "api_gateway_consumer_service" {
+  name            = "api_gateway_consumer_service"
+  cluster         = aws_ecs_cluster.api_gateway_consumer_cluster.id
+  task_definition = aws_ecs_task_definition.api_gateway_consumer_ecs_task_definition.arn
   desired_count   = 2
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent = 200

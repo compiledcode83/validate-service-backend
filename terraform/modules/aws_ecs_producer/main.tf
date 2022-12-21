@@ -60,7 +60,7 @@ resource "aws_ecs_task_definition" "api_gateway_producer_ecs_task_definition" {
 }
 
 resource "aws_launch_configuration" "api_gateway_producer_launch_config" {
-  name_prefix                 = "ecs_web3_api_gateway_producer_"
+  name_prefix                 = "ecs_api_gateway_producer_"
   enable_monitoring           = true
   image_id                    = data.aws_ami.amz_linux.id
   iam_instance_profile        = var.ecs_agent_name
