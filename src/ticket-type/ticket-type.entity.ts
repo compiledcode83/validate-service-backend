@@ -61,11 +61,11 @@ export class TicketType {
 
   @ApiProperty({ description: 'Resale min price', required: true })
   @Column({ type: 'decimal', nullable: true })
-  resaleMinPrice: number;
+  resaleMinPrice: string;
 
   @ApiProperty({ description: 'Resale max price', required: true })
   @Column({ type: 'decimal', nullable: true })
-  resaleMaxPrice: number;
+  resaleMaxPrice: string;
 
   @ApiProperty({ description: 'Created at date', required: true })
   @Column({ type: 'datetime', nullable: false })

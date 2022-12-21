@@ -74,7 +74,10 @@ export class TicketService {
         }),
       );
 
-      const ticket = await queryRunner.manager.findOneBy(Ticket, { id: createdTicket.id });
+      const ticket = await queryRunner.manager.findOne(Ticket, {
+        where: { id: createdTicket.id },
+        relations: ['ticketType', 'ticketType.event', 'user'],
+      });
       const payload = new TicketCreateMessage({
         ticket,
         user: ticketUser,

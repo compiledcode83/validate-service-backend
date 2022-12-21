@@ -292,6 +292,12 @@ describe('Ticket (e2e)', () => {
             ticket: expect.objectContaining({
               ...expectedCreateTicketMessage.ticket,
               createdAt: String(newTicket.createdAt.toJSON()),
+              ticketType: expect.objectContaining({
+                name: ticketData.ticketType.name,
+                event: expect.objectContaining({
+                  name: ticketData.event.name,
+                }),
+              }),
             }),
             user: expect.objectContaining({ ...expectedCreateTicketMessage.user }),
             operationUuid: expect.any(String),

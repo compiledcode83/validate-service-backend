@@ -86,12 +86,12 @@ export class TicketTypeDto {
   @Type(() => Number)
   @IsNumber()
   @Min(0.01)
-  resaleMinPrice: number;
+  resaleMinPrice: string;
 
   @ApiProperty({ example: 50.0, required: false, description: 'Resale max price' })
   @ValidateIf((o) => o.resaleEnabled === TicketTypeResaleStatus.Enabled)
   @Type(() => Number)
   @IsNumber()
   @Min(0.02)
-  resaleMaxPrice: number;
+  resaleMaxPrice: string;
 }
