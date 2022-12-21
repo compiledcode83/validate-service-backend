@@ -1,11 +1,11 @@
 import { v4 as uuid } from 'uuid';
-import { Ticket } from '../ticket.entity';
+import { TicketType } from '../ticket-type.entity';
 
-export class TicketValidateMessage {
+export class TicketTypeUpdateMessage {
   operationUuid: string;
-  ticket: Ticket;
+  ticketType: TicketType;
 
-  constructor(data: Partial<TicketValidateMessage>) {
+  constructor(data: Partial<TicketTypeUpdateMessage>) {
     Object.assign(this, data);
     this.operationUuid = uuid();
   }

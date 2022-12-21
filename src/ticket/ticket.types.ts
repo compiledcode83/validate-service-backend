@@ -21,7 +21,6 @@ export enum TicketEventPattern {
   TicketValidate = 'ticket.validate',
 }
 
-export const DATE_FORMAT = 'yyyy-MM-dd';
 export const DEFAULT_IMAGE = `https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg`;
 
 export class TicketPaginatedResult {

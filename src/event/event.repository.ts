@@ -6,7 +6,7 @@ import { Event } from './event.entity';
 
 @Injectable()
 export class EventRepository extends Repository<Event> {
-  constructor(private readonly dataSource: DataSource) {
+  constructor(public readonly dataSource: DataSource) {
     super(Event, dataSource.manager);
   }
 
@@ -27,13 +27,8 @@ export class EventRepository extends Repository<Event> {
     return paginator.paginate(queryBuilder);
   }
 
-  async findOrCreate(
-    queryRunner: QueryRunner,
-    name: string,
-    ticketType: string,
-    ticketProviderId: number,
-  ): Promise<Event> {
-    const existingEvent = await this.findOneBy({ name, ticketType, ticketProviderId });
+  async findOrCreate(queryRunner: QueryRunner, name: string, ticketProviderId: number): Promise<Event> {
+    const existingEvent = await this.findOneBy({ name, ticketProviderId });
 
     if (existingEvent) {
       return existingEvent;
@@ -42,7 +37,7 @@ export class EventRepository extends Repository<Event> {
     const { generatedMaps } = await queryRunner.manager
       .createQueryBuilder(Event, 'event')
       .insert()
-      .values(this.create({ name, ticketType, ticketProviderId }))
+      .values(this.create({ name, ticketProviderId }))
       .execute();
     const [insertedValues] = generatedMaps;
 

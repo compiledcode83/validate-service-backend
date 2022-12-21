@@ -1,19 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DateValidator } from '@src/common/validators/date.validator';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { Type } from 'class-transformer';
-import {
-  Allow,
-  IsObject,
-  IsOptional,
-  IsString,
-  IsUrl,
-  MaxLength,
-  MinLength,
-  Validate,
-  ValidateNested,
-} from 'class-validator';
+import { Allow, IsObject, IsOptional, IsUrl, MaxLength, ValidateNested } from 'class-validator';
 import { TicketAdditionalData } from '../ticket.types';
+import { CreateTicketEventDto } from './create-ticket-event.dto';
+import { CreateTicketTicketTypeDto } from './create-ticket-ticket-type.dto';
 import { CreateTicketUserDto } from './create-ticket-user.dto';
 
 export class CreateTicketDto {
@@ -27,45 +18,22 @@ export class CreateTicketDto {
   user: CreateTicketUserDto;
 
   @ApiProperty({
-    example: 'Abu Dhabi Full-Day Trip with Louvre',
+    example: { name: 'John doe concert' },
     required: true,
-    minimum: 1,
-    maximum: 255,
-    description: 'Name of the ticket',
+    description: `Event name of the ticket. Will be automatically created if doesn't exist yet`,
   })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(255)
-  name: string;
+  @Type(() => CreateTicketEventDto)
+  @ValidateNested()
+  event: CreateTicketEventDto;
 
   @ApiProperty({
-    example: 'VIP ticket',
+    example: { name: 'John doe concert' },
     required: true,
-    minimum: 1,
-    maximum: 64,
-    description: 'Type of the ticket',
+    description: `Ticket type of the ticket. Will be automatically created if doesn't exist yet`,
   })
-  @IsString()
-  @MinLength(1)
-  @MaxLength(64)
-  type: string;
-
-  @ApiProperty({
-    example: '2025-06-23',
-    required: true,
-    description: 'Ticket start date',
-  })
-  @Validate(DateValidator)
-  dateStart: string;
-
-  @ApiProperty({
-    example: '2025-06-24',
-    required: false,
-    description: 'Ticket end date',
-  })
-  @IsOptional()
-  @Validate(DateValidator)
-  dateEnd?: string;
+  @Type(() => CreateTicketTicketTypeDto)
+  @ValidateNested()
+  ticketType: CreateTicketTicketTypeDto;
 
   @ApiProperty({
     example: 'https://example.com/tickets/images/1.jpg',

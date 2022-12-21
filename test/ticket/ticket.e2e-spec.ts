@@ -17,10 +17,15 @@ import { TicketProviderEncryptionKeyFactory } from '@src/database/factories/tick
 import { TicketProviderEncryptionService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.service';
 import { TicketDeleteMessage } from '@src/ticket/messages/ticket-delete.message';
 import { User } from '@src/user/user.entity';
-import { MoreThan } from 'typeorm';
+import { MoreThan, Not } from 'typeorm';
 import { RedisService } from '@src/redis/redis.service';
 import { Outbox } from '@src/outbox/outbox.entity';
 import { OutboxStatus } from '@src/outbox/outbox.types';
+import { TicketType } from '@src/ticket-type/ticket-type.entity';
+import { Event } from '@src/event/event.entity';
+import { EventFactory } from '@src/database/factories/event.factory';
+import { TicketTypeFactory } from '@src/database/factories/ticket-type.factory';
+import { DATE_FORMAT } from '@src/ticket-type/ticket-type.types';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
@@ -79,11 +84,8 @@ describe('Ticket (e2e)', () => {
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
-            'name must be shorter than or equal to 255 characters',
             'imageUrl must be an URL address',
             'additionalData must be an object',
-            'type must be shorter than or equal to 64 characters',
-            'Acceptable date format is yyyy-MM-dd.',
             'user.name must be shorter than or equal to 128 characters',
             'user.email must be shorter than or equal to 255 characters',
             'user.phoneNumber must be a valid phone number',
@@ -93,15 +95,13 @@ describe('Ticket (e2e)', () => {
       });
   });
 
-  it(`should successfully create a new ticket for existing user`, async () => {
+  it(`should successfully create a new ticket for existing user, event and ticketType`, async () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticketData = {
-      name: faker.random.words(4),
-      type: faker.random.word(),
-      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
-      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       imageUrl: faker.internet.url(),
       additionalData: {
         seats: 4,
@@ -109,6 +109,14 @@ describe('Ticket (e2e)', () => {
       },
       user: {
         uuid: user.uuid,
+      },
+      event: {
+        name: event.name,
+      },
+      ticketType: {
+        name: ticketType.name,
+        ticketDateStart: DateTime.fromJSDate(ticketType.ticketDateStart).toFormat(DATE_FORMAT),
+        ticketDateEnd: DateTime.fromJSDate(ticketType.ticketDateEnd).toFormat(DATE_FORMAT),
       },
     };
 
@@ -121,10 +129,6 @@ describe('Ticket (e2e)', () => {
         expect(response.body).toEqual(
           expect.objectContaining({
             uuid: expect.any(String),
-            name: ticketData.name,
-            type: ticketData.type,
-            dateStart: ticketData.dateStart,
-            dateEnd: ticketData.dateEnd,
             imageUrl: ticketData.imageUrl,
             additionalData: ticketData.additionalData,
             status: TicketStatus.Creating,
@@ -142,17 +146,18 @@ describe('Ticket (e2e)', () => {
 
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(user.id);
+        expect(newTicket.ticketTypeId).toEqual(ticketType.id);
+
+        const events = await AppDataSource.manager.getRepository(Event).countBy({ id: Not(0) });
+
+        expect(events).toEqual(1);
       });
   });
 
-  it(`should successfully create a new ticket and a new user`, async () => {
+  it(`should successfully create a new ticket, new user, new event and new ticketType`, async () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const ticketData = {
-      name: faker.random.words(4),
-      type: faker.random.word(),
-      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
-      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       imageUrl: faker.internet.url(),
       additionalData: {
         seats: 4,
@@ -163,6 +168,14 @@ describe('Ticket (e2e)', () => {
         email: faker.internet.email(),
         phoneNumber: faker.phone.number('+4891#######'),
       },
+      event: {
+        name: faker.random.word(),
+      },
+      ticketType: {
+        name: faker.random.word(),
+        ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+        ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+      },
     };
 
     await request(app.getHttpServer())
@@ -174,10 +187,6 @@ describe('Ticket (e2e)', () => {
         expect(response.body).toEqual(
           expect.objectContaining({
             uuid: expect.any(String),
-            name: ticketData.name,
-            type: ticketData.type,
-            dateStart: ticketData.dateStart,
-            dateEnd: ticketData.dateEnd,
             imageUrl: ticketData.imageUrl,
             additionalData: ticketData.additionalData,
             status: TicketStatus.Creating,
@@ -188,6 +197,12 @@ describe('Ticket (e2e)', () => {
               uuid: expect.any(String),
               ...ticketData.user,
             }),
+            ticketType: expect.objectContaining({
+              name: ticketData.ticketType.name,
+              event: expect.objectContaining({
+                name: ticketData.event.name,
+              }),
+            }),
           }),
         );
         expect(response.status).toBe(HttpStatus.CREATED);
@@ -197,9 +212,13 @@ describe('Ticket (e2e)', () => {
           .findOne({ where: { uuid: response.body.uuid } });
 
         const newUser = await AppDataSource.manager.getRepository(User).findOne({ where: { id: MoreThan(0) } });
+        const newTicketType = await AppDataSource.manager.getRepository(TicketType).findOne({ where: { id: Not(0) } });
+        const newEvent = await AppDataSource.manager.getRepository(Event).findOne({ where: { id: Not(0) } });
 
         expect(newTicket.ticketProviderId).toEqual(ticketProvider.id);
         expect(newTicket.userId).toEqual(newUser.id);
+        expect(newTicket.ticketTypeId).toEqual(newTicketType.id);
+        expect(newTicketType.eventId).toEqual(newEvent.id);
       });
   });
 
@@ -208,10 +227,6 @@ describe('Ticket (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const ticketData = {
-      name: faker.random.words(4),
-      type: faker.random.word(),
-      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
-      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       imageUrl: faker.internet.url(),
       additionalData: {
         seats: 4,
@@ -219,6 +234,14 @@ describe('Ticket (e2e)', () => {
       },
       user: {
         uuid: user.uuid,
+      },
+      event: {
+        name: faker.random.word(),
+      },
+      ticketType: {
+        name: faker.random.word(),
+        ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+        ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       },
     };
 
@@ -231,10 +254,6 @@ describe('Ticket (e2e)', () => {
         expect(response.body).toEqual(
           expect.objectContaining({
             uuid: expect.any(String),
-            name: ticketData.name,
-            type: ticketData.type,
-            dateStart: ticketData.dateStart,
-            dateEnd: ticketData.dateEnd,
             imageUrl: ticketData.imageUrl,
             additionalData: ticketData.additionalData,
             status: TicketStatus.Creating,
@@ -290,10 +309,6 @@ describe('Ticket (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const ticketData = {
-      name: faker.random.words(4),
-      type: faker.random.word(),
-      dateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
-      dateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       imageUrl: faker.internet.url(),
       additionalData: {
         seats: 4,
@@ -301,6 +316,14 @@ describe('Ticket (e2e)', () => {
       },
       user: {
         uuid: user.uuid,
+      },
+      event: {
+        name: faker.random.word(),
+      },
+      ticketType: {
+        name: faker.random.word(),
+        ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
+        ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       },
     };
 
@@ -313,10 +336,6 @@ describe('Ticket (e2e)', () => {
         expect(response.body).toEqual(
           expect.objectContaining({
             uuid: expect.any(String),
-            name: ticketData.name,
-            type: ticketData.type,
-            dateStart: ticketData.dateStart,
-            dateEnd: ticketData.dateEnd,
             imageUrl: ticketData.imageUrl,
             additionalData: ticketData.additionalData,
             status: TicketStatus.Creating,
@@ -407,7 +426,6 @@ describe('Ticket (e2e)', () => {
         expect(response.body).toEqual(
           expect.objectContaining({
             uuid: ticket.uuid,
-            name: ticket.name,
             imageUrl: ticket.imageUrl,
             additionalData: ticket.additionalData,
             status: TicketStatus.Active,

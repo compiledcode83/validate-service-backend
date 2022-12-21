@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
 import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
+import { TicketType } from '@src/ticket-type/ticket-type.entity';
 import { User } from '@src/user/user.entity';
 import { Exclude, Expose } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
@@ -28,21 +29,9 @@ export class Ticket {
   @Column({ type: 'int', nullable: false })
   ticketProviderId: number;
 
-  @ApiProperty({ description: 'Name of the ticket', maximum: 255, minimum: 1, required: true })
-  @Column({ type: 'varchar', nullable: false, length: 255 })
-  name: string;
-
-  @ApiProperty({ description: 'Type of the ticket', maximum: 64, minimum: 1, required: true })
-  @Column({ type: 'varchar', nullable: false, length: 64 })
-  type: string;
-
-  @ApiProperty({ description: 'Ticket start date', required: true })
-  @Column({ type: 'varchar', nullable: false, length: 64 })
-  dateStart: Date;
-
-  @ApiProperty({ description: 'Ticket end date', required: false })
-  @Column({ type: 'varchar', nullable: true, length: 64 })
-  dateEnd: Date;
+  @ApiProperty({ description: 'Ticket type ID', example: 1, required: true })
+  @Column({ type: 'int', nullable: false })
+  ticketTypeId: number;
 
   @ApiProperty({ description: 'Image of the ticket', maximum: 255, required: false })
   @Column({ type: 'varchar', nullable: true, length: 255 })
@@ -130,4 +119,7 @@ export class Ticket {
   @OneToMany(() => TicketTransfer, (ticketTransfer) => ticketTransfer.ticket)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_id' })
   transfers: TicketTransfer[];
+
+  @ManyToOne(() => TicketType, (ticketType) => ticketType.tickets)
+  ticketType: TicketType;
 }
