@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CurrencyEnum } from '@src/common/types/currency.enum';
 import { DateValidator } from '@src/common/validators/date.validator';
 import { Type } from 'class-transformer';
-import { IsDateString, IsIn, IsNumber, IsOptional, Max, Min, Validate, ValidateIf } from 'class-validator';
+import { IsDateString, IsEnum, IsIn, IsNumber, IsOptional, Max, Min, Validate, ValidateIf } from 'class-validator';
 import { TicketTypeResaleStatus, TicketTypeSaleStatus } from '../ticket-type.types';
 
 export class TicketTypeDto {
@@ -56,6 +57,18 @@ export class TicketTypeDto {
   @Max(1000000)
   saleAmount: number;
 
+  @ApiProperty({ example: 50.0, required: false, description: 'Sale price' })
+  @ValidateIf((o) => o.saleEnabled === TicketTypeResaleStatus.Enabled)
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0.01)
+  salePrice: string;
+
+  @ApiProperty({ example: CurrencyEnum, required: false, description: 'Sale currency' })
+  @ValidateIf((o) => o.saleEnabled === TicketTypeResaleStatus.Enabled)
+  @IsEnum(CurrencyEnum)
+  saleCurrency: CurrencyEnum;
+
   @ApiProperty({
     example: 1,
     required: true,
@@ -94,4 +107,9 @@ export class TicketTypeDto {
   @IsNumber()
   @Min(0.02)
   resaleMaxPrice: string;
+
+  @ApiProperty({ example: CurrencyEnum, required: false, description: 'Resale currency' })
+  @ValidateIf((o) => o.resaleEnabled === TicketTypeResaleStatus.Enabled)
+  @IsEnum(CurrencyEnum)
+  resaleCurrency: CurrencyEnum;
 }

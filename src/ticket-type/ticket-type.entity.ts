@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CurrencyEnum } from '@src/common/types/currency.enum';
 import { Event } from '@src/event/event.entity';
 import { Ticket } from '@src/ticket/ticket.entity';
 import { Exclude } from 'class-transformer';
@@ -47,6 +48,14 @@ export class TicketType {
   @Column({ type: 'int', default: 0 })
   saleAmount: number;
 
+  @ApiProperty({ description: 'Sale price', required: true })
+  @Column({ type: 'decimal', nullable: true })
+  salePrice: string;
+
+  @ApiProperty({ description: 'Sale currency', required: true, enum: CurrencyEnum })
+  @Column({ nullable: false })
+  saleCurrency: CurrencyEnum;
+
   @ApiProperty({ description: 'Is resale enabled', example: TicketTypeResaleStatus.Disabled, required: true })
   @Column({ type: 'tinyint', default: TicketTypeResaleStatus.Disabled })
   resaleEnabled: number;
@@ -66,6 +75,10 @@ export class TicketType {
   @ApiProperty({ description: 'Resale max price', required: true })
   @Column({ type: 'decimal', nullable: true })
   resaleMaxPrice: string;
+
+  @ApiProperty({ description: 'Resale currency', required: true, enum: CurrencyEnum })
+  @Column({ nullable: false })
+  resaleCurrency: CurrencyEnum;
 
   @ApiProperty({ description: 'Created at date', required: true })
   @Column({ type: 'datetime', nullable: false })
