@@ -17,6 +17,7 @@ import { Outbox } from '@src/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
 import { OutboxStatus } from '@src/outbox/outbox.types';
 import { TicketTypeUpdateMessage } from '@src/ticket-type/messages/ticket-type-update.message';
+import { CurrencyEnum } from '@src/common/types/currency.enum';
 
 describe('Ticket-types (e2e)', () => {
   let app: INestApplication;
@@ -140,6 +141,8 @@ describe('Ticket-types (e2e)', () => {
         saleEnabledFromDate: DateTime.now().toISO(),
         saleEnabledToDate: DateTime.now().toISO(),
         saleAmount: 1000,
+        salePrice: '100.00',
+        saleCurrency: CurrencyEnum.AED,
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
