@@ -20,7 +20,7 @@ export class User {
   @Column({ type: 'varchar', nullable: true, length: 128 })
   name: string;
 
-  @ApiProperty({ description: 'E-mail', maximum: 255, required: true })
+  @ApiProperty({ description: 'E-mail', maximum: 255, required: false })
   @Column({ type: 'varchar', nullable: false, length: 255 })
   email: string;
 

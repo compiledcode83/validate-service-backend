@@ -8,11 +8,9 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AuthRequest } from '@src/auth/auth.types';
 import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
 import { ParamToBodyInterceptor } from '@src/common/interceptors/param-to-body.interceptor';
 import { RequestToBodyInterceptor } from '@src/common/interceptors/request-to-body.interceptor';
