@@ -76,6 +76,12 @@ resource "aws_launch_configuration" "api_gateway_launch_config" {
   user_data                   = <<EOF
 #!/bin/bash
 echo ECS_CLUSTER=${aws_ecs_cluster.api_gateway_cluster.name} >> /etc/ecs/ecs.config
+sudo dd if=/dev/zero of=/swapfile bs=128M count=8
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo swapon -s
+echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 EOF
   instance_type               = "t3.small"
 
@@ -94,8 +100,7 @@ resource "aws_autoscaling_group" "api_gateway_ecs_asg" {
   min_size                  = 2
   max_size                  = 20
   min_elb_capacity          = 1
-  health_check_grace_period = 600
-  health_check_type         = "ELB"
+  health_check_type         = "EC2"
 
   lifecycle {
     create_before_destroy = true

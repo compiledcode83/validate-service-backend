@@ -70,6 +70,12 @@ resource "aws_launch_configuration" "api_gateway_consumer_launch_config" {
   user_data                   = <<EOF
 #!/bin/bash
 echo ECS_CLUSTER=${aws_ecs_cluster.api_gateway_consumer_cluster.name} >> /etc/ecs/ecs.config
+sudo dd if=/dev/zero of=/swapfile bs=128M count=8
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo swapon -s
+echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 EOF
   instance_type               = "t3.small"
 
