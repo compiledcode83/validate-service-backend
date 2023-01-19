@@ -1,23 +1,23 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppBootstrapManager } from '@src/app-bootstrap.manager';
-import { AppDataSource } from '@src/config/datasource';
-import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
+import { AppBootstrapManager } from '@api/app-bootstrap.manager';
+import { AppDataSource } from '@app/database/config/datasource';
+import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
 import { faker } from '@faker-js/faker';
-import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provider.types';
-import { TicketTypeFactory } from '@src/database/factories/ticket-type.factory';
-import { EventFactory } from '@src/database/factories/event.factory';
+import { TicketProviderUserIdentifier } from '@api/ticket-provider/ticket-provider.types';
+import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
+import { EventFactory } from '@app/database/factories/event.factory';
 import { DateTime } from 'luxon';
-import { DATE_FORMAT, TicketTypeEventPattern } from '@src/ticket-type/ticket-type.types';
-import { TicketType } from '@src/ticket-type/ticket-type.entity';
-import { TicketTypeCreateMessage } from '@src/ticket-type/messages/ticket-type-create.message';
-import { Outbox } from '@src/outbox/outbox.entity';
+import { DATE_FORMAT, TicketTypeEventPattern } from '@api/ticket-type/ticket-type.types';
+import { TicketType } from '@api/ticket-type/ticket-type.entity';
+import { TicketTypeCreateMessage } from '@api/ticket-type/messages/ticket-type-create.message';
+import { Outbox } from '@api/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
-import { OutboxStatus } from '@src/outbox/outbox.types';
-import { TicketTypeUpdateMessage } from '@src/ticket-type/messages/ticket-type-update.message';
-import { CurrencyEnum } from '@src/common/types/currency.enum';
+import { OutboxStatus } from '@api/outbox/outbox.types';
+import { TicketTypeUpdateMessage } from '@api/ticket-type/messages/ticket-type-update.message';
+import { CurrencyEnum } from '@api/common/types/currency.enum';
 
 describe('Ticket-types (e2e)', () => {
   let app: INestApplication;

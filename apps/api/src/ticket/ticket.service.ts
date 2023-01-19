@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UserService } from '@src/user/user.service';
+import { UserService } from '@api/user/user.service';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
@@ -7,17 +7,17 @@ import { Ticket } from './ticket.entity';
 import { TicketRepository } from './ticket.repository';
 import { DEFAULT_IMAGE, TicketEventPattern, TicketStatus } from './ticket.types';
 import { TicketCreateMessage } from './messages/ticket-create.message';
-import { TicketProviderEncryptionKeyService } from '@src/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
-import { TicketProviderSecurityLevel } from '@src/ticket-provider/ticket-provider.types';
-import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
-import { User } from '@src/user/user.entity';
+import { TicketProviderEncryptionKeyService } from '@api/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
+import { TicketProviderSecurityLevel } from '@api/ticket-provider/ticket-provider.types';
+import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { User } from '@api/user/user.entity';
 import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { TicketDeleteMessage } from './messages/ticket-delete.message';
-import { EventService } from '@src/event/event.service';
-import { OutboxService } from '@src/outbox/outbox.service';
+import { EventService } from '@api/event/event.service';
+import { OutboxService } from '@api/outbox/outbox.service';
 import { TicketValidateMessage } from './messages/ticket-validate.message';
-import { TicketTypeService } from '@src/ticket-type/ticket-type.service';
+import { TicketTypeService } from '@api/ticket-type/ticket-type.service';
 
 @Injectable()
 export class TicketService {

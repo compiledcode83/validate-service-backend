@@ -2,14 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as dotenv from 'dotenv';
 import { ProducerService } from './producer.service';
 import { ProducerModule } from './producer.module';
-import { EnvHelper } from '@src/common/helpers/env.helper';
-import { AppDataSource } from '@src/config/datasource';
+import { EnvHelper } from '@app/env/env.helper';
 import { TestHelper } from '@test/helpers/test.helper';
-import { OutboxFactory } from '@src/database/factories/outbox.factory';
-import { TicketEventPattern } from '@src/ticket/ticket.types';
+import { OutboxFactory } from '@app/database/factories/outbox.factory';
+import { TicketEventPattern } from '@api/ticket/ticket.types';
 import { faker } from '@faker-js/faker';
-import { OutboxStatus } from '@src/outbox/outbox.types';
-import { Outbox } from '@src/outbox/outbox.entity';
+import { OutboxStatus } from '@api/outbox/outbox.types';
+import { Outbox } from '@api/outbox/outbox.entity';
+import { AppDataSource } from '@app/database/config/datasource';
 
 EnvHelper.verifyNodeEnv();
 

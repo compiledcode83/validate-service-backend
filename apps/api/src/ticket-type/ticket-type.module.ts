@@ -7,8 +7,8 @@ import { TicketTypeRepository } from './ticket-type.repository';
 import { EventExistsValidator } from './validators/event-exists.validator';
 import { TicketTypeDuplicateValidator } from './validators/ticket-type-duplicate.validator';
 import { TicketTypeExistsValidator } from './validators/ticket-type-exists.validator';
-import { EventModule } from '@src/event/event.module';
-import { OutboxModule } from '@src/outbox/outbox.module';
+import { EventModule } from '@api/event/event.module';
+import { OutboxModule } from '@api/outbox/outbox.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TicketType]), EventModule, OutboxModule],

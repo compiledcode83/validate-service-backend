@@ -1,5 +1,5 @@
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-import { EventService } from '@src/event/event.service';
+import { EventService } from '@api/event/event.service';
 import { FindTicketTypesDto } from '../dto/find-ticket-types.dto';
 import { CreateTicketTypeDto } from '../dto/create-ticket-type.dto';
 

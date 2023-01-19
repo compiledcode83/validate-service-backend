@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
-import { TicketType } from '@src/ticket-type/ticket-type.entity';
+import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketType } from '@api/ticket-type/ticket-type.entity';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 

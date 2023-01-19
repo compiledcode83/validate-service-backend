@@ -8,8 +8,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
-import { AuthRequest } from '@src/common/types/auth.request';
+import { ApiResponseHelper } from '@api/common/helpers/api-response.helper';
+import { AuthRequest } from '@api/common/types/auth.request';
 import { TicketProvider } from './ticket-provider.entity';
 import { TicketProviderService } from './ticket-provider.service';
 

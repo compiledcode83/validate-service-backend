@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity('ticket_provider_api_token')

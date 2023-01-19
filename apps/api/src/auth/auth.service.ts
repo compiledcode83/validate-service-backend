@@ -1,13 +1,13 @@
 import * as bcrypt from 'bcrypt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { TicketProviderApiTokenService } from '@src/ticket-provider-api-token/ticket-provider-api-token.service';
-import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
-import { TicketProviderService } from '@src/ticket-provider/ticket-provider.service';
+import { TicketProviderApiTokenService } from '@api/ticket-provider-api-token/ticket-provider-api-token.service';
+import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProviderService } from '@api/ticket-provider/ticket-provider.service';
 import { AccessTokenInterface } from './auth.types';
-import { TicketProviderRefreshTokenService } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.service';
+import { TicketProviderRefreshTokenService } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.service';
 import { RefreshTokensDto } from './dto/refresh-tokens.dto';
-import { TicketProviderRefreshToken } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
+import { TicketProviderRefreshToken } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
 import { TokensResponseDto } from './dto/tokens-response.dto';
 import { LoginDto } from './dto/login.dto';
 

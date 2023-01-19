@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OutboxModule } from '@src/outbox/outbox.module';
+import { OutboxModule } from '@api/outbox/outbox.module';
 import { EventController } from './event.controller';
 import { Event } from './event.entity';
 import { EventRepository } from './event.repository';

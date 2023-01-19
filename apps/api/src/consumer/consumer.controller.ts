@@ -5,9 +5,9 @@ import { TicketDeleteReplyMessage } from './messages/ticket-delete-reply.message
 import { TicketCreateReplyMessage } from './messages/ticket-create-reply.message';
 import { TicketTransferReplyMessage } from './messages/ticket-transfer-reply.message';
 import { UserCreateReplyMessage } from './messages/user-create-reply.message';
-import { UserEventPattern } from '@src/user/user.types';
-import { TicketEventPattern } from '@src/ticket/ticket.types';
-import { TicketTransferEventPattern } from '@src/ticket-transfer/ticket-transfer.types';
+import { UserEventPattern } from '@api/user/user.types';
+import { TicketEventPattern } from '@api/ticket/ticket.types';
+import { TicketTransferEventPattern } from '@api/ticket-transfer/ticket-transfer.types';
 
 @Controller()
 export class ConsumerController {

@@ -3,16 +3,16 @@ import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DateTime } from 'luxon';
 import { faker } from '@faker-js/faker';
-import { AppBootstrapManager } from '@src/app-bootstrap.manager';
-import { AppDataSource } from '@src/config/datasource';
-import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
+import { AppBootstrapManager } from '@api/app-bootstrap.manager';
+import { AppDataSource } from '@app/database/config/datasource';
+import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { TicketProviderRefreshTokenFactory } from '@src/database/factories/ticket-provider-refresh-token.factory';
-import { TicketProviderService } from '@src/ticket-provider/ticket-provider.service';
-import { UserFactory } from '@src/database/factories/user.factory';
-import { TicketFactory } from '@src/database/factories/ticket.factory';
-import { AuthService } from '@src/auth/auth.service';
-import { TicketProviderRefreshToken } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
+import { TicketProviderRefreshTokenFactory } from '@app/database/factories/ticket-provider-refresh-token.factory';
+import { TicketProviderService } from '@api/ticket-provider/ticket-provider.service';
+import { UserFactory } from '@app/database/factories/user.factory';
+import { TicketFactory } from '@app/database/factories/ticket.factory';
+import { AuthService } from '@api/auth/auth.service';
+import { TicketProviderRefreshToken } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication;

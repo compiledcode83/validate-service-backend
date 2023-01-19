@@ -18,7 +18,7 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@src/*": [
+      "@api/*": [
         "apps/api/src/*"
       ],
       "@test/*": [
@@ -29,6 +29,18 @@
       ],
       "@app/ticket-provider-encryption-key/*": [
         "libs/ticket-provider-encryption-key/src/*"
+      ],
+      "@app/database": [
+        "libs/database/src"
+      ],
+      "@app/database/*": [
+        "libs/database/src/*"
+      ],
+      "@app/env": [
+        "libs/env/src"
+      ],
+      "@app/env/*": [
+        "libs/env/src/*"
       ]
     }
   },

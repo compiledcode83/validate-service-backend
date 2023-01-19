@@ -7,7 +7,9 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "^@src/(.*)$": "<rootDir>/apps/api/src/$1",
-    "^@test/(.*)$": "<rootDir>/apps/api/test/$1"
+    "^@api/(.*)$": "<rootDir>/src/$1",
+    "^@test/(.*)$": "<rootDir>/test/$1",
+    "^@app/database(.*)$": "<rootDir>/../../libs/database/src",
+    "^@app/env(.*)$": "<rootDir>/../../libs/env/src"
   }
 }

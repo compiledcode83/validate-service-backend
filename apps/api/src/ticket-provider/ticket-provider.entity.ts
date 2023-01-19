@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProviderApiToken } from '@src/ticket-provider-api-token/ticket-provider-api-token.entity';
-import { TicketProviderRefreshToken } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
-import { Ticket } from '@src/ticket/ticket.entity';
-import { User } from '@src/user/user.entity';
+import { TicketProviderApiToken } from '@api/ticket-provider-api-token/ticket-provider-api-token.entity';
+import { TicketProviderRefreshToken } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
+import { Ticket } from '@api/ticket/ticket.entity';
+import { User } from '@api/user/user.entity';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
 import {

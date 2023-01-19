@@ -1,5 +1,5 @@
 import { ConfigService } from '@nestjs/config';
-import { Environment } from '@src/common/validators/env.validator';
+import { Environment } from '@app/env/env.validator';
 import { Kafka, logLevel, Producer, Partitioners } from 'kafkajs';
 import { KAFKA_PRODUCER_TOKEN } from './producer.types';
 

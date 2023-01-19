@@ -1,15 +1,15 @@
 import { INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
-import { AppBootstrapManager } from '@src/app-bootstrap.manager';
-import { AppDataSource } from '@src/config/datasource';
+import { AppBootstrapManager } from '@api/app-bootstrap.manager';
+import { AppDataSource } from '@app/database/config/datasource';
 import { TestHelper } from '@test/helpers/test.helper';
-import { ProducerService } from '@src/producer/producer.service';
-import { InternalServerErrorExceptionsFilter } from '@src/common/filters/internal-server-error-exceptions.filter';
-import { OutboxFactory } from '@src/database/factories/outbox.factory';
-import { TicketEventPattern } from '@src/ticket/ticket.types';
-import { OutboxStatus } from '@src/outbox/outbox.types';
-import { Outbox } from '@src/outbox/outbox.entity';
+import { ProducerService } from '@api/producer/producer.service';
+import { InternalServerErrorExceptionsFilter } from '@api/common/filters/internal-server-error-exceptions.filter';
+import { OutboxFactory } from '@app/database/factories/outbox.factory';
+import { TicketEventPattern } from '@api/ticket/ticket.types';
+import { OutboxStatus } from '@api/outbox/outbox.types';
+import { Outbox } from '@api/outbox/outbox.entity';
 
 describe('Producer (e2e)', () => {
   let app: INestApplication;

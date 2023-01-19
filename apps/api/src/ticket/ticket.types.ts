@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginatedResultCursor } from '@src/common/pagination/pagination.types';
+import { PaginatedResultCursor } from '@api/common/pagination/pagination.types';
 import { Ticket } from './ticket.entity';
 
 export class TicketAdditionalData {

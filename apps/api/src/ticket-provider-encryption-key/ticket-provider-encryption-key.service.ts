@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@src/user/user.entity';
+import { User } from '@api/user/user.entity';
 import { TicketProviderEncryptionKey } from './ticket-provider-encryption-key.entity';
 import { TicketProviderEncryptionKeyRepository } from './ticket-provider-encryption-key.repository';
 import { TicketProviderEncryptionService } from './ticket-provider-encryption.service';

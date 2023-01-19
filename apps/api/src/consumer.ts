@@ -3,7 +3,7 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import * as kafkaConfig from './config/kafka.config';
 import * as appConfig from './config/app.config';
 import { ConsumerModule } from './consumer/consumer.module';
-import { Environment } from './common/validators/env.validator';
+import { Environment } from '../../../libs/env/src/env.validator';
 
 async function bootstrap() {
   const kafkaOptions = kafkaConfig.default();

@@ -1,4 +1,4 @@
-import { Ticket } from '@src/ticket/ticket.entity';
+import { Ticket } from '@api/ticket/ticket.entity';
 
 export class TicketDeleteReplyMessage {
   ticket: Ticket;

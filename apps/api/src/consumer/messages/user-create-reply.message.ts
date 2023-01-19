@@ -1,4 +1,4 @@
-import { User } from '@src/user/user.entity';
+import { User } from '@api/user/user.entity';
 
 export class UserCreateReplyMessage {
   user: User;

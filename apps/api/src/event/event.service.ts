@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { PaginatedResult } from '@src/common/pagination/pagination.types';
-import { OutboxService } from '@src/outbox/outbox.service';
+import { PaginatedResult } from '@api/common/pagination/pagination.types';
+import { OutboxService } from '@api/outbox/outbox.service';
 import { Not, QueryRunner } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { FindEventsDto } from './dto/find-events.dto';

@@ -1,5 +1,5 @@
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-import { EventService } from '@src/event/event.service';
+import { EventService } from '@api/event/event.service';
 
 @ValidatorConstraint({ name: 'eventExistsValidator', async: true })
 export class EventExistsValidator implements ValidatorConstraintInterface {

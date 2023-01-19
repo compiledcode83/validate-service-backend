@@ -1,5 +1,5 @@
 import { Allow, IsUUID, Validate } from 'class-validator';
-import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
 import { TicketIsDeletableValidator } from '../validators/ticket-is-deletable.validator';
 
 export class DeleteTicketDto {

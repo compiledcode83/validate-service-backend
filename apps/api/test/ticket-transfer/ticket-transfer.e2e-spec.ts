@@ -1,21 +1,21 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppBootstrapManager } from '@src/app-bootstrap.manager';
-import { UserFactory } from '@src/database/factories/user.factory';
-import { AppDataSource } from '@src/config/datasource';
-import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
+import { AppBootstrapManager } from '@api/app-bootstrap.manager';
+import { UserFactory } from '@app/database/factories/user.factory';
+import { AppDataSource } from '@app/database/config/datasource';
+import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { TicketFactory } from '@src/database/factories/ticket.factory';
-import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
-import { TicketTransferFactory } from '@src/database/factories/ticket-transfer.factory';
-import { UserStatus } from '@src/user/user.types';
-import { TicketStatus } from '@src/ticket/ticket.types';
-import { TicketTransferMessage } from '@src/ticket-transfer/messages/ticket-transfer.message';
-import { TicketTransferEventPattern } from '@src/ticket-transfer/ticket-transfer.types';
-import { Outbox } from '@src/outbox/outbox.entity';
+import { TicketFactory } from '@app/database/factories/ticket.factory';
+import { TicketTransfer } from '@api/ticket-transfer/ticket-transfer.entity';
+import { TicketTransferFactory } from '@app/database/factories/ticket-transfer.factory';
+import { UserStatus } from '@api/user/user.types';
+import { TicketStatus } from '@api/ticket/ticket.types';
+import { TicketTransferMessage } from '@api/ticket-transfer/messages/ticket-transfer.message';
+import { TicketTransferEventPattern } from '@api/ticket-transfer/ticket-transfer.types';
+import { Outbox } from '@api/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
-import { OutboxStatus } from '@src/outbox/outbox.types';
+import { OutboxStatus } from '@api/outbox/outbox.types';
 
 describe('Ticket-transfer (e2e)', () => {
   let app: INestApplication;

@@ -1,5 +1,5 @@
-import { EncryptedData } from '@src/ticket-provider-encryption-key/ticket-provider-encryption.types';
-import { User } from '@src/user/user.entity';
+import { EncryptedData } from '@api/ticket-provider-encryption-key/ticket-provider-encryption.types';
+import { User } from '@api/user/user.entity';
 import { v4 as uuid } from 'uuid';
 import { Ticket } from '../ticket.entity';
 

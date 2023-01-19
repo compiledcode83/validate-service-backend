@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { PaginatedResult } from '@src/common/pagination/pagination.types';
-import { EventService } from '@src/event/event.service';
-import { OutboxService } from '@src/outbox/outbox.service';
+import { PaginatedResult } from '@api/common/pagination/pagination.types';
+import { EventService } from '@api/event/event.service';
+import { OutboxService } from '@api/outbox/outbox.service';
 import { Not, QueryRunner } from 'typeorm';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { ProducerService } from '@src/producer/producer.service';
+import { ProducerService } from '@api/producer/producer.service';
 
 @Injectable()
 export class ProducerTasks {

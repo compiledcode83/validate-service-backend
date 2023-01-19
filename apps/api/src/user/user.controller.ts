@@ -13,10 +13,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
-import { ParamToBodyInterceptor } from '@src/common/interceptors/param-to-body.interceptor';
-import { RequestToBodyInterceptor } from '@src/common/interceptors/request-to-body.interceptor';
-import { AuthRequest } from '@src/common/types/auth.request';
+import { ApiResponseHelper } from '@api/common/helpers/api-response.helper';
+import { ParamToBodyInterceptor } from '@api/common/interceptors/param-to-body.interceptor';
+import { RequestToBodyInterceptor } from '@api/common/interceptors/request-to-body.interceptor';
+import { AuthRequest } from '@api/common/types/auth.request';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';

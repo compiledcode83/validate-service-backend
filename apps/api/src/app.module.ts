@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { EnvHelper } from './common/helpers/env.helper';
-import { validate } from './common/validators/env.validator';
+import { EnvHelper } from '../../../libs/env/src/env.helper';
+import { validateApi } from '../../../libs/env/src/env.validator';
 import { TicketProviderModule } from './ticket-provider/ticket-provider.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
@@ -19,8 +17,8 @@ import { RedisModule } from './redis/redis.module';
 import { OutboxModule } from './outbox/outbox.module';
 import { SentryModule } from './sentry/sentry.module';
 import { TicketTypeModule } from './ticket-type/ticket-type.module';
+import { DatabaseModule } from '@app/database';
 import appConfig from './config/app.config';
-import databaseConfig from './config/database.config';
 import kafkaConfig from './config/kafka.config';
 import jwtConfig from './config/jwt.config';
 import redisConfig from './config/redis.config';
@@ -32,22 +30,10 @@ EnvHelper.verifyNodeEnv();
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
-      load: [appConfig, databaseConfig, kafkaConfig, jwtConfig, redisConfig],
-      validate: validate,
+      load: [appConfig, kafkaConfig, jwtConfig, redisConfig],
+      validate: validateApi,
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
-        const config = configService.get('databaseConfig');
-
-        return {
-          ...config,
-          namingStrategy: new SnakeNamingStrategy(),
-          autoLoadEntities: true,
-        };
-      },
-      inject: [ConfigService],
-    }),
+    DatabaseModule,
     TicketProviderModule,
     UserModule,
     AuthModule,

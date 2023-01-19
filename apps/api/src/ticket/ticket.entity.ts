@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
-import { TicketTransfer } from '@src/ticket-transfer/ticket-transfer.entity';
-import { TicketType } from '@src/ticket-type/ticket-type.entity';
-import { User } from '@src/user/user.entity';
+import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketTransfer } from '@api/ticket-transfer/ticket-transfer.entity';
+import { TicketType } from '@api/ticket-type/ticket-type.entity';
+import { User } from '@api/user/user.entity';
 import { Exclude, Expose } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { TicketAdditionalData, TicketStatus } from './ticket.types';

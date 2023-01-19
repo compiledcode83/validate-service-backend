@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { TicketTransferService } from '@src/ticket-transfer/ticket-transfer.service';
-import { TicketService } from '@src/ticket/ticket.service';
-import { UserService } from '@src/user/user.service';
+import { TicketTransferService } from '@api/ticket-transfer/ticket-transfer.service';
+import { TicketService } from '@api/ticket/ticket.service';
+import { UserService } from '@api/user/user.service';
 import { TicketDeleteReplyMessage } from './messages/ticket-delete-reply.message';
 import { TicketCreateReplyMessage } from './messages/ticket-create-reply.message';
 import { TicketTransferReplyMessage } from './messages/ticket-transfer-reply.message';

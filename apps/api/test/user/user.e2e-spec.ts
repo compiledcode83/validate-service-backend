@@ -1,19 +1,19 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppBootstrapManager } from '@src/app-bootstrap.manager';
-import { UserFactory } from '@src/database/factories/user.factory';
-import { AppDataSource } from '@src/config/datasource';
-import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
+import { AppBootstrapManager } from '@api/app-bootstrap.manager';
+import { UserFactory } from '@app/database/factories/user.factory';
+import { AppDataSource } from '@app/database/config/datasource';
+import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { UserEventPattern, UserStatus } from '@src/user/user.types';
+import { UserEventPattern, UserStatus } from '@api/user/user.types';
 import { faker } from '@faker-js/faker';
-import { User } from '@src/user/user.entity';
-import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provider.types';
-import { UserCreateMessage } from '@src/user/messages/user-create.message';
-import { Outbox } from '@src/outbox/outbox.entity';
+import { User } from '@api/user/user.entity';
+import { TicketProviderUserIdentifier } from '@api/ticket-provider/ticket-provider.types';
+import { UserCreateMessage } from '@api/user/messages/user-create.message';
+import { Outbox } from '@api/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
-import { OutboxStatus } from '@src/outbox/outbox.types';
+import { OutboxStatus } from '@api/outbox/outbox.types';
 
 describe('User (e2e)', () => {
   let app: INestApplication;

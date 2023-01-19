@@ -1,6 +1,6 @@
-import { CreateTicketTransferDto } from '@src/ticket-transfer/dto/create-ticket-transfer.dto';
-import { UserService } from '@src/user/user.service';
-import { UserStatus } from '@src/user/user.types';
+import { CreateTicketTransferDto } from '@api/ticket-transfer/dto/create-ticket-transfer.dto';
+import { UserService } from '@api/user/user.service';
+import { UserStatus } from '@api/user/user.types';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { CreateTicketDto } from '../dto/create-ticket.dto';
 

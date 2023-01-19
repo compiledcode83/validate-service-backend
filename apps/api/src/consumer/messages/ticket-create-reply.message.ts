@@ -1,5 +1,5 @@
-import { Ticket } from '@src/ticket/ticket.entity';
-import { User } from '@src/user/user.entity';
+import { Ticket } from '@api/ticket/ticket.entity';
+import { User } from '@api/user/user.entity';
 
 export class TicketCreateReplyMessage {
   operationUuid: string;

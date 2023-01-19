@@ -1,4 +1,4 @@
-import { RedisService } from '@src/redis/redis.service';
+import { RedisService } from '@api/redis/redis.service';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { ValidateTicketDto } from '../dto/validate-ticket.dto';
 import { TicketService } from '../ticket.service';

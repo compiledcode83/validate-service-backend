@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import { TicketProviderRefreshTokenService } from '@src/ticket-provider-refresh-token/ticket-provider-refresh-token.service';
+import { TicketProviderRefreshTokenService } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.service';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { RefreshTokensDto } from '../dto/refresh-tokens.dto';
 

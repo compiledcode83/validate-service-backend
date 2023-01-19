@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@src/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
 import { Type } from 'class-transformer';
 import { Allow, IsObject, IsOptional, IsUrl, MaxLength, ValidateNested } from 'class-validator';
 import { TicketAdditionalData } from '../ticket.types';

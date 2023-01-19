@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
-import { CursorFilterDto } from '@src/common/pagination/cursor-filter.dto';
+import { CursorFilterDto } from '@api/common/pagination/cursor-filter.dto';
 import { Type } from 'class-transformer';
 import { Event } from '../event.entity';
 

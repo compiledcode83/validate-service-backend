@@ -10,26 +10,21 @@
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    
     "api:start": "nest start api",
     "api:start:dev": "nest start api --watch",
     "api:start:debug": "nest start api --debug --watch",
     "api:start:prod": "node dist/api/main",
-    
-    "test": "jest --config ./test/jest.json --maxWorkers=1 --forceExit",
-    "test:ci": "jest --config ./test/jest.json --ci --reporters=default --reporters=jest-junit --maxWorkers=1 --logHeapUsage --colors --forceExit",
-    "test:watch": "jest --config ./test/jest.json --watch",
-    "test:cov": "jest --config ./test/jest.json --coverage",
-    "test:debug": "node --config ./test/jest.json --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    
-    "migration:run": "NODE_ENV=development npx typeorm-ts-node-commonjs migration:run --dataSource ./src/config/datasource.ts",
-    "migration:run:ci": "NODE_ENV=test npx typeorm-ts-node-commonjs migration:run --dataSource ./src/config/datasource.ts",
+    "test": "jest --config ./apps/api/test/jest.json --maxWorkers=1 --forceExit",
+    "test:ci": "jest --config ./apps/api/test/jest.json --ci --reporters=default --reporters=jest-junit --maxWorkers=1 --logHeapUsage --colors --forceExit",
+    "test:watch": "jest --config ./apps/api/test/jest.json --watch",
+    "test:cov": "jest --config ./apps/api/test/jest.json --coverage",
+    "test:debug": "node --config ./apps/api/test/jest.json --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "migration:run": "NODE_ENV=development npx typeorm-ts-node-commonjs migration:run --dataSource ./libs/database/src/config/datasource.ts",
+    "migration:run:ci": "NODE_ENV=test npx typeorm-ts-node-commonjs migration:run --dataSource ./libs/database/src/config/datasource.ts",
     "migration:revert": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:revert",
     "migration:generate": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generate --",
     "migration:create": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:create --",
-    
     "repl": "npm run start -- --entryFile repl",
-
     "consumer": "npm run start -- --entryFile consumer",
     "consumer:dev": "npm run start -- --watch --entryFile consumer",
     "producer": "npm run start -- --entryFile producer",
@@ -133,7 +128,9 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/ticket-provider-encryption-key(|/.*)$": "<rootDir>/libs/ticket-provider-encryption-key/src/$1"
+      "^@app/ticket-provider-encryption-key(|/.*)$": "<rootDir>/libs/ticket-provider-encryption-key/src/$1",
+      "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
+      "^@app/env(|/.*)$": "<rootDir>/libs/env/src/$1"
     }
   }
 }

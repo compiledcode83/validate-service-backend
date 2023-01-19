@@ -1,6 +1,6 @@
 import { TestingModule } from '@nestjs/testing';
-import { AppDataSource } from '@src/config/datasource';
-import { TicketProviderApiTokenFactory } from '@src/database/factories/ticket-provider-api-token.factory';
+import { AppDataSource } from '@app/database/config/datasource';
+import { TicketProviderApiTokenFactory } from '@app/database/factories/ticket-provider-api-token.factory';
 
 type JestType = typeof jest;
 

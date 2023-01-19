@@ -15,13 +15,13 @@ import { AuthRequest, GuestRequest } from './auth.types';
 import { Public } from './decorators/public.decorator';
 import { RefreshTokensDto } from './dto/refresh-tokens.dto';
 import { Response } from 'express';
-import { RequestToBodyInterceptor } from '@src/common/interceptors/request-to-body.interceptor';
-import { CookieToBodyInterceptor } from '@src/common/interceptors/cookie-to-body.interceptor';
+import { RequestToBodyInterceptor } from '@api/common/interceptors/request-to-body.interceptor';
+import { CookieToBodyInterceptor } from '@api/common/interceptors/cookie-to-body.interceptor';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { LoginDto } from './dto/login.dto';
 import { TokensResponseDto } from './dto/tokens-response.dto';
 import { ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
+import { ApiResponseHelper } from '@api/common/helpers/api-response.helper';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')

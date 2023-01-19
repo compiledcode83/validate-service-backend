@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Ticket } from '@src/ticket/ticket.entity';
+import { Ticket } from '@api/ticket/ticket.entity';
 import { DataSource, Repository } from 'typeorm';
 import { TicketTransfer } from './ticket-transfer.entity';
 import { TicketTransferStatus } from './ticket-transfer.types';

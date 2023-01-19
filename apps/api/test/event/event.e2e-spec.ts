@@ -1,21 +1,21 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppBootstrapManager } from '@src/app-bootstrap.manager';
-import { AppDataSource } from '@src/config/datasource';
-import { TicketProviderFactory } from '@src/database/factories/ticket-provider.factory';
+import { AppBootstrapManager } from '@api/app-bootstrap.manager';
+import { AppDataSource } from '@app/database/config/datasource';
+import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
 import { faker } from '@faker-js/faker';
-import { TicketProviderUserIdentifier } from '@src/ticket-provider/ticket-provider.types';
-import { EventFactory } from '@src/database/factories/event.factory';
+import { TicketProviderUserIdentifier } from '@api/ticket-provider/ticket-provider.types';
+import { EventFactory } from '@app/database/factories/event.factory';
 import { DateTime } from 'luxon';
-import { DATE_FORMAT } from '@src/ticket-type/ticket-type.types';
-import { EventCreateMessage } from '@src/event/messages/event-create.message';
-import { Outbox } from '@src/outbox/outbox.entity';
+import { DATE_FORMAT } from '@api/ticket-type/ticket-type.types';
+import { EventCreateMessage } from '@api/event/messages/event-create.message';
+import { Outbox } from '@api/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
-import { EventEventPattern } from '@src/event/event.types';
-import { OutboxStatus } from '@src/outbox/outbox.types';
-import { Event } from '@src/event/event.entity';
+import { EventEventPattern } from '@api/event/event.types';
+import { OutboxStatus } from '@api/outbox/outbox.types';
+import { Event } from '@api/event/event.entity';
 
 describe('Events (e2e)', () => {
   let app: INestApplication;

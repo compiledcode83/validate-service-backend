@@ -5,9 +5,9 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserEventPattern, UserStatus } from './user.types';
 import { UserCreateMessage } from './messages/user-create.message';
-import { CreateTicketUserDto } from '@src/ticket/dto/create-ticket-user.dto';
+import { CreateTicketUserDto } from '@api/ticket/dto/create-ticket-user.dto';
 import { QueryRunner } from 'typeorm';
-import { OutboxService } from '@src/outbox/outbox.service';
+import { OutboxService } from '@api/outbox/outbox.service';
 
 @Injectable()
 export class UserService {

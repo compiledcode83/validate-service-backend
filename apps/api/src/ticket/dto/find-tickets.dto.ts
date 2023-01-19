@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsIn, IsInt, IsOptional, IsUUID, Max, Min } from 'class-validator';
-import { CursorFilterDto } from '@src/common/pagination/cursor-filter.dto';
+import { CursorFilterDto } from '@api/common/pagination/cursor-filter.dto';
 import { Ticket } from '../ticket.entity';
 import { Type } from 'class-transformer';
 import { TicketStatus } from '../ticket.types';

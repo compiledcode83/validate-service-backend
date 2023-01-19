@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { InternalServerErrorExceptionsFilter } from './common/filters/internal-server-error-exceptions.filter';
 import { ProducerModule } from './producer/producer.module';
 import * as dotenv from 'dotenv';
-import { EnvHelper } from './common/helpers/env.helper';
+import { EnvHelper } from '../../../libs/env/src/env.helper';
 
 EnvHelper.verifyNodeEnv();
 

@@ -11,9 +11,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
-import { RequestToBodyInterceptor } from '@src/common/interceptors/request-to-body.interceptor';
-import { AuthRequest } from '@src/common/types/auth.request';
+import { ApiResponseHelper } from '@api/common/helpers/api-response.helper';
+import { RequestToBodyInterceptor } from '@api/common/interceptors/request-to-body.interceptor';
+import { AuthRequest } from '@api/common/types/auth.request';
 import { TicketProviderEncryptionKey } from './ticket-provider-encryption-key.entity';
 import { TicketProviderEncryptionKeyService } from './ticket-provider-encryption-key.service';
 

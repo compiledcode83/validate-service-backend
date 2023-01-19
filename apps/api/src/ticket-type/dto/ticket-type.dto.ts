@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CurrencyEnum } from '@src/common/types/currency.enum';
-import { DateValidator } from '@src/common/validators/date.validator';
+import { CurrencyEnum } from '@api/common/types/currency.enum';
+import { DateValidator } from '@api/common/validators/date.validator';
 import { Type } from 'class-transformer';
 import { IsDateString, IsEnum, IsIn, IsNumber, IsOptional, Max, Min, Validate, ValidateIf } from 'class-validator';
 import { TicketTypeResaleStatus, TicketTypeSaleStatus } from '../ticket-type.types';

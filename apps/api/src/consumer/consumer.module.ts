@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConsumerService } from './consumer.service';
 import { ConsumerController } from './consumer.controller';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EnvHelper } from '@src/common/helpers/env.helper';
-import { validate } from '@src/common/validators/env.validator';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { UserModule } from '@src/user/user.module';
-import { TicketModule } from '@src/ticket/ticket.module';
-import { TicketTransferModule } from '@src/ticket-transfer/ticket-transfer.module';
-import databaseConfig from '@src/config/database.config';
-import kafkaConfig from '@src/config/kafka.config';
+import { ConfigModule } from '@nestjs/config';
+import { EnvHelper } from '@app/env/env.helper';
+import { validateApi } from '@app/env/env.validator';
+import { UserModule } from '@api/user/user.module';
+import { TicketModule } from '@api/ticket/ticket.module';
+import { TicketTransferModule } from '@api/ticket-transfer/ticket-transfer.module';
+import kafkaConfig from '@api/config/kafka.config';
+import { DatabaseModule } from '@app/database';
 
 EnvHelper.verifyNodeEnv();
 
@@ -19,22 +17,10 @@ EnvHelper.verifyNodeEnv();
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
-      load: [databaseConfig, kafkaConfig],
-      validate: validate,
+      load: [kafkaConfig],
+      validate: validateApi,
     }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
-        const config = configService.get('databaseConfig');
-
-        return {
-          ...config,
-          namingStrategy: new SnakeNamingStrategy(),
-          autoLoadEntities: true,
-        };
-      },
-      inject: [ConfigService],
-    }),
+    DatabaseModule,
     UserModule,
     TicketModule,
     TicketTransferModule,

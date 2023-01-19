@@ -6,7 +6,7 @@ import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 import { UserExistsByUuidValidator } from './validators/user-exists-by-uuid.validator';
 import { UserExistsByIdentifierValidator } from './validators/user-exists-by-identifier.validator';
-import { OutboxModule } from '@src/outbox/outbox.module';
+import { OutboxModule } from '@api/outbox/outbox.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), OutboxModule],
