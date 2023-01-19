@@ -1,15 +1,10 @@
-import { DataSource } from 'typeorm';
+import { registerAs } from '@nestjs/config';
 import path = require('path');
-import * as dotenv from 'dotenv';
-import { EnvHelper } from '@src/common/helpers/env.helper';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
-dotenv.config({ path: EnvHelper.getEnvFilePath() });
-
-export const AppDataSource = new DataSource({
+export default registerAs('databaseConfig', () => ({
   type: 'mysql',
   host: process.env.TYPEORM_HOST,
-  port: Number(process.env.TYPEORM_PORT),
+  port: process.env.TYPEORM_PORT || 3306,
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
@@ -17,14 +12,20 @@ export const AppDataSource = new DataSource({
   subscribers: [path.join(__dirname, '../**/*.subscriber{.ts,.js}')],
   synchronize: false,
   logging: process.env.TYPEORM_LOGGING === 'true',
-  migrations: [path.join(__dirname, '../database/migrations/*')],
+  migrationsTableName: 'migrations',
+  migrations: [path.join(__dirname, '../migrations/*{.ts,.js')],
   charset: 'utf8mb4_unicode_ci',
+  seeds: [path.join(__dirname, '../database/seeds/**/*{.ts,.js}')],
+  factories: [path.join(__dirname, '../database/factories/**/*{.ts,.js}')],
+  cli: {
+    entitiesDir: 'src/**/',
+    migrationsDir: process.env.TYPEORM_MIGRATIONS_DIR,
+  },
   legacySpatialSupport: false,
   extra: {
     connectionLimit: process.env.MYSQL_CONNECTION_LIMIT || 200,
     waitForConnections: process.env.MYSQL_WAIT_FOR_CONNECTIONS === 'true',
   },
-  poolSize: Number(process.env.TYPEORM_POOL_SIZE),
-  namingStrategy: new SnakeNamingStrategy(),
-  ssl: { rejectUnauthorized: process.env.MYSQL_TLS === 'true' },
-});
+  poolSize: process.env.TYPEORM_POOL_SIZE,
+  ssl: false,
+}));

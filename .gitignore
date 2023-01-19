@@ -40,3 +40,5 @@ lerna-debug.log*
 !.env.test
 
 /terraform/.terraform/*
+
+junit.xml

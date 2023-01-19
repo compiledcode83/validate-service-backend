@@ -18,11 +18,23 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@src/*": ["src/*"],
-      "@test/*": ["test/*"],
+      "@src/*": [
+        "apps/api/src/*"
+      ],
+      "@test/*": [
+        "apps/api/test/*"
+      ],
+      "@app/ticket-provider-encryption-key": [
+        "libs/ticket-provider-encryption-key/src"
+      ],
+      "@app/ticket-provider-encryption-key/*": [
+        "libs/ticket-provider-encryption-key/src/*"
+      ]
     }
   },
   "ts-node": {
-    "require": ["tsconfig-paths/register"]
-  },
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  }
 }

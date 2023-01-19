@@ -69,7 +69,7 @@ export class TicketType {
   salePrice: string;
 
   @ApiProperty({ description: 'Sale currency', required: true, enum: CurrencyEnum })
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'enum', enum: CurrencyEnum })
   saleCurrency: CurrencyEnum;
 
   @ApiProperty({ description: 'Is resale enabled', example: TicketTypeResaleStatus.Disabled, required: true })
@@ -93,7 +93,7 @@ export class TicketType {
   resaleMaxPrice: string;
 
   @ApiProperty({ description: 'Resale currency', required: true, enum: CurrencyEnum })
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'enum', enum: CurrencyEnum })
   resaleCurrency: CurrencyEnum;
 
   @ApiProperty({ description: 'Created at date', required: true })
