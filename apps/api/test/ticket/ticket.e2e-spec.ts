@@ -14,7 +14,6 @@ import { TicketEventPattern, TicketStatus } from '@api/ticket/ticket.types';
 import { TicketProviderSecurityLevel } from '@api/ticket-provider/ticket-provider.types';
 import { TicketCreateMessage } from '@api/ticket/messages/ticket-create.message';
 import { TicketProviderEncryptionKeyFactory } from '@app/database/factories/ticket-provider-encryption-key.factory';
-import { TicketProviderEncryptionService } from '@api/ticket-provider-encryption-key/ticket-provider-encryption.service';
 import { TicketDeleteMessage } from '@api/ticket/messages/ticket-delete.message';
 import { User } from '@api/user/user.entity';
 import { MoreThan, Not } from 'typeorm';
@@ -26,6 +25,7 @@ import { Event } from '@api/event/event.entity';
 import { EventFactory } from '@app/database/factories/event.factory';
 import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
 import { DATE_FORMAT } from '@api/ticket-type/ticket-type.types';
+import { TicketProviderEncryptionService } from '@app/ticket-provider-encryption-key';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;

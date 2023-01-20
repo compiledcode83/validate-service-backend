@@ -5,9 +5,9 @@ import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { AppDataSource } from '@app/database/config/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
-import { SECRET_KEY_LENGTH } from '@api/ticket-provider-encryption-key/ticket-provider-encryption.types';
 import { TicketProviderEncryptionKeyFactory } from '@app/database/factories/ticket-provider-encryption-key.factory';
 import { ProducerService } from '@api/producer/producer.service';
+import { SECRET_KEY_LENGTH } from '@app/ticket-provider-encryption-key/ticket-provider-encryption.types';
 
 describe('Ticket-provider-encryption-keys (e2e)', () => {
   let app: INestApplication;

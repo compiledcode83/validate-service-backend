@@ -7,7 +7,6 @@ import { Ticket } from './ticket.entity';
 import { TicketRepository } from './ticket.repository';
 import { DEFAULT_IMAGE, TicketEventPattern, TicketStatus } from './ticket.types';
 import { TicketCreateMessage } from './messages/ticket-create.message';
-import { TicketProviderEncryptionKeyService } from '@api/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
 import { TicketProviderSecurityLevel } from '@api/ticket-provider/ticket-provider.types';
 import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
 import { User } from '@api/user/user.entity';
@@ -18,6 +17,7 @@ import { EventService } from '@api/event/event.service';
 import { OutboxService } from '@api/outbox/outbox.service';
 import { TicketValidateMessage } from './messages/ticket-validate.message';
 import { TicketTypeService } from '@api/ticket-type/ticket-type.service';
+import { TicketProviderEncryptionKeyService } from '@app/ticket-provider-encryption-key';
 
 @Injectable()
 export class TicketService {

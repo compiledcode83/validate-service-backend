@@ -1,15 +1,16 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": "../",
+  "rootDir": "../../../",
   "testEnvironment": "node",
   "testRegex": "spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "^@api/(.*)$": "<rootDir>/src/$1",
-    "^@test/(.*)$": "<rootDir>/test/$1",
-    "^@app/database(.*)$": "<rootDir>/../../libs/database/src",
-    "^@app/env(.*)$": "<rootDir>/../../libs/env/src"
+    "^@api/(.*)$": "<rootDir>/apps/api/src/$1",
+    "^@test/(.*)$": "<rootDir>/apps/api/test/$1",
+    "^@app/database(.*)$": "<rootDir>/libs/database/src",
+    "^@app/env(.*)$": "<rootDir>/libs/env/src",
+    "^@app/ticket-provider-encryption-key(.*)$": "<rootDir>/libs/ticket-provider-encryption-key/src"
   }
 }
