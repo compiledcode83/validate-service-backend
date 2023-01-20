@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Allow, IsIn, IsInt, IsOptional, IsUUID, Max, Min, Validate } from 'class-validator';
-import { CursorFilterDto } from '@api/common/pagination/cursor-filter.dto';
 import { Type } from 'class-transformer';
 import { EventExistsValidator } from '../validators/event-exists.validator';
 import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
 import { TicketType } from '../ticket-type.entity';
+import { CursorFilterDto } from '@app/common';
 
 export class FindTicketTypesDto extends CursorFilterDto {
   @ApiProperty({

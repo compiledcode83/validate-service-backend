@@ -11,11 +11,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@api/common/helpers/api-response.helper';
-import { RequestToBodyInterceptor } from '@api/common/interceptors/request-to-body.interceptor';
-import { AuthRequest } from '@api/common/types/auth.request';
 import { TicketProviderEncryptionKeyService } from '@app/ticket-provider-encryption-key';
 import { TicketProviderEncryptionKey } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.entity';
+import { ApiResponseHelper, AuthRequest, RequestToBodyInterceptor } from '@app/common';
 
 @ApiResponse(ApiResponseHelper.unauthorized())
 @Controller('ticket-provider-encryption-keys')

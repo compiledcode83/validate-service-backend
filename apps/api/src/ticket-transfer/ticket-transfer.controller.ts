@@ -1,3 +1,4 @@
+import { ApiResponseHelper, AuthRequest, RequestToBodyInterceptor } from '@app/common';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -12,9 +13,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@api/common/helpers/api-response.helper';
-import { RequestToBodyInterceptor } from '@api/common/interceptors/request-to-body.interceptor';
-import { AuthRequest } from '@api/common/types/auth.request';
 import { CreateTicketTransferDto } from './dto/create-ticket-transfer.dto';
 import { TicketTransfer } from './ticket-transfer.entity';
 import { TicketTransferService } from './ticket-transfer.service';

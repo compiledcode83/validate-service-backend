@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { PaginatedResultCursor } from "@api/common/pagination/pagination.types";
-import { TicketType } from "./ticket-type.entity";
+import { PaginatedResultCursor } from '@app/common';
+import { ApiProperty } from '@nestjs/swagger';
+import { TicketType } from './ticket-type.entity';
 
 export enum TicketTypeResaleStatus {
   Disabled,

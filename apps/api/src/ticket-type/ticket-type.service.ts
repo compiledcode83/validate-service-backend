@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { PaginatedResult } from '@api/common/pagination/pagination.types';
 import { EventService } from '@api/event/event.service';
 import { OutboxService } from '@api/outbox/outbox.service';
 import { Not, QueryRunner } from 'typeorm';
@@ -12,6 +11,7 @@ import { TicketTypeUpdateMessage } from './messages/ticket-type-update.message';
 import { TicketType } from './ticket-type.entity';
 import { TicketTypeRepository } from './ticket-type.repository';
 import { TicketTypeEventPattern } from './ticket-type.types';
+import { PaginatedResult } from '@app/common';
 
 @Injectable()
 export class TicketTypeService {

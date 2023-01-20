@@ -5,7 +5,7 @@ import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { AppDataSource } from '@app/database/config/datasource';
 import { TestHelper } from '@test/helpers/test.helper';
 import { ProducerService } from '@api/producer/producer.service';
-import { InternalServerErrorExceptionsFilter } from '@api/common/filters/internal-server-error-exceptions.filter';
+import { InternalServerErrorExceptionsFilter } from '@app/common/filters/internal-server-error-exceptions.filter';
 import { OutboxFactory } from '@app/database/factories/outbox.factory';
 import { TicketEventPattern } from '@api/ticket/ticket.types';
 import { OutboxStatus } from '@api/outbox/outbox.types';

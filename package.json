@@ -130,7 +130,8 @@
     "moduleNameMapper": {
       "^@app/ticket-provider-encryption-key(|/.*)$": "<rootDir>/libs/ticket-provider-encryption-key/src/$1",
       "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
-      "^@app/env(|/.*)$": "<rootDir>/libs/env/src/$1"
+      "^@app/env(|/.*)$": "<rootDir>/libs/env/src/$1",
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
     }
   }
 }

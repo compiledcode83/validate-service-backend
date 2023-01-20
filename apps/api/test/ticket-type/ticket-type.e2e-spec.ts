@@ -17,7 +17,7 @@ import { Outbox } from '@api/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
 import { OutboxStatus } from '@api/outbox/outbox.types';
 import { TicketTypeUpdateMessage } from '@api/ticket-type/messages/ticket-type-update.message';
-import { CurrencyEnum } from '@api/common/types/currency.enum';
+import { CurrencyEnum } from '@app/common';
 
 describe('Ticket-types (e2e)', () => {
   let app: INestApplication;

@@ -1,5 +1,5 @@
+import { PaginatedResultCursor } from '@app/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginatedResultCursor } from '@api/common/pagination/pagination.types';
 import { Event } from './event.entity';
 
 export class EventPaginatedResult {

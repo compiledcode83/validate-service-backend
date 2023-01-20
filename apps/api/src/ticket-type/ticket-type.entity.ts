@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CurrencyEnum } from '@api/common/types/currency.enum';
 import { Event } from '@api/event/event.entity';
 import { Ticket } from '@api/ticket/ticket.entity';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { TicketTypeResaleStatus, TicketTypeSaleStatus } from './ticket-type.types';
+import { CurrencyEnum } from '@app/common';
 
 @Entity('ticket_type')
 export class TicketType {

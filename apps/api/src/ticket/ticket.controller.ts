@@ -1,3 +1,4 @@
+import { ApiResponseHelper, AuthRequest, ParamToBodyInterceptor, RequestToBodyInterceptor } from '@app/common';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -15,10 +16,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@api/common/helpers/api-response.helper';
-import { ParamToBodyInterceptor } from '@api/common/interceptors/param-to-body.interceptor';
-import { RequestToBodyInterceptor } from '@api/common/interceptors/request-to-body.interceptor';
-import { AuthRequest } from '@api/common/types/auth.request';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';

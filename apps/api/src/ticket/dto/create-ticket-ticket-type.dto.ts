@@ -1,5 +1,5 @@
+import { DateValidator } from '@app/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { DateValidator } from '@api/common/validators/date.validator';
 import { IsOptional, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 
 export class CreateTicketTicketTypeDto {
