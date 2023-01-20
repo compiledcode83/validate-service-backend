@@ -8,8 +8,14 @@ export default registerAs('databaseConfig', () => ({
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
   database: process.env.TYPEORM_DATABASE,
-  entities: [path.join(__dirname, '../../../../apps/**/*.entity{.ts,.js}')],
-  subscribers: [path.join(__dirname, '../../../../apps/**/*.subscriber{.ts,.js}')],
+  entities: [
+    path.join(__dirname, '../../../../apps/**/*.entity{.ts,.js}'),
+    path.join(__dirname, '../../../../libs/**/*.entity{.ts,.js}'),
+  ],
+  subscribers: [
+    path.join(__dirname, '../../../../apps/**/*.subscriber{.ts,.js}'),
+    path.join(__dirname, '../../../../libs/**/*.subscriber{.ts,.js}'),
+  ],
   synchronize: false,
   logging: process.env.TYPEORM_LOGGING === 'true',
   migrationsTableName: 'migrations',

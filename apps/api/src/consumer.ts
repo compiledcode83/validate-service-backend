@@ -1,12 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import * as kafkaConfig from './config/kafka.config';
 import * as appConfig from './config/app.config';
 import { ConsumerModule } from './consumer/consumer.module';
 import { Environment } from '../../../libs/env/src/env.validator';
+import kafkaConfig from '@app/common/configs/kafka.config';
 
 async function bootstrap() {
-  const kafkaOptions = kafkaConfig.default();
+  const kafkaOptions = kafkaConfig();
   const appOptions = appConfig.default();
 
   let saslConfig = {};

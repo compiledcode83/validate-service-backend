@@ -24,6 +24,9 @@
       "@test/*": [
         "apps/api/test/*"
       ],
+      "@producer/*": [
+        "apps/producer/src/*"
+      ],
       "@app/ticket-provider-encryption-key": [
         "libs/ticket-provider-encryption-key/src"
       ],

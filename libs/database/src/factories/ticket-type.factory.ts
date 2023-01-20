@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketType } from '@api/ticket-type/ticket-type.entity';
 
 export class TicketTypeFactory {

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { User } from '@api/user/user.entity';
 import { UserStatus } from '@api/user/user.types';
 

@@ -9,6 +9,7 @@
   "moduleNameMapper": {
     "^@api/(.*)$": "<rootDir>/apps/api/src/$1",
     "^@test/(.*)$": "<rootDir>/apps/api/test/$1",
+    "^@producer/(.*)$": "<rootDir>/apps/producer/src/$1",
     "^@app/database(.*)$": "<rootDir>/libs/database/src",
     "^@app/env(.*)$": "<rootDir>/libs/env/src",
     "^@app/ticket-provider-encryption-key(.*)$": "<rootDir>/libs/ticket-provider-encryption-key/src",

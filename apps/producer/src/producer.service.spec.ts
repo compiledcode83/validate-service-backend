@@ -1,53 +1,54 @@
-import { INestApplication } from '@nestjs/common';
-import { TestingModule } from '@nestjs/testing';
-import { faker } from '@faker-js/faker';
-import { AppBootstrapManager } from '@api/app-bootstrap.manager';
-import { AppDataSource } from '@app/database/config/datasource';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as dotenv from 'dotenv';
+import { ProducerService } from './producer.service';
+import { ProducerModule } from './producer.module';
+import { EnvHelper } from '@app/env/env.helper';
 import { TestHelper } from '@test/helpers/test.helper';
-import { ProducerService } from '@api/producer/producer.service';
-import { InternalServerErrorExceptionsFilter } from '@app/common/filters/internal-server-error-exceptions.filter';
 import { OutboxFactory } from '@app/database/factories/outbox.factory';
 import { TicketEventPattern } from '@api/ticket/ticket.types';
+import { faker } from '@faker-js/faker';
 import { OutboxStatus } from '@api/outbox/outbox.types';
 import { Outbox } from '@api/outbox/outbox.entity';
+import { AppDataSource } from '@app/common/configs/datasource';
 
-describe('Producer (e2e)', () => {
-  let app: INestApplication;
-  let moduleFixture: TestingModule;
+EnvHelper.verifyNodeEnv();
+
+dotenv.config({ path: EnvHelper.getEnvFilePath() });
+
+describe('ProducerService', () => {
+  let service: ProducerService;
   let testHelper: TestHelper;
-  let producerService: ProducerService;
 
   beforeAll(async () => {
-    const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
-    moduleFixture = await testingModuleBuilder.compile();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [ProducerModule],
+    }).compile();
 
-    producerService = moduleFixture.get<ProducerService>(ProducerService);
-    app = moduleFixture.createNestApplication();
-    app.useGlobalFilters(new InternalServerErrorExceptionsFilter());
-    app.enableShutdownHooks();
+    service = module.get<ProducerService>(ProducerService);
+    jest.spyOn(service, 'sendBatch');
 
-    jest.spyOn(producerService, 'sendBatch');
-    testHelper = new TestHelper(moduleFixture, jest);
+    testHelper = new TestHelper(module, jest);
+
     await AppDataSource.initialize();
-    await app.init();
   });
 
   afterAll(async () => {
     jest.resetAllMocks().restoreAllMocks();
     await AppDataSource.destroy();
-    await app.close();
   });
 
   beforeEach(async () => {
     await testHelper.cleanDatabase();
+    await service.client.connect();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.resetAllMocks();
+    await service.client.disconnect();
   });
 
   it('should read empty outbox table and send nothing', async () => {
-    const messages = await producerService.produceMessages();
+    const messages = await service.produceMessages();
 
     expect(messages).toEqual([]);
   });
@@ -58,7 +59,7 @@ describe('Producer (e2e)', () => {
       payload: JSON.stringify({ attribute: faker.random.word() }),
       status: OutboxStatus.Created,
     });
-    const messages = await producerService.produceMessages();
+    const messages = await service.produceMessages();
 
     expect(messages).toEqual(
       expect.arrayContaining([
@@ -81,7 +82,7 @@ describe('Producer (e2e)', () => {
       ]),
     );
 
-    expect(producerService.sendBatch).toHaveBeenCalledWith(messages);
+    expect(service.sendBatch).toHaveBeenCalledWith(messages);
 
     const [outboxRecordOne, ourboxRecordTwo] = await AppDataSource.manager.getRepository(Outbox).find({});
 

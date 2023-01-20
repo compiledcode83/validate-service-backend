@@ -1,4 +1,4 @@
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketTransfer } from '@api/ticket-transfer/ticket-transfer.entity';
 import { TicketTransferStatus } from '@api/ticket-transfer/ticket-transfer.types';
 

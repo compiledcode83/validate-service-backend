@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { DateTime } from 'luxon';
 import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { UserFactory } from '@app/database/factories/user.factory';
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
 import { faker } from '@faker-js/faker';

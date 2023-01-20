@@ -2,12 +2,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppBootstrapManager } from '@api/app-bootstrap.manager';
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
 import { TestHelper } from '@test/helpers/test.helper';
 import { TicketProviderEncryptionKeyFactory } from '@app/database/factories/ticket-provider-encryption-key.factory';
-import { ProducerService } from '@api/producer/producer.service';
 import { SECRET_KEY_LENGTH } from '@app/ticket-provider-encryption-key/ticket-provider-encryption.types';
+import { ProducerService } from '@producer/producer.service';
 
 describe('Ticket-provider-encryption-keys (e2e)', () => {
   let app: INestApplication;

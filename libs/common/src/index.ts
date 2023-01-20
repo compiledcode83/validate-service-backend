@@ -13,3 +13,4 @@ export * from './pagination/pagination.types';
 export * from './types/auth.request';
 export * from './types/currency.enum';
 export * from './validators/date.validator';
+export * from './configs/datasource';

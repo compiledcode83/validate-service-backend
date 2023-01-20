@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { DatabaseService } from './database.service';
-import databaseConfig from './config/database.config';
+import databaseConfig from '../../../libs/common/src/configs/database.config';
 
 EnvHelper.verifyNodeEnv();
 

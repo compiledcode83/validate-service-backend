@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { faker } from '@faker-js/faker';
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderRefreshToken } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
 
 export class TicketProviderRefreshTokenFactory {

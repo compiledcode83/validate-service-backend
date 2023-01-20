@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { Outbox } from '@api/outbox/outbox.entity';
 import { OutboxStatus } from '@api/outbox/outbox.types';
 

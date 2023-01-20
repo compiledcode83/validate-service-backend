@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { AppDataSource } from '@app/database/config/datasource';
+import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderApiToken } from '@api/ticket-provider-api-token/ticket-provider-api-token.entity';
 
 export class TicketProviderApiTokenFactory {

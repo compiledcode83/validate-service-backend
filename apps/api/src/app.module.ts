@@ -19,9 +19,9 @@ import { SentryModule } from './sentry/sentry.module';
 import { TicketTypeModule } from './ticket-type/ticket-type.module';
 import { DatabaseModule } from '@app/database';
 import appConfig from './config/app.config';
-import kafkaConfig from './config/kafka.config';
 import jwtConfig from './config/jwt.config';
-import redisConfig from './config/redis.config';
+import redisConfig from '../../../libs/common/src/configs/redis.config';
+import kafkaConfig from '../../../libs/common/src/configs/kafka.config';
 
 EnvHelper.verifyNodeEnv();
 

@@ -1,6 +1,5 @@
 export * from './database.module';
 export * from './database.service';
-export * from './config/datasource';
 export * from './factories/ticket-provider.factory';
 export * from './factories/ticket.factory';
 export * from './factories/event.factory';

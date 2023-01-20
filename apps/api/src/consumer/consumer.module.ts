@@ -7,8 +7,8 @@ import { validateApi } from '@app/env/env.validator';
 import { UserModule } from '@api/user/user.module';
 import { TicketModule } from '@api/ticket/ticket.module';
 import { TicketTransferModule } from '@api/ticket-transfer/ticket-transfer.module';
-import kafkaConfig from '@api/config/kafka.config';
 import { DatabaseModule } from '@app/database';
+import kafkaConfig from '../../../../libs/common/src/configs/kafka.config';
 
 EnvHelper.verifyNodeEnv();
 

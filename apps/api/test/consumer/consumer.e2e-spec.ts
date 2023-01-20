@@ -5,7 +5,6 @@ import waitForExpect from 'wait-for-expect';
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 import { TestHelper } from '../helpers/test.helper';
-import { ProducerService } from '../../src/producer/producer.service';
 import { AppBootstrapManager } from '../../src/app-bootstrap.manager';
 import { TicketEventPattern, TicketStatus } from '@api/ticket/ticket.types';
 import { TicketCreateReplyMessage } from '@api/consumer/messages/ticket-create-reply.message';
@@ -19,11 +18,12 @@ import { TicketTransferEventPattern, TicketTransferStatus } from '@api/ticket-tr
 import { TicketTransferFactory } from '@app/database/factories/ticket-transfer.factory';
 import { TicketTransferReplyMessage } from '@api/consumer/messages/ticket-transfer-reply.message';
 import { TicketTransfer } from '@api/ticket-transfer/ticket-transfer.entity';
-import kafkaConfig from '@api/config/kafka.config';
 import { UserEventPattern, UserStatus } from '@api/user/user.types';
 import { UserCreateReplyMessage } from '@api/consumer/messages/user-create-reply.message';
 import { User } from '@api/user/user.entity';
-import { AppDataSource } from '@app/database';
+import { ProducerService } from '@producer/producer.service';
+import kafkaConfig from '@app/common/configs/kafka.config';
+import { AppDataSource } from '@app/common';
 
 jest.setTimeout(30000);
 waitForExpect.defaults.timeout = 25000;

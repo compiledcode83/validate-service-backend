@@ -8,71 +8,71 @@ export enum Environment {
 }
 
 export class EnvironmentVariables {
-  @IsEnum(Environment, { groups: ['api'] })
+  @IsEnum(Environment, { groups: ['api', 'producer'] })
   NODE_ENV: Environment;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_HOST: string;
 
-  @IsInt({ groups: ['database'] })
-  @Min(1, { groups: ['database'] })
+  @IsInt({ groups: ['database', 'producer'] })
+  @Min(1, { groups: ['database', 'producer'] })
   TYPEORM_PORT: number;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_PASSWORD: string;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_DATABASE: string;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_USERNAME: string;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_CONNECTION: string;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_MIGRATIONS: string;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_MIGRATIONS_DIR: string;
 
-  @IsString({ groups: ['database'] })
-  @MinLength(1, { groups: ['database'] })
+  @IsString({ groups: ['database', 'producer'] })
+  @MinLength(1, { groups: ['database', 'producer'] })
   TYPEORM_LOGGING: string;
 
-  @IsInt({ groups: ['database'] })
-  @Min(10, { groups: ['database'] })
+  @IsInt({ groups: ['database', 'producer'] })
+  @Min(10, { groups: ['database', 'producer'] })
   TYPEORM_POOL_SIZE: number;
 
-  @IsIn(['true', 'false'], { groups: ['database'] })
+  @IsIn(['true', 'false'], { groups: ['database', 'producer'] })
   MYSQL_TLS: 'true' | 'false';
 
-  @IsString()
-  @MinLength(1)
+  @IsString({ groups: ['producer'] })
+  @MinLength(1, { groups: ['producer'] })
   KAFKA_BROKER_URL: string;
 
-  @IsString()
-  @MinLength(1)
+  @IsString({ groups: ['producer'] })
+  @MinLength(1, { groups: ['producer'] })
   KAFKA_CONSUMER_GROUP: string;
 
-  @IsIn(['true', 'false'])
+  @IsIn(['true', 'false'], { groups: ['producer'] })
   KAFKA_SSL: 'true' | 'false';
 
-  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
-  @IsString()
-  @MinLength(1)
+  @ValidateIf((o) => o.NODE_ENV === Environment.Production, { groups: ['producer'] })
+  @IsString({ groups: ['producer'] })
+  @MinLength(1, { groups: ['producer'] })
   KAFKA_USERNAME: string;
 
-  @ValidateIf((o) => o.NODE_ENV === Environment.Production)
-  @IsString()
-  @MinLength(1)
+  @ValidateIf((o) => o.NODE_ENV === Environment.Production, { groups: ['producer'] })
+  @IsString({ groups: ['producer'] })
+  @MinLength(1, { groups: ['producer'] })
   KAFKA_PASSWORD: string;
 
   @IsString({ groups: ['api'] })
@@ -103,19 +103,19 @@ export class EnvironmentVariables {
   @IsIn(['true', 'false'], { groups: ['api'] })
   API_JWT_REFRESH_TOKEN_COOKIE_HTTPONLY: 'true' | 'false';
 
-  @IsString()
-  @MinLength(1)
+  @IsString({ groups: ['api'] })
+  @MinLength(1, { groups: ['api'] })
   REDIS_HOST: string;
 
-  @IsString()
-  @MinLength(1)
+  @IsString({ groups: ['api'] })
+  @MinLength(1, { groups: ['api'] })
   REDIS_PORT: string;
 
-  @IsString()
-  @IsOptional()
+  @IsString({ groups: ['api'] })
+  @IsOptional({ groups: ['api'] })
   REDIS_PASSWORD: string;
 
-  @IsIn(['true', 'false'])
+  @IsIn(['true', 'false'], { groups: ['api'] })
   REDIS_TLS: 'true' | 'false';
 }
 
@@ -133,6 +133,17 @@ export function validateApi(config: Record<string, unknown>) {
 export function validateDatabaseConfig(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, { enableImplicitConversion: true });
   const errors = validateSync(validatedConfig, { skipMissingProperties: false, groups: ['database'] });
+
+  if (errors.length > 0) {
+    throw new Error(errors.toString());
+  }
+
+  return validatedConfig;
+}
+
+export function validateProducer(config: Record<string, unknown>) {
+  const validatedConfig = plainToInstance(EnvironmentVariables, config, { enableImplicitConversion: true });
+  const errors = validateSync(validatedConfig, { skipMissingProperties: false, groups: ['producer'] });
 
   if (errors.length > 0) {
     throw new Error(errors.toString());
