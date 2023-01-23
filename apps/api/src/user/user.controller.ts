@@ -1,4 +1,8 @@
-import { ApiResponseHelper, AuthRequest, ParamToBodyInterceptor, RequestToBodyInterceptor } from '@app/common';
+import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
+import { ParamToBodyInterceptor } from '@app/common/interceptors/param-to-body.interceptor';
+import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
+import { AuthRequest } from '@app/common/types/auth.request';
+import { User } from '@app/user/user.entity';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -16,7 +20,6 @@ import {
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @ApiResponse(ApiResponseHelper.unauthorized())

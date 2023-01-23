@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { EventService } from '@api/event/event.service';
-import { OutboxService } from '@api/outbox/outbox.service';
 import { Not, QueryRunner } from 'typeorm';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
-import { TicketTypeCreateMessage } from './messages/ticket-type-create.message';
-import { TicketTypeUpdateMessage } from './messages/ticket-type-update.message';
-import { TicketType } from './ticket-type.entity';
 import { TicketTypeRepository } from './ticket-type.repository';
-import { TicketTypeEventPattern } from './ticket-type.types';
-import { PaginatedResult } from '@app/common';
+import { EventService } from '@api/event/event.service';
+import { OutboxService } from '@app/outbox/outbox.service';
+import { TicketType } from '@app/ticket-type/ticket-type.entity';
+import { PaginatedResult } from '@app/common/pagination/pagination.types';
+import { TicketTypeCreateMessage } from '@app/ticket-type/messages/ticket-type-create.message';
+import { TicketTypeEventPattern } from '@app/ticket-type/ticket-type.types';
+import { TicketTypeUpdateMessage } from '@app/ticket-type/messages/ticket-type-update.message';
 
 @Injectable()
 export class TicketTypeService {

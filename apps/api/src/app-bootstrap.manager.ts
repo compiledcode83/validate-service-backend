@@ -6,9 +6,10 @@ import { useContainer } from 'class-validator';
 import { Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ApiKeyOrJwtGuard } from './auth/guards/api-key-or-jwt.guard';
-import { ConsumerModule } from './consumer/consumer.module';
-import { ProducerModule } from '../../producer/src/producer.module';
-import { InternalServerErrorExceptionsFilter, QueryFailedErrorExceptionsFilter } from '@app/common';
+import { InternalServerErrorExceptionsFilter } from '@app/common/filters/internal-server-error-exceptions.filter';
+import { QueryFailedErrorExceptionsFilter } from '@app/common/filters/query-failed-error-exception.filter';
+import { ConsumerModule } from '@consumer/consumer.module';
+import { ProducerModule } from '@producer/producer.module';
 
 export class AppBootstrapManager {
   static getTestingModuleBuilder(): TestingModuleBuilder {

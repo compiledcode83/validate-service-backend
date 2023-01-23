@@ -18,6 +18,10 @@
     "producer:start:dev": "nest start producer --watch",
     "producer:start:debug": "nest start producer --debug --watch",
     "producer:start:prod": "node dist/producer/main",
+    "consumer:start": "nest start consumer",
+    "consumer:start:dev": "nest start consumer --watch",
+    "consumer:start:debug": "nest start consumer --debug --watch",
+    "consumer:start:prod": "node dist/consumer/main",
     "test": "jest --config ./apps/api/test/jest.json --maxWorkers=1 --forceExit --verbose",
     "test:ci": "jest --config ./apps/api/test/jest.json --ci --reporters=default --reporters=jest-junit --maxWorkers=1 --logHeapUsage --colors --forceExit",
     "test:watch": "jest --config ./apps/api/test/jest.json --watch",
@@ -28,11 +32,7 @@
     "migration:revert": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:revert",
     "migration:generate": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:generate --",
     "migration:create": "dotenv -e .env.development ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm migration:create --",
-    "repl": "npm run start -- --entryFile repl",
-    "consumer": "npm run start -- --entryFile consumer",
-    "consumer:dev": "npm run start -- --watch --entryFile consumer",
-    "producer": "npm run start -- --entryFile producer",
-    "producer:dev": "npm run start -- --watch --entryFile producer"
+    "repl": "npm run start -- --entryFile repl"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
@@ -135,7 +135,16 @@
       "^@app/ticket-provider-encryption-key(|/.*)$": "<rootDir>/libs/ticket-provider-encryption-key/src/$1",
       "^@app/database(|/.*)$": "<rootDir>/libs/database/src/$1",
       "^@app/env(|/.*)$": "<rootDir>/libs/env/src/$1",
-      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@app/ticket(|/.*)$": "<rootDir>/libs/ticket/src/$1",
+      "^@app/event(|/.*)$": "<rootDir>/libs/event/src/$1",
+      "^@app/ticket-provider(|/.*)$": "<rootDir>/libs/ticket-provider/src/$1",
+      "^@app/ticket-transfer(|/.*)$": "<rootDir>/libs/ticket-transfer/src/$1",
+      "^@app/ticket-type(|/.*)$": "<rootDir>/libs/ticket-type/src/$1",
+      "^@app/user(|/.*)$": "<rootDir>/libs/user/src/$1",
+      "^@app/outbox(|/.*)$": "<rootDir>/libs/outbox/src/$1",
+      "^@app/redis(|/.*)$": "<rootDir>/libs/redis/src/$1",
+      "^@app/sentry(|/.*)$": "<rootDir>/libs/sentry/src/$1"
     }
   }
 }

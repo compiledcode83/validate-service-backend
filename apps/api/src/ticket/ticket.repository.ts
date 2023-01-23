@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Not, QueryRunner, Repository } from 'typeorm';
+import { Not, QueryRunner } from 'typeorm';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindTicketsDto } from './dto/find-tickets.dto';
-import { Ticket } from './ticket.entity';
-import { TicketStatus } from './ticket.types';
+import { TicketRepository as CommonRepository } from '@app/ticket/ticket.repository';
+import { Ticket } from '@app/ticket/ticket.entity';
+import { TicketStatus } from '@app/ticket/ticket.types';
 
 @Injectable()
-export class TicketRepository extends Repository<Ticket> {
-  constructor(public readonly dataSource: DataSource) {
-    super(Ticket, dataSource.manager);
-  }
-
+export class TicketRepository extends CommonRepository {
   async createTicket(queryRunner: QueryRunner, data: Partial<Ticket>) {
     return queryRunner.manager.save(this.create(data));
   }

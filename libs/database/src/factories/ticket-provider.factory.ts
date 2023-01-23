@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { AppDataSource } from '@app/common/configs/datasource';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
-import { TicketProviderSecurityLevel } from '@api/ticket-provider/ticket-provider.types';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
+import { TicketProviderSecurityLevel } from '@app/ticket-provider/ticket-provider.types';
 
 export class TicketProviderFactory {
   static async create(data?: Partial<TicketProvider>) {

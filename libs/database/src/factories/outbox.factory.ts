@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { AppDataSource } from '@app/common/configs/datasource';
-import { Outbox } from '@api/outbox/outbox.entity';
-import { OutboxStatus } from '@api/outbox/outbox.types';
+import { Outbox } from '@app/outbox/outbox.entity';
+import { OutboxStatus } from '@app/outbox/outbox.types';
 
 export class OutboxFactory {
   static async create(data?: Partial<Outbox>) {

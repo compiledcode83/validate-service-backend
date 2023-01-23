@@ -6,7 +6,7 @@ import { faker } from '@faker-js/faker';
 import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
-import { TestHelper } from '@test/helpers/test.helper';
+import { TestHelper } from '@app/common/helpers/test.helper';
 import { TicketProviderRefreshTokenFactory } from '@app/database/factories/ticket-provider-refresh-token.factory';
 import { TicketProviderService } from '@api/ticket-provider/ticket-provider.service';
 import { UserFactory } from '@app/database/factories/user.factory';

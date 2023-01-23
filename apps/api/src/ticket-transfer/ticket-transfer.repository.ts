@@ -1,15 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Ticket } from '@api/ticket/ticket.entity';
-import { DataSource, Repository } from 'typeorm';
-import { TicketTransfer } from './ticket-transfer.entity';
-import { TicketTransferStatus } from './ticket-transfer.types';
+import { TicketTransferRepository as CommonRepository } from '@app/ticket-transfer/ticket-transfer.repository';
+import { TicketTransfer } from '@app/ticket-transfer/ticket-transfer.entity';
+import { TicketTransferStatus } from '@app/ticket-transfer/ticket-transfer.types';
+import { Ticket } from '@app/ticket/ticket.entity';
 
 @Injectable()
-export class TicketTransferRepository extends Repository<TicketTransfer> {
-  constructor(public readonly dataSource: DataSource) {
-    super(TicketTransfer, dataSource.manager);
-  }
-
+export class TicketTransferRepository extends CommonRepository {
   async complete(uuid: string, transactionHash: string): Promise<TicketTransfer> {
     const queryRunner = this.dataSource.createQueryRunner();
 

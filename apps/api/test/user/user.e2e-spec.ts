@@ -5,15 +5,15 @@ import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { UserFactory } from '@app/database/factories/user.factory';
 import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
-import { TestHelper } from '@test/helpers/test.helper';
-import { UserEventPattern, UserStatus } from '@api/user/user.types';
+import { TestHelper } from '@app/common/helpers/test.helper';
+import { UserEventPattern, UserStatus } from '@app/user/user.types';
 import { faker } from '@faker-js/faker';
-import { User } from '@api/user/user.entity';
-import { TicketProviderUserIdentifier } from '@api/ticket-provider/ticket-provider.types';
-import { UserCreateMessage } from '@api/user/messages/user-create.message';
-import { Outbox } from '@api/outbox/outbox.entity';
+import { User } from '@app/user/user.entity';
+import { TicketProviderUserIdentifier } from '@app/ticket-provider/ticket-provider.types';
+import { UserCreateMessage } from '@app/user/messages/user-create.message';
+import { Outbox } from '@app/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
-import { OutboxStatus } from '@api/outbox/outbox.types';
+import { OutboxStatus } from '@app/outbox/outbox.types';
 
 describe('User (e2e)', () => {
   let app: INestApplication;

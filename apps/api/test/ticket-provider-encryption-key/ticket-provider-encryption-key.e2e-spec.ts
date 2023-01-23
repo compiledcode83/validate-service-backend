@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
-import { TestHelper } from '@test/helpers/test.helper';
+import { TestHelper } from '@app/common/helpers/test.helper';
 import { TicketProviderEncryptionKeyFactory } from '@app/database/factories/ticket-provider-encryption-key.factory';
 import { SECRET_KEY_LENGTH } from '@app/ticket-provider-encryption-key/ticket-provider-encryption.types';
 import { ProducerService } from '@producer/producer.service';

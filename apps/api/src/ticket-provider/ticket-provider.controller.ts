@@ -1,4 +1,6 @@
-import { ApiResponseHelper, AuthRequest } from '@app/common';
+import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
+import { AuthRequest } from '@app/common/types/auth.request';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import {
   ClassSerializerInterceptor,
   Controller,
@@ -9,7 +11,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { TicketProvider } from './ticket-provider.entity';
 import { TicketProviderService } from './ticket-provider.service';
 
 @ApiResponse(ApiResponseHelper.unauthorized())

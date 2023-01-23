@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './user.entity';
-import { UserRepository } from './user.repository';
-import { UserEventPattern, UserStatus } from './user.types';
-import { UserCreateMessage } from './messages/user-create.message';
 import { CreateTicketUserDto } from '@api/ticket/dto/create-ticket-user.dto';
 import { QueryRunner } from 'typeorm';
-import { OutboxService } from '@api/outbox/outbox.service';
+import { UserRepository } from './user.repository';
+import { UserCreateMessage } from '@app/user/messages/user-create.message';
+import { User } from '@app/user/user.entity';
+import { UserEventPattern, UserStatus } from '@app/user/user.types';
+import { OutboxService } from '@app/outbox/outbox.service';
 
 @Injectable()
 export class UserService {

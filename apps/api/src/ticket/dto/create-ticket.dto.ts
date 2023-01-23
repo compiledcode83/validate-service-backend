@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Type } from 'class-transformer';
 import { Allow, IsObject, IsOptional, IsUrl, MaxLength, ValidateNested } from 'class-validator';
-import { TicketAdditionalData } from '../ticket.types';
 import { CreateTicketEventDto } from './create-ticket-event.dto';
 import { CreateTicketTicketTypeDto } from './create-ticket-ticket-type.dto';
 import { CreateTicketUserDto } from './create-ticket-user.dto';
+import { TicketAdditionalData } from '@app/ticket/ticket.types';
 
 export class CreateTicketDto {
   @ApiProperty({

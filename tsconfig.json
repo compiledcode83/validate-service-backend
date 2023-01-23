@@ -27,6 +27,9 @@
       "@producer/*": [
         "apps/producer/src/*"
       ],
+      "@consumer/*": [
+        "apps/consumer/src/*"
+      ],
       "@app/ticket-provider-encryption-key": [
         "libs/ticket-provider-encryption-key/src"
       ],
@@ -50,6 +53,60 @@
       ],
       "@app/common/*": [
         "libs/common/src/*"
+      ],
+      "@app/ticket": [
+        "libs/ticket/src"
+      ],
+      "@app/ticket/*": [
+        "libs/ticket/src/*"
+      ],
+      "@app/event": [
+        "libs/event/src"
+      ],
+      "@app/event/*": [
+        "libs/event/src/*"
+      ],
+      "@app/ticket-provider": [
+        "libs/ticket-provider/src"
+      ],
+      "@app/ticket-provider/*": [
+        "libs/ticket-provider/src/*"
+      ],
+      "@app/ticket-transfer": [
+        "libs/ticket-transfer/src"
+      ],
+      "@app/ticket-transfer/*": [
+        "libs/ticket-transfer/src/*"
+      ],
+      "@app/ticket-type": [
+        "libs/ticket-type/src"
+      ],
+      "@app/ticket-type/*": [
+        "libs/ticket-type/src/*"
+      ],
+      "@app/user": [
+        "libs/user/src"
+      ],
+      "@app/user/*": [
+        "libs/user/src/*"
+      ],
+      "@app/outbox": [
+        "libs/outbox/src"
+      ],
+      "@app/outbox/*": [
+        "libs/outbox/src/*"
+      ],
+      "@app/redis": [
+        "libs/redis/src"
+      ],
+      "@app/redis/*": [
+        "libs/redis/src/*"
+      ],
+      "@app/sentry": [
+        "libs/sentry/src"
+      ],
+      "@app/sentry/*": [
+        "libs/sentry/src/*"
       ]
     }
   },

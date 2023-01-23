@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
-import { TicketType } from './ticket-type.entity';
+import { TicketTypeRepository as CommonRepository } from '@app/ticket-type/ticket-type.repository';
+import { TicketType } from '@app/ticket-type/ticket-type.entity';
 
 @Injectable()
-export class TicketTypeRepository extends Repository<TicketType> {
-  constructor(public readonly dataSource: DataSource) {
-    super(TicketType, dataSource.manager);
-  }
-
+export class TicketTypeRepository extends CommonRepository {
   async getPaginatedQueryBuilder(searchParams: FindTicketTypesDto, eventId: number): Promise<PagingResult<TicketType>> {
     const queryBuilder = this.createQueryBuilder('ticket_type').where({ eventId });
 

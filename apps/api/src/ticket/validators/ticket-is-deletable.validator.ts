@@ -1,7 +1,7 @@
+import { TicketStatus } from '@app/ticket/ticket.types';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { ValidateTicketDto } from '../dto/validate-ticket.dto';
 import { TicketService } from '../ticket.service';
-import { TicketStatus } from '../ticket.types';
 
 @ValidatorConstraint({ name: 'ticketIsDeletableValidator', async: true })
 export class TicketIsDeletableValidator implements ValidatorConstraintInterface {

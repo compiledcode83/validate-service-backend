@@ -2,7 +2,7 @@ import * as bcrypt from 'bcrypt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { TicketProviderApiTokenService } from '@api/ticket-provider-api-token/ticket-provider-api-token.service';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { TicketProviderService } from '@api/ticket-provider/ticket-provider.service';
 import { AccessTokenInterface } from './auth.types';
 import { TicketProviderRefreshTokenService } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.service';

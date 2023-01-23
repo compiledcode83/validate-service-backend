@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { AppDataSource } from '@app/common/configs/datasource';
-import { Ticket } from '@api/ticket/ticket.entity';
-import { Event } from '@api/event/event.entity';
-import { TicketStatus } from '@api/ticket/ticket.types';
+import { Ticket } from '@app/ticket/ticket.entity';
 import { v4 as uuid } from 'uuid';
 import { TicketTypeFactory } from './ticket-type.factory';
+import { TicketStatus } from '@app/ticket/ticket.types';
+import { Event } from '@app/event/event.entity';
 
 export class TicketFactory {
   static async create(data?: Partial<Ticket>) {

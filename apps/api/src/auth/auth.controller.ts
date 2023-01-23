@@ -20,7 +20,9 @@ import { LoginDto } from './dto/login.dto';
 import { TokensResponseDto } from './dto/tokens-response.dto';
 import { ApiResponse } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { ApiResponseHelper, CookieToBodyInterceptor, RequestToBodyInterceptor } from '@app/common';
+import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
+import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
+import { CookieToBodyInterceptor } from '@app/common/interceptors/cookie-to-body.interceptor';
 
 @Controller('auth')
 export class AuthController {

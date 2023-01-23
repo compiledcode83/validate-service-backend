@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { AppDataSource } from '@app/common/configs/datasource';
-import { User } from '@api/user/user.entity';
-import { UserStatus } from '@api/user/user.types';
+import { User } from '@app/user/user.entity';
+import { UserStatus } from '@app/user/user.types';
 
 export class UserFactory {
   static async create(data?: Partial<User>) {

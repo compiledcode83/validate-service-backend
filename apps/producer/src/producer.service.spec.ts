@@ -3,12 +3,12 @@ import * as dotenv from 'dotenv';
 import { ProducerService } from './producer.service';
 import { ProducerModule } from './producer.module';
 import { EnvHelper } from '@app/env/env.helper';
-import { TestHelper } from '@test/helpers/test.helper';
+import { TestHelper } from '@app/common/helpers/test.helper';
 import { OutboxFactory } from '@app/database/factories/outbox.factory';
-import { TicketEventPattern } from '@api/ticket/ticket.types';
+import { TicketEventPattern } from '@app/ticket/ticket.types';
 import { faker } from '@faker-js/faker';
-import { OutboxStatus } from '@api/outbox/outbox.types';
-import { Outbox } from '@api/outbox/outbox.entity';
+import { OutboxStatus } from '@app/outbox/outbox.types';
+import { Outbox } from '@app/outbox/outbox.entity';
 import { AppDataSource } from '@app/common/configs/datasource';
 
 EnvHelper.verifyNodeEnv();

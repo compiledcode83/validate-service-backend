@@ -1,9 +1,9 @@
-import {
-  ApiResponseHelper,
-  ParamToBodyInterceptor,
-  RequestToBodyInterceptor,
-  RequestToQueryInterceptor,
-} from '@app/common';
+import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
+import { ParamToBodyInterceptor } from '@app/common/interceptors/param-to-body.interceptor';
+import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
+import { RequestToQueryInterceptor } from '@app/common/interceptors/request-to-query.interceptor';
+import { TicketType } from '@app/ticket-type/ticket-type.entity';
+import { TicketTypePaginatedResult } from '@app/ticket-type/ticket-type.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -20,9 +20,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
-import { TicketType } from './ticket-type.entity';
 import { TicketTypeService } from './ticket-type.service';
-import { TicketTypePaginatedResult } from './ticket-type.types';
 
 @Controller('ticket-types')
 export class TicketTypeController {

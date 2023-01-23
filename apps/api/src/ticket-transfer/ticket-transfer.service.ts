@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { TicketService } from '@api/ticket/ticket.service';
 import { UserService } from '@api/user/user.service';
 import { CreateTicketTransferDto } from './dto/create-ticket-transfer.dto';
-import { TicketTransfer } from './ticket-transfer.entity';
+import { TicketTransferMessage } from '@app/ticket-transfer/messages/ticket-transfer.message';
 import { TicketTransferRepository } from './ticket-transfer.repository';
-import { TicketTransferEventPattern } from './ticket-transfer.types';
-import { TicketTransferMessage } from '@api/ticket-transfer/messages/ticket-transfer.message';
-import { OutboxService } from '@api/outbox/outbox.service';
+import { TicketTransferEventPattern } from '@app/ticket-transfer/ticket-transfer.types';
+import { OutboxService } from '@app/outbox/outbox.service';
+import { TicketTransfer } from '@app/ticket-transfer/ticket-transfer.entity';
 
 @Injectable()
 export class TicketTransferService {

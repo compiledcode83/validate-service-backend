@@ -5,17 +5,17 @@ import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { UserFactory } from '@app/database/factories/user.factory';
 import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
-import { TestHelper } from '@test/helpers/test.helper';
+import { TestHelper } from '@app/common/helpers/test.helper';
 import { TicketFactory } from '@app/database/factories/ticket.factory';
-import { TicketTransfer } from '@api/ticket-transfer/ticket-transfer.entity';
+import { TicketTransfer } from '@app/ticket-transfer/ticket-transfer.entity';
 import { TicketTransferFactory } from '@app/database/factories/ticket-transfer.factory';
-import { UserStatus } from '@api/user/user.types';
-import { TicketStatus } from '@api/ticket/ticket.types';
-import { TicketTransferMessage } from '@api/ticket-transfer/messages/ticket-transfer.message';
-import { TicketTransferEventPattern } from '@api/ticket-transfer/ticket-transfer.types';
-import { Outbox } from '@api/outbox/outbox.entity';
+import { TicketTransferMessage } from '@app/ticket-transfer/messages/ticket-transfer.message';
+import { Outbox } from '@app/outbox/outbox.entity';
 import { MoreThan } from 'typeorm';
-import { OutboxStatus } from '@api/outbox/outbox.types';
+import { OutboxStatus } from '@app/outbox/outbox.types';
+import { TicketStatus } from '@app/ticket/ticket.types';
+import { TicketTransferEventPattern } from '@app/ticket-transfer/ticket-transfer.types';
+import { UserStatus } from '@app/user/user.types';
 
 describe('Ticket-transfer (e2e)', () => {
   let app: INestApplication;

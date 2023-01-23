@@ -1,4 +1,9 @@
-import { ApiResponseHelper, AuthRequest, ParamToBodyInterceptor, RequestToBodyInterceptor } from '@app/common';
+import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
+import { ParamToBodyInterceptor } from '@app/common/interceptors/param-to-body.interceptor';
+import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
+import { AuthRequest } from '@app/common/types/auth.request';
+import { Ticket } from '@app/ticket/ticket.entity';
+import { TicketPaginatedResult } from '@app/ticket/ticket.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -20,9 +25,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { ValidateTicketDto } from './dto/validate-ticket.dto';
-import { Ticket } from './ticket.entity';
 import { TicketService } from './ticket.service';
-import { TicketPaginatedResult } from './ticket.types';
 
 @ApiResponse(ApiResponseHelper.unauthorized())
 @Controller('tickets')

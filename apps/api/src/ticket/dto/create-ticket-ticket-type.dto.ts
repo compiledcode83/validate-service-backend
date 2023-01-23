@@ -1,4 +1,4 @@
-import { DateValidator } from '@app/common';
+import { DateValidator } from '@app/common/validators/date.validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 

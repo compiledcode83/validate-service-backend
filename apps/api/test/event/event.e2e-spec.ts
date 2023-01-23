@@ -4,18 +4,18 @@ import * as request from 'supertest';
 import { AppBootstrapManager } from '@api/app-bootstrap.manager';
 import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
-import { TestHelper } from '@test/helpers/test.helper';
+import { TestHelper } from '@app/common/helpers/test.helper';
 import { faker } from '@faker-js/faker';
-import { TicketProviderUserIdentifier } from '@api/ticket-provider/ticket-provider.types';
 import { EventFactory } from '@app/database/factories/event.factory';
 import { DateTime } from 'luxon';
-import { DATE_FORMAT } from '@api/ticket-type/ticket-type.types';
-import { EventCreateMessage } from '@api/event/messages/event-create.message';
-import { Outbox } from '@api/outbox/outbox.entity';
+import { EventCreateMessage } from '@app/event/messages/event-create.message';
 import { MoreThan } from 'typeorm';
-import { EventEventPattern } from '@api/event/event.types';
-import { OutboxStatus } from '@api/outbox/outbox.types';
-import { Event } from '@api/event/event.entity';
+import { TicketProviderUserIdentifier } from '@app/ticket-provider/ticket-provider.types';
+import { DATE_FORMAT } from '@app/ticket-type/ticket-type.types';
+import { OutboxStatus } from '@app/outbox/outbox.types';
+import { Outbox } from '@app/outbox/outbox.entity';
+import { Event } from '@app/event/event.entity';
+import { EventEventPattern } from '@app/event/event.types';
 
 describe('Events (e2e)', () => {
   let app: INestApplication;

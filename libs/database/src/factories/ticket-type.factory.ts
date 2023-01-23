@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { v4 as uuid } from 'uuid';
 import { AppDataSource } from '@app/common/configs/datasource';
-import { TicketType } from '@api/ticket-type/ticket-type.entity';
+import { TicketType } from '@app/ticket-type/ticket-type.entity';
 
 export class TicketTypeFactory {
   static async create(data?: Partial<TicketType>) {

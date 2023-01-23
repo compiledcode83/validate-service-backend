@@ -2,12 +2,12 @@ import { INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
 import { AppBootstrapManager } from '@api/app-bootstrap.manager';
-import { TestHelper } from '@test/helpers/test.helper';
+import { TestHelper } from '@app/common/helpers/test.helper';
 import { InternalServerErrorExceptionsFilter } from '@app/common/filters/internal-server-error-exceptions.filter';
 import { OutboxFactory } from '@app/database/factories/outbox.factory';
-import { TicketEventPattern } from '@api/ticket/ticket.types';
-import { OutboxStatus } from '@api/outbox/outbox.types';
-import { Outbox } from '@api/outbox/outbox.entity';
+import { TicketEventPattern } from '@app/ticket/ticket.types';
+import { OutboxStatus } from '@app/outbox/outbox.types';
+import { Outbox } from '@app/outbox/outbox.entity';
 import { AppDataSource } from '@app/common/configs/datasource';
 import { ProducerService } from '@producer/producer.service';
 

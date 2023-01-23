@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { PaginatedResult } from '@app/common/pagination/pagination.types';
+import { Event } from '@app/event/event.entity';
+import { EventEventPattern } from '@app/event/event.types';
+import { EventCreateMessage } from '@app/event/messages/event-create.message';
+import { EventUpdateMessage } from '@app/event/messages/event-update.message';
+import { OutboxService } from '@app/outbox/outbox.service';
 import { Injectable } from '@nestjs/common';
-import { OutboxService } from '@api/outbox/outbox.service';
 import { Not, QueryRunner } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { FindEventsDto } from './dto/find-events.dto';
 import { UpdateEventDto } from './dto/update-ticket-type.dto';
-import { Event } from './event.entity';
 import { EventRepository } from './event.repository';
-import { EventEventPattern } from './event.types';
-import { EventCreateMessage } from './messages/event-create.message';
-import { EventUpdateMessage } from './messages/event-update.message';
-import { PaginatedResult } from '@app/common';
 
 @Injectable()
 export class EventService {

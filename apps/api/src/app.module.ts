@@ -13,11 +13,10 @@ import { TicketTransferModule } from './ticket-transfer/ticket-transfer.module';
 import { TicketProviderEncryptionKeyModule } from './ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import { TicketProviderRefreshTokenModule } from './ticket-provider-refresh-token/ticket-provider-refresh-token.module';
 import { EventModule } from './event/event.module';
-import { RedisModule } from './redis/redis.module';
-import { OutboxModule } from './outbox/outbox.module';
-import { SentryModule } from './sentry/sentry.module';
 import { TicketTypeModule } from './ticket-type/ticket-type.module';
-import { DatabaseModule } from '@app/database';
+import { DatabaseModule } from '@app/database/database.module';
+import { RedisModule } from '@app/redis/redis.module';
+import { SentryModule } from '@app/sentry/sentry.module';
 import appConfig from './config/app.config';
 import jwtConfig from './config/jwt.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
@@ -45,7 +44,6 @@ EnvHelper.verifyNodeEnv();
     EventModule,
     RedisModule,
     SentryModule,
-    OutboxModule,
     TicketTypeModule,
   ],
   controllers: [AppController],

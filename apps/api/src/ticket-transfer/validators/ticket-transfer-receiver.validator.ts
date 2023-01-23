@@ -1,6 +1,6 @@
+import { TicketService } from '@api/ticket/ticket.service';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { CreateTicketTransferDto } from '../dto/create-ticket-transfer.dto';
-import { TicketService } from '../../ticket/ticket.service';
 
 @ValidatorConstraint({ name: 'ticketTransferReceiverValidator', async: true })
 export class TicketTransferReceiverValidator implements ValidatorConstraintInterface {

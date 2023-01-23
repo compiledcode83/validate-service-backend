@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 

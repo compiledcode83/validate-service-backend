@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Allow, IsOptional, IsString, IsUUID, MaxLength, MinLength, Validate } from 'class-validator';
 import { EventExistsValidator } from '../validators/event-exists.validator';
 import { TicketTypeDuplicateValidator } from '../validators/ticket-type-duplicate.validator';

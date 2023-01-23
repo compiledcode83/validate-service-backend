@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RefreshTokensDto } from '@api/auth/dto/refresh-tokens.dto';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { TicketProviderRefreshToken } from './ticket-provider-refresh-token.entity';
 import { ConfigService } from '@nestjs/config';
 import { TicketProviderRefreshTokenRepository } from './ticket-provider-refresh-token.repository';

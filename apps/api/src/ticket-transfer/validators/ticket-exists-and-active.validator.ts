@@ -1,7 +1,7 @@
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { CreateTicketTransferDto } from '../dto/create-ticket-transfer.dto';
-import { TicketService } from '../../ticket/ticket.service';
-import { TicketStatus } from '@api/ticket/ticket.types';
+import { TicketService } from '@api/ticket/ticket.service';
+import { TicketStatus } from '@app/ticket/ticket.types';
 
 @ValidatorConstraint({ name: 'ticketExistsValidator', async: true })
 export class TicketExistsAndActiveValidator implements ValidatorConstraintInterface {

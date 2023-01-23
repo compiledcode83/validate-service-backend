@@ -71,6 +71,96 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "consumer": {
+      "type": "application",
+      "root": "apps/consumer",
+      "entryFile": "main",
+      "sourceRoot": "apps/consumer/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/consumer/tsconfig.app.json"
+      }
+    },
+    "ticket": {
+      "type": "library",
+      "root": "libs/ticket",
+      "entryFile": "index",
+      "sourceRoot": "libs/ticket/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ticket/tsconfig.lib.json"
+      }
+    },
+    "event": {
+      "type": "library",
+      "root": "libs/event",
+      "entryFile": "index",
+      "sourceRoot": "libs/event/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/event/tsconfig.lib.json"
+      }
+    },
+    "ticket-provider": {
+      "type": "library",
+      "root": "libs/ticket-provider",
+      "entryFile": "index",
+      "sourceRoot": "libs/ticket-provider/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ticket-provider/tsconfig.lib.json"
+      }
+    },
+    "ticket-transfer": {
+      "type": "library",
+      "root": "libs/ticket-transfer",
+      "entryFile": "index",
+      "sourceRoot": "libs/ticket-transfer/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ticket-transfer/tsconfig.lib.json"
+      }
+    },
+    "ticket-type": {
+      "type": "library",
+      "root": "libs/ticket-type",
+      "entryFile": "index",
+      "sourceRoot": "libs/ticket-type/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/ticket-type/tsconfig.lib.json"
+      }
+    },
+    "user": {
+      "type": "library",
+      "root": "libs/user",
+      "entryFile": "index",
+      "sourceRoot": "libs/user/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/user/tsconfig.lib.json"
+      }
+    },
+    "outbox": {
+      "type": "library",
+      "root": "libs/outbox",
+      "entryFile": "index",
+      "sourceRoot": "libs/outbox/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/outbox/tsconfig.lib.json"
+      }
+    },
+    "redis": {
+      "type": "library",
+      "root": "libs/redis",
+      "entryFile": "index",
+      "sourceRoot": "libs/redis/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/redis/tsconfig.lib.json"
+      }
+    },
+    "sentry": {
+      "type": "library",
+      "root": "libs/sentry",
+      "entryFile": "index",
+      "sourceRoot": "libs/sentry/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/sentry/tsconfig.lib.json"
+      }
     }
   }
 }

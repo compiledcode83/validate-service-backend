@@ -1,4 +1,4 @@
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Request } from 'express';
 
 export interface AccessTokenInterface {

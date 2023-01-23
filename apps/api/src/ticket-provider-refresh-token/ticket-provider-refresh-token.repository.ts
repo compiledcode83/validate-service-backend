@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { Injectable } from '@nestjs/common';
 import { RefreshTokensDto } from '@api/auth/dto/refresh-tokens.dto';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { randomBytes } from 'node:crypto';
 import { DataSource, Repository } from 'typeorm';
 import { TicketProviderRefreshToken } from './ticket-provider-refresh-token.entity';

@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
-import { TicketProvider } from './ticket-provider.entity';
 import { TicketProviderRepository } from './ticket-provider.repository';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 
 @Injectable()
 export class TicketProviderService {

@@ -3,21 +3,21 @@ import { UserService } from '@api/user/user.service';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
-import { Ticket } from './ticket.entity';
-import { TicketRepository } from './ticket.repository';
-import { DEFAULT_IMAGE, TicketEventPattern, TicketStatus } from './ticket.types';
-import { TicketCreateMessage } from './messages/ticket-create.message';
-import { TicketProviderSecurityLevel } from '@api/ticket-provider/ticket-provider.types';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
-import { User } from '@api/user/user.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
+import { User } from '@app/user/user.entity';
 import { ValidateTicketDto } from './dto/validate-ticket.dto';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
-import { TicketDeleteMessage } from './messages/ticket-delete.message';
 import { EventService } from '@api/event/event.service';
-import { OutboxService } from '@api/outbox/outbox.service';
-import { TicketValidateMessage } from './messages/ticket-validate.message';
 import { TicketTypeService } from '@api/ticket-type/ticket-type.service';
-import { TicketProviderEncryptionKeyService } from '@app/ticket-provider-encryption-key';
+import { TicketRepository } from './ticket.repository';
+import { TicketProviderEncryptionKeyService } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
+import { OutboxService } from '@app/outbox/outbox.service';
+import { TicketProviderSecurityLevel } from '@app/ticket-provider/ticket-provider.types';
+import { Ticket } from '@app/ticket/ticket.entity';
+import { DEFAULT_IMAGE, TicketEventPattern, TicketStatus } from '@app/ticket/ticket.types';
+import { TicketCreateMessage } from '@app/ticket/messages/ticket-create.message';
+import { TicketValidateMessage } from '@app/ticket/messages/ticket-validate.message';
+import { TicketDeleteMessage } from '@app/ticket/messages/ticket-delete.message';
 
 @Injectable()
 export class TicketService {

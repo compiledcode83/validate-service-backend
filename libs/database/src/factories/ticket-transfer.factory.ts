@@ -1,6 +1,6 @@
 import { AppDataSource } from '@app/common/configs/datasource';
-import { TicketTransfer } from '@api/ticket-transfer/ticket-transfer.entity';
-import { TicketTransferStatus } from '@api/ticket-transfer/ticket-transfer.types';
+import { TicketTransfer } from '@app/ticket-transfer/ticket-transfer.entity';
+import { TicketTransferStatus } from '@app/ticket-transfer/ticket-transfer.types';
 
 export class TicketTransferFactory {
   static async create(data?: Partial<TicketTransfer>) {

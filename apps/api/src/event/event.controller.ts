@@ -1,4 +1,9 @@
-import { ApiResponseHelper, AuthRequest, ParamToBodyInterceptor, RequestToBodyInterceptor } from '@app/common';
+import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
+import { ParamToBodyInterceptor } from '@app/common/interceptors/param-to-body.interceptor';
+import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
+import { AuthRequest } from '@app/common/types/auth.request';
+import { Event } from '@app/event/event.entity';
+import { EventPaginatedResult } from '@app/event/event.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -16,9 +21,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateEventDto } from './dto/create-event.dto';
 import { FindEventsDto } from './dto/find-events.dto';
 import { UpdateEventDto } from './dto/update-ticket-type.dto';
-import { Event } from './event.entity';
 import { EventService } from './event.service';
-import { EventPaginatedResult } from './event.types';
 
 @ApiResponse(ApiResponseHelper.unauthorized())
 @Controller('events')

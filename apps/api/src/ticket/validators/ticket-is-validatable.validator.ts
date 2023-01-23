@@ -1,8 +1,8 @@
-import { RedisService } from '@api/redis/redis.service';
+import { RedisService } from '@app/redis/redis.service';
+import { TicketStatus } from '@app/ticket/ticket.types';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { ValidateTicketDto } from '../dto/validate-ticket.dto';
 import { TicketService } from '../ticket.service';
-import { TicketStatus } from '../ticket.types';
 
 @ValidatorConstraint({ name: 'ticketIsValidatableValidator', async: true })
 export class TicketIsValidatableValidator implements ValidatorConstraintInterface {

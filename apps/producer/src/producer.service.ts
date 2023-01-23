@@ -1,6 +1,6 @@
+import { OutboxService } from '@app/outbox/outbox.service';
 import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
-import { OutboxService } from '@api/outbox/outbox.service';
 import { Producer, RecordMetadata, TopicMessages } from 'kafkajs';
 import { KAFKA_PRODUCER_TOKEN } from './producer.types';
 

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Event } from '../event.entity';
-import { CursorFilterDto } from '@app/common';
+import { CursorFilterDto } from '@app/common/pagination/cursor-filter.dto';
+import { Event } from '@app/event/event.entity';
 
 export class FindEventsDto extends CursorFilterDto {
   @ApiProperty({ example: 'createdAt', enum: ['createdAt'], required: false })

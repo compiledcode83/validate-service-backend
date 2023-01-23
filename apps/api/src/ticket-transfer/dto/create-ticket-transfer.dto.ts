@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@api/ticket-provider/ticket-provider.entity';
+import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Allow, IsUUID, Validate } from 'class-validator';
 import { TicketExistsAndActiveValidator } from '../validators/ticket-exists-and-active.validator';
-import { TicketUserExistsAndActiveValidator } from '../../ticket/validators/ticket-user-exists-and-active.validator';
 import { TicketTransferReceiverValidator } from '../validators/ticket-transfer-receiver.validator';
+import { TicketUserExistsAndActiveValidator } from '@api/ticket/validators/ticket-user-exists-and-active.validator';
 
 export class CreateTicketTransferDto {
   @ApiProperty({
