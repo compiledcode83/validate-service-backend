@@ -11,8 +11,4 @@ export class TicketProviderRepository extends Repository<TicketProvider> {
   async findById(id: number) {
     return this.findOne({ where: { id } });
   }
-
-  async findMany(id: number) {
-    return this.find({ where: { id } });
-  }
 }

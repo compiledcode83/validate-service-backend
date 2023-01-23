@@ -11,7 +11,6 @@ import { TicketProviderFactory } from '@app/database/factories/ticket-provider.f
 import { UserFactory } from '@app/database/factories/user.factory';
 import { TicketFactory } from '@app/database/factories/ticket.factory';
 import { Ticket } from '@app/ticket/ticket.entity';
-import { ConsumerService } from '@api/consumer/consumer.service';
 import { TicketDeleteReplyMessage } from '@consumer/messages/ticket-delete-reply.message';
 import { TicketTransferFactory } from '@app/database/factories/ticket-transfer.factory';
 import { TicketTransferReplyMessage } from '@consumer/messages/ticket-transfer-reply.message';
@@ -24,6 +23,7 @@ import { TicketEventPattern, TicketStatus } from '@app/ticket/ticket.types';
 import { TicketTransferEventPattern, TicketTransferStatus } from '@app/ticket-transfer/ticket-transfer.types';
 import { UserEventPattern, UserStatus } from '@app/user/user.types';
 import kafkaConfig from '@app/common/configs/kafka.config';
+import { ConsumerService } from '@consumer/consumer.service';
 
 jest.setTimeout(30000);
 waitForExpect.defaults.timeout = 25000;

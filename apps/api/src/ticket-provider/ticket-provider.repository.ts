@@ -1,17 +1,8 @@
-import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { TicketProviderRepository as CommonRepository } from '@app/ticket-provider/ticket-provider.repository';
 
 @Injectable()
-export class TicketProviderRepository extends Repository<TicketProvider> {
-  constructor(public readonly dataSource: DataSource) {
-    super(TicketProvider, dataSource.manager);
-  }
-
-  async findById(id: number) {
-    return this.findOne({ where: { id } });
-  }
-
+export class TicketProviderRepository extends CommonRepository {
   async findMany(id: number) {
     return this.find({ where: { id } });
   }
