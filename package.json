@@ -27,7 +27,7 @@
     "consumer:start:debug": "nest start consumer --debug --watch",
     "consumer:start:prod": "node dist/consumer/main",
     "test": "jest --config jest.json --maxWorkers=1 --forceExit --verbose",
-    "test:ci": "jest --config ./apps/api/test/jest.json --ci --reporters=default --reporters=jest-junit --maxWorkers=1 --logHeapUsage --colors --forceExit",
+    "test:ci": "jest --config jest.json --ci --reporters=default --reporters=jest-junit --maxWorkers=1 --logHeapUsage --colors --forceExit",
     "test:watch": "jest --config ./apps/api/test/jest.json --watch",
     "test:cov": "jest --config ./apps/api/test/jest.json --coverage",
     "test:debug": "node --config ./apps/api/test/jest.json --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
