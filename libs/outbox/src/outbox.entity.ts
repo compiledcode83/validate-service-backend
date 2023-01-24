@@ -18,6 +18,9 @@ export class Outbox {
   @Column({ type: 'datetime', nullable: false })
   createdAt: Date;
 
+  @Column({ type: 'datetime', nullable: false })
+  sendAfter: Date;
+
   @Column({ type: 'datetime', nullable: true })
   sentAt: Date;
 

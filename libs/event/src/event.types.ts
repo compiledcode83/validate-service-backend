@@ -14,3 +14,8 @@ export enum EventEventPattern {
   Create = 'event.create',
   Update = 'event.update',
 }
+
+export enum EventResaleStatus {
+  Disabled,
+  Enabled,
+}

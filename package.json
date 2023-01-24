@@ -14,6 +14,10 @@
     "api:start:dev": "nest start api --watch",
     "api:start:debug": "nest start api --debug --watch",
     "api:start:prod": "node dist/api/main",
+    "web:start": "nest start web",
+    "web:start:dev": "nest start web --watch",
+    "web:start:debug": "nest start web --debug --watch",
+    "web:start:prod": "node dist/web/main",
     "producer:start": "nest start producer",
     "producer:start:dev": "nest start producer --watch",
     "producer:start:debug": "nest start producer --debug --watch",
@@ -69,6 +73,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "stripe": "^11.7.0",
     "typeorm": "^0.3.10",
     "typeorm-cursor-pagination": "^0.9.1",
     "typeorm-naming-strategies": "^4.1.0",
@@ -144,7 +149,12 @@
       "^@app/user(|/.*)$": "<rootDir>/libs/user/src/$1",
       "^@app/outbox(|/.*)$": "<rootDir>/libs/outbox/src/$1",
       "^@app/redis(|/.*)$": "<rootDir>/libs/redis/src/$1",
-      "^@app/sentry(|/.*)$": "<rootDir>/libs/sentry/src/$1"
+      "^@app/sentry(|/.*)$": "<rootDir>/libs/sentry/src/$1",
+      "^@app/inbox(|/.*)$": "<rootDir>/libs/inbox/src/$1",
+      "^@app/listing(|/.*)$": "<rootDir>/libs/listing/src/$1",
+      "^@app/message(|/.*)$": "<rootDir>/libs/message/src/$1",
+      "^@app/order(|/.*)$": "<rootDir>/libs/order/src/$1",
+      "^@app/redeem(|/.*)$": "<rootDir>/libs/redeem/src/$1"
     }
   }
 }

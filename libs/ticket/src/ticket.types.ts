@@ -1,7 +1,3 @@
-import { PaginatedResultCursor } from '@app/common/pagination/pagination.types';
-import { ApiProperty } from '@nestjs/swagger';
-import { Ticket } from './ticket.entity';
-
 export class TicketAdditionalData {
   [key: string]: string | number;
 }
@@ -22,11 +18,3 @@ export enum TicketEventPattern {
 }
 
 export const DEFAULT_IMAGE = `https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg`;
-
-export class TicketPaginatedResult {
-  @ApiProperty({ isArray: true, type: () => Ticket })
-  data: Ticket[];
-
-  @ApiProperty()
-  cursor: PaginatedResultCursor;
-}

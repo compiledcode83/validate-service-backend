@@ -3,6 +3,8 @@ import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
+import { Listing } from '@app/listing/listing.entity';
+import { CurrencyEnum } from '@app/common/types/currency.enum';
 
 @Entity('event')
 export class Event {
@@ -48,4 +50,43 @@ export class Event {
   @OneToMany(() => TicketType, (ticketType) => ticketType.event)
   @JoinColumn({ name: 'id', referencedColumnName: 'event_id' })
   ticketTypes: TicketType[];
+
+  @OneToMany(() => Listing, (listing) => listing.event)
+  @JoinColumn({ name: 'id', referencedColumnName: 'event_id' })
+  listings: Listing[];
+
+  @ApiProperty({ description: 'Event start date', required: true, example: '2024-05-01' })
+  dateStart: string;
+
+  @ApiProperty({ description: 'Event end date', required: true, example: '2024-05-02' })
+  dateEnd: string;
+
+  @ApiProperty({
+    description: 'Starting ticket prices for the event',
+    required: true,
+    example: {
+      primary: {
+        amount: '100.00',
+        currency: CurrencyEnum.AED,
+      },
+      secondary: {
+        amount: '150.00',
+        currency: CurrencyEnum.AED,
+      },
+    },
+  })
+  ticketsInformation: {
+    primary: {
+      startingPrice: {
+        amount: string;
+        currency: CurrencyEnum;
+      };
+    };
+    secondary: {
+      startingPrice: {
+        amount: string;
+        currency: CurrencyEnum;
+      };
+    };
+  };
 }

@@ -2,8 +2,8 @@ import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { ParamToBodyInterceptor } from '@app/common/interceptors/param-to-body.interceptor';
 import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
 import { AuthRequest } from '@app/common/types/auth.request';
+import { TicketPaginatedResult } from '@app/ticket/interfaces/ticket-paginated-result';
 import { Ticket } from '@app/ticket/ticket.entity';
-import { TicketPaginatedResult } from '@app/ticket/ticket.types';
 import {
   Body,
   ClassSerializerInterceptor,

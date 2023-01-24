@@ -3,9 +3,23 @@ import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { TicketTransfer } from '@app/ticket-transfer/ticket-transfer.entity';
 import { User } from '@app/user/user.entity';
 import { Exclude, Expose } from 'class-transformer';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+  ManyToMany,
+  JoinTable,
+  OneToOne,
+} from 'typeorm';
 import { TicketAdditionalData, TicketStatus } from './ticket.types';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
+import { Listing } from '@app/listing/listing.entity';
+import { Message } from '@app/message/message.entity';
+import { OrderPrimaryTicket } from '@app/order/order-primary-ticket.entity';
+import { Redeem } from '@app/redeem/redeem.entity';
 
 @Entity('ticket')
 export class Ticket {
@@ -109,6 +123,10 @@ export class Ticket {
   @Column({ type: 'text', nullable: true })
   errorData: string;
 
+  @ApiProperty({ description: 'Tickets purchase id', example: 'cbc0bd0b-cbce-4922-91c1-9e2ea5e4eff9', required: true })
+  @Column({ type: 'varchar', nullable: true, length: 64 })
+  purchaseId: string;
+
   @ManyToOne(() => TicketProvider, (ticketProvider) => ticketProvider.tickets)
   ticketProvider: TicketProvider;
 
@@ -122,4 +140,20 @@ export class Ticket {
 
   @ManyToOne(() => TicketType, (ticketType) => ticketType.tickets)
   ticketType: TicketType;
+
+  @OneToMany(() => Listing, (listing) => listing.ticket)
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticket_id' })
+  listings: Listing[];
+
+  @ManyToMany(() => Redeem, (redeem) => redeem.tickets)
+  @JoinTable({ name: 'redeem_ticket' })
+  redeems: Redeem[];
+
+  @OneToMany(() => Message, (messages) => messages.ticket)
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticketId' })
+  messages: Message[];
+
+  @OneToOne(() => OrderPrimaryTicket, (orderPrimaryTicket) => orderPrimaryTicket.ticket)
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticketId' })
+  orderPrimary: OrderPrimaryTicket;
 }

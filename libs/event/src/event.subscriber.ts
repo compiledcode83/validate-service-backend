@@ -6,6 +6,7 @@ import {
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { Event } from './event.entity';
+import { EventHelper } from './event.helper';
 
 @EventSubscriberDecorator()
 export class EventSubscriber implements EntitySubscriberInterface<Event> {
@@ -21,5 +22,14 @@ export class EventSubscriber implements EntitySubscriberInterface<Event> {
 
   beforeUpdate(event: UpdateEvent<Event>): void {
     event.entity.updatedAt = new Date();
+  }
+
+  afterLoad(entity: Event): void {
+    entity.ticketsInformation = EventHelper.getTicketsInformation(entity);
+
+    const dates = EventHelper.getEventDates(entity);
+
+    entity.dateStart = dates.dateStart;
+    entity.dateEnd = dates.dateEnd;
   }
 }

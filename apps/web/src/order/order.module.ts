@@ -1,0 +1,28 @@
+import { forwardRef, Module } from '@nestjs/common';
+import { OrderService } from './order.service';
+import { OrderController } from './order.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TicketTypeModule } from '@web/ticket-type/ticket-type.module';
+import { TicketModule } from '@web/ticket/ticket.module';
+import { MessageModule } from '@web/message/message.module';
+import { Order } from '@app/order/order.entity';
+import { OrderPrimary } from '@app/order/order-primary.entity';
+import { OrderPrimaryTicket } from '@app/order/order-primary-ticket.entity';
+import { OrderSecondary } from '@app/order/order-secondary.entity';
+import { OutboxModule } from '@app/outbox/outbox.module';
+import { OrderPayment } from '@app/order/order-payment.entity';
+import { OrderRepository } from './order.repository';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([Order, OrderPrimary, OrderPrimaryTicket, OrderSecondary, OrderPayment]),
+    forwardRef(() => TicketTypeModule),
+    TicketModule,
+    OutboxModule,
+    MessageModule,
+  ],
+  providers: [OrderService, OrderRepository],
+  controllers: [OrderController],
+  exports: [OrderService],
+})
+export class OrderModule {}

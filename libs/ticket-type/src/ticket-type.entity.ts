@@ -5,6 +5,7 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColum
 import { TicketTypeResaleStatus, TicketTypeSaleStatus } from './ticket-type.types';
 import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { Event } from '@app/event/event.entity';
+import { OrderPrimary } from '@app/order/order-primary.entity';
 
 @Entity('ticket_type')
 export class TicketType {
@@ -110,4 +111,11 @@ export class TicketType {
   @OneToMany(() => Ticket, (ticket) => ticket.ticketType)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticket_type_id' })
   tickets: Ticket[];
+
+  @OneToMany(() => OrderPrimary, (orderPrimary) => orderPrimary.ticketType)
+  @JoinColumn({ name: 'id', referencedColumnName: 'ticketTypeId' })
+  primarySales: OrderPrimary[];
+
+  @ApiProperty({ example: 10 })
+  saleAmountAvailable: number;
 }

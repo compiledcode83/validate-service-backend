@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, In, Repository, UpdateResult } from 'typeorm';
+import { DateTime } from 'luxon';
+import { DataSource, In, LessThanOrEqual, Repository, UpdateResult } from 'typeorm';
 import { Outbox } from './outbox.entity';
 import { OutboxStatus } from './outbox.types';
 
@@ -10,7 +11,13 @@ export class OutboxRepository extends Repository<Outbox> {
   }
 
   async findAll(batchSize: number): Promise<Outbox[]> {
-    return this.find({ where: { status: OutboxStatus.Created }, take: batchSize });
+    return this.find({
+      where: {
+        status: OutboxStatus.Created,
+        sendAfter: LessThanOrEqual(DateTime.now().toUTC().toJSDate()),
+      },
+      take: batchSize,
+    });
   }
 
   async setAsSent(id: number[]): Promise<UpdateResult> {

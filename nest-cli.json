@@ -161,6 +161,51 @@
       "compilerOptions": {
         "tsConfigPath": "libs/sentry/tsconfig.lib.json"
       }
+    },
+    "inbox": {
+      "type": "library",
+      "root": "libs/inbox",
+      "entryFile": "index",
+      "sourceRoot": "libs/inbox/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/inbox/tsconfig.lib.json"
+      }
+    },
+    "listing": {
+      "type": "library",
+      "root": "libs/listing",
+      "entryFile": "index",
+      "sourceRoot": "libs/listing/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/listing/tsconfig.lib.json"
+      }
+    },
+    "message": {
+      "type": "library",
+      "root": "libs/message",
+      "entryFile": "index",
+      "sourceRoot": "libs/message/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/message/tsconfig.lib.json"
+      }
+    },
+    "order": {
+      "type": "library",
+      "root": "libs/order",
+      "entryFile": "index",
+      "sourceRoot": "libs/order/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/order/tsconfig.lib.json"
+      }
+    },
+    "redeem": {
+      "type": "library",
+      "root": "libs/redeem",
+      "entryFile": "index",
+      "sourceRoot": "libs/redeem/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/redeem/tsconfig.lib.json"
+      }
     }
   }
 }

@@ -5,6 +5,9 @@ import { Ticket } from '@app/ticket/ticket.entity';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { UserStatus } from './user.types';
+import { Order } from '@app/order/order.entity';
+import { UserRefreshToken } from '@web/user-refresh-token/user-refresh-token.entity';
+import { Message } from '@app/message/message.entity';
 
 @Entity('user')
 export class User {
@@ -73,4 +76,18 @@ export class User {
   @OneToMany(() => TicketTransfer, (ticketTransfer) => ticketTransfer.userTo)
   @JoinColumn({ name: 'id', referencedColumnName: 'user_id_to' })
   ticketTransfersTo: TicketTransfer[];
+
+  @OneToMany(() => Order, (order) => order.seller)
+  @JoinColumn({ name: 'id', referencedColumnName: 'seller_id' })
+  sellOrders: Order[];
+
+  @OneToMany(() => Order, (order) => order.buyer)
+  @JoinColumn({ name: 'id', referencedColumnName: 'buyer_id' })
+  buyOrders: Order[];
+
+  @OneToMany(() => UserRefreshToken, (userRefreshToken) => userRefreshToken.user)
+  refreshTokens: UserRefreshToken[];
+
+  @OneToMany(() => Message, (message) => message.user)
+  messages: Message;
 }

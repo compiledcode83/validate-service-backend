@@ -9,6 +9,10 @@ import { TicketTypeEventPattern } from '@app/ticket-type';
 import { UserEventPattern } from '@app/user';
 import { UserCreateMessage } from '@app/user/messages/user-create.message';
 import { EventEventPattern } from '@app/event';
+import { MessageEventPattern } from '@app/message';
+import { MessageSendMessage } from '@app/message/messages/message-send.message';
+import { PaymentEventPattern } from '@web/payment/payment.types';
+import { PaymentCancelPaywallMessage } from '@web/payment/messages/payment-cancel-paywall.message';
 
 export enum OutboxStatus {
   Created = 'created',
@@ -20,7 +24,9 @@ export type OutboxEventName =
   | TicketTransferEventPattern
   | UserEventPattern
   | EventEventPattern
-  | TicketTypeEventPattern;
+  | TicketTypeEventPattern
+  | MessageEventPattern
+  | PaymentEventPattern;
 
 export type OutboxPayload =
   | TicketCreateMessage
@@ -31,4 +37,6 @@ export type OutboxPayload =
   | EventCreateMessage
   | EventUpdateMessage
   | TicketTypeCreateMessage
-  | TicketTypeUpdateMessage;
+  | TicketTypeUpdateMessage
+  | MessageSendMessage
+  | PaymentCancelPaywallMessage;

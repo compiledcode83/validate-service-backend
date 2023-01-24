@@ -16,12 +16,18 @@ export class OutboxService {
     await this.outboxRepository.setAsSent(id);
   }
 
-  async create(queryRunner: QueryRunner, eventName: OutboxEventName, payload: OutboxPayload): Promise<Outbox> {
+  async create(
+    queryRunner: QueryRunner,
+    eventName: OutboxEventName,
+    payload: OutboxPayload,
+    sendAfter: Date = new Date(),
+  ): Promise<Outbox> {
     return queryRunner.manager.save(
       this.outboxRepository.create({
         eventName,
         payload: JSON.stringify(payload),
         operationUuid: payload.operationUuid,
+        sendAfter,
       }),
     );
   }

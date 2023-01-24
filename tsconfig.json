@@ -21,8 +21,8 @@
       "@api/*": [
         "apps/api/src/*"
       ],
-      "@test/*": [
-        "apps/api/test/*"
+      "@web/*": [
+        "apps/web/src/*"
       ],
       "@producer/*": [
         "apps/producer/src/*"
@@ -107,6 +107,36 @@
       ],
       "@app/sentry/*": [
         "libs/sentry/src/*"
+      ],
+      "@app/inbox": [
+        "libs/inbox/src"
+      ],
+      "@app/inbox/*": [
+        "libs/inbox/src/*"
+      ],
+      "@app/listing": [
+        "libs/listing/src"
+      ],
+      "@app/listing/*": [
+        "libs/listing/src/*"
+      ],
+      "@app/message": [
+        "libs/message/src"
+      ],
+      "@app/message/*": [
+        "libs/message/src/*"
+      ],
+      "@app/order": [
+        "libs/order/src"
+      ],
+      "@app/order/*": [
+        "libs/order/src/*"
+      ],
+      "@app/redeem": [
+        "libs/redeem/src"
+      ],
+      "@app/redeem/*": [
+        "libs/redeem/src/*"
       ]
     }
   },
