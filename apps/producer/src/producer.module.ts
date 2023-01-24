@@ -11,6 +11,7 @@ import { OutboxModule } from '@app/outbox/outbox.module';
 import kafkaConfig from '../../../libs/common/src/configs/kafka.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
 import appConfig from './config/app.config';
+import stripeConfig from '@web/config/stripe.config';
 
 EnvHelper.verifyNodeEnv();
 
@@ -18,7 +19,7 @@ const imports = [
   ConfigModule.forRoot({
     envFilePath: EnvHelper.getEnvFilePath(),
     isGlobal: true,
-    load: [appConfig, kafkaConfig, redisConfig],
+    load: [appConfig, kafkaConfig, redisConfig, stripeConfig],
     validate: validateProducer,
   }),
   DatabaseModule,
