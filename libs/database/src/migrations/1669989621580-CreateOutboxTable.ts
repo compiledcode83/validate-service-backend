@@ -1,4 +1,4 @@
-import { OutboxStatus } from '@api/outbox/outbox.types';
+import { OutboxStatus } from '@app/outbox/outbox.types';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateOutboxTable1669989621580 implements MigrationInterface {

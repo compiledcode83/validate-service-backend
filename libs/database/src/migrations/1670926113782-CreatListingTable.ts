@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
-import { ListingStatus } from '@src/listing/listing.types';
-import { CurrencyEnum } from '@src/common/types/listing-currency';
+import { ListingStatus } from '@app/listing/listing.types';
+import { CurrencyEnum } from '@app/common/types/currency.enum';
 
 export class CreatListingTable1670926113779 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

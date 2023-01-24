@@ -1,4 +1,4 @@
-import { MessageChannel, MessageStatus, MessageType } from '@src/message/message.types';
+import { MessageChannel, MessageStatus, MessageType } from '@app/message/message.types';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateMessageTable1667834676371 implements MigrationInterface {

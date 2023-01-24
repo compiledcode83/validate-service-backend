@@ -1,4 +1,4 @@
-import { CurrencyEnum } from '@src/common/types/listing-currency';
+import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateOrderTables1671702283663 implements MigrationInterface {

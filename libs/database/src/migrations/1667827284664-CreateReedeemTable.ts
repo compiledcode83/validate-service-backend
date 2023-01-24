@@ -1,4 +1,4 @@
-import { RedeemStatus } from '@src/redeem/redeem.types';
+import { RedeemStatus } from '@app/redeem/redeem.types';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateReedeemTable1667827284664 implements MigrationInterface {

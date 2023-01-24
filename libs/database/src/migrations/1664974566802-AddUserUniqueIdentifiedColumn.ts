@@ -1,4 +1,4 @@
-import { TicketProviderUserIdentifier } from '@api/ticket-provider/ticket-provider.types';
+import { TicketProviderUserIdentifier } from '@app/ticket-provider/ticket-provider.types';
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 export class AddUserUniqueIdentifiedColumn1664974566802 implements MigrationInterface {

@@ -1,4 +1,4 @@
-import { MessageType } from '@src/message/message.types';
+import { MessageType } from '@app/message/message.types';
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 export class AddNewMessageType1670591306812 implements MigrationInterface {

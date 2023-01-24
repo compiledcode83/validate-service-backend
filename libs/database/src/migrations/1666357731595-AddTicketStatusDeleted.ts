@@ -1,4 +1,4 @@
-import { TicketStatus } from '@api/ticket/ticket.types';
+import { TicketStatus } from '@app/ticket/ticket.types';
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 export class AddTicketStatusDeleted1666357731595 implements MigrationInterface {

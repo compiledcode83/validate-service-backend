@@ -1,4 +1,4 @@
-import { UserStatus } from '@api/user/user.types';
+import { UserStatus } from '@app/user/user.types';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateUserTable1664198326986 implements MigrationInterface {

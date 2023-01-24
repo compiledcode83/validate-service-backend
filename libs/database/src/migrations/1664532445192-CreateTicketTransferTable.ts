@@ -1,4 +1,4 @@
-import { TicketTransferStatus } from '@api/ticket-transfer/ticket-transfer.types';
+import { TicketTransferStatus } from '@app/ticket-transfer/ticket-transfer.types';
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateTicketTransferTable1664532445192 implements MigrationInterface {
