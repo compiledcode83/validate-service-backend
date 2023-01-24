@@ -15,7 +15,7 @@ import { QueryFailedErrorExceptionsFilter } from '@app/common/filters/query-fail
 export class AppBootstrapManager {
   static getTestingModuleBuilder(): TestingModuleBuilder {
     return Test.createTestingModule({
-      imports: [AppModule, ConsumerModule, ProducerModule],
+      imports: [ConsumerModule, ProducerModule, AppModule],
     });
   }
 

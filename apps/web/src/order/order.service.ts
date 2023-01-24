@@ -69,18 +69,7 @@ export class OrderService {
   }
 
   async findPayableOrder(uuid: string, userId: number): Promise<Order> {
-    return this.orderRepository.findOne({
-      where: {
-        buyerId: userId,
-        uuid,
-        payment: {
-          id: IsNull(),
-        },
-        status: OrderStatus.Created,
-        reservedUntil: MoreThanOrEqual(DateTime.now().toJSDate()),
-      },
-      relations: this.getRelations(),
-    });
+    return this.orderRepository.findPayableOrder(uuid, userId);
   }
 
   async findCompletableByExternalId(externalId: string): Promise<Order> {
