@@ -23,7 +23,7 @@ export const AppDataSource = new DataSource({
   ],
   synchronize: false,
   logging: process.env.TYPEORM_LOGGING === 'true',
-  migrations: [path.join(__dirname, '../database/migrations/*')],
+  migrations: [path.join(__dirname, '../../../../libs/database/src/migrations/*')],
   charset: 'utf8mb4_unicode_ci',
   legacySpatialSupport: false,
   extra: {
