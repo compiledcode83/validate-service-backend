@@ -34,21 +34,7 @@ export class TicketService {
   }
 
   async findAllRedeemableByPurchaseId(purchaseId: string): Promise<Ticket[]> {
-    return this.ticketRepository.find({
-      where: [
-        {
-          purchaseId,
-          status: In([TicketStatus.Active, TicketStatus.Creating]),
-          listings: { status: Not(ListingStatus.Active) },
-        },
-        {
-          purchaseId,
-          status: In([TicketStatus.Active, TicketStatus.Creating]),
-          listings: { id: IsNull() },
-        },
-      ],
-      relations: ['listings'],
-    });
+    return this.ticketRepository.findAllRedeemableByPurchaseId(purchaseId);
   }
 
   async findById(ticketId: number): Promise<Ticket> {

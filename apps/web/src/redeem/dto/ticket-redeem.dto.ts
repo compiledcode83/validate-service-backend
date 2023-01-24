@@ -1,7 +1,8 @@
 import { Event } from '@app/event/event.entity';
-import { Ticket, TicketStatus } from '@app/ticket';
+import { TicketStatus } from '@app/ticket/ticket.types';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Ticket } from '@app/ticket/ticket.entity';
 
 class TicketRedeemEvent {
   @ApiProperty({ description: `Event uuid`, maximum: 36 })

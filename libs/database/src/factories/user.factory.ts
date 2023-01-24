@@ -8,7 +8,7 @@ export class UserFactory {
     const user = new User();
     user.name = faker.name.firstName();
     user.email = faker.internet.email();
-    user.phoneNumber = faker.phone.number('+1907#######').toString();
+    user.phoneNumber = faker.phone.number('+38050#######').toString();
     user.walletAddress = faker.finance.ethereumAddress();
     user.status = UserStatus.Active;
 

@@ -18,6 +18,8 @@ export class TicketFactory {
     ticket.tokenId = Number(faker.random.numeric(2));
     ticket.additionalData = { seat: 10 };
     ticket.status = TicketStatus.Active;
+    ticket.hash = uuid();
+    ticket.purchaseId = uuid();
 
     event.name = faker.random.word();
     event.ticketProviderId = data.ticketProviderId;

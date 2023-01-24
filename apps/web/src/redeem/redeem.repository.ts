@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IsNull, Not, UpdateResult } from 'typeorm';
-import { Redeem, RedeemMode, RedeemRepository as CommonRepository, RedeemStatus } from '@app/redeem';
+import { RedeemMode, RedeemStatus } from '@app/redeem/redeem.types';
+import { Redeem } from '@app/redeem/redeem.entity';
+import { RedeemRepository as CommonRepository } from '@app/redeem/redeem.repository';
 
 @Injectable()
 export class RedeemRepository extends CommonRepository {

@@ -8,6 +8,10 @@ import { UserCreateReplyMessage } from './messages/user-create-reply.message';
 import { UserEventPattern } from '@app/user/user.types';
 import { TicketEventPattern } from '@app/ticket/ticket.types';
 import { TicketTransferEventPattern } from '@app/ticket-transfer/ticket-transfer.types';
+import { MessageEventPattern } from '@app/message/message.types';
+import { MessageSendReplyMessage } from '@app/message/messages/message-send-reply.message';
+import { PaymentEventPattern } from '@web/payment/payment.types';
+import { PaymentCancelPaywallMessage } from '@web/payment/messages/payment-cancel-paywall.message';
 
 @Controller()
 export class ConsumerController {
@@ -37,5 +41,17 @@ export class ConsumerController {
   async handleTicketDeleteReply(@Payload() message: TicketDeleteReplyMessage) {
     await this.consumerService.handleTicketDeleteReply(message);
     this.logger.log(`Saved nft burn data for ticket ${message.ticket.uuid}`);
+  }
+
+  @EventPattern(MessageEventPattern.SendReply)
+  async handleMessageSendReply(@Payload() message: MessageSendReplyMessage) {
+    await this.consumerService.handleMessageSendReply(message);
+    this.logger.log(`Handled ${MessageEventPattern.SendReply} for message ${message.messageUuid}`);
+  }
+
+  @EventPattern(PaymentEventPattern.CancelPaywall)
+  async handlePaymentPaywallCancel(@Payload() message: PaymentCancelPaywallMessage) {
+    await this.consumerService.handlePaymentPaywallCancel(message);
+    this.logger.log(`Handled ${PaymentEventPattern.CancelPaywall} for order ${message.order.uuid}`);
   }
 }

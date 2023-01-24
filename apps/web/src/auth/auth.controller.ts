@@ -20,7 +20,9 @@ import { ConfigService } from '@nestjs/config';
 import { SendAuthCodeDto } from './dto/send-auth-code.dto';
 import { VerifyAuthCodeDto } from './dto/verify-auth-code.dto';
 import { VerifyAuthCodeResponseDto } from './dto/verify-auth-code-response.dto';
-import { ApiResponseHelper, CookieToBodyInterceptor, RequestToBodyInterceptor } from '@app/common';
+import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
+import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
+import { CookieToBodyInterceptor } from '@app/common/interceptors/cookie-to-body.interceptor';
 
 @Controller('auth')
 export class AuthController {

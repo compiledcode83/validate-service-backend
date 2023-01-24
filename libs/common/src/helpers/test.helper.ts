@@ -21,14 +21,14 @@ export class TestHelper {
   }
 
   async truncateTable(tableName: string): Promise<void> {
-    await AppDataSource.query(`TRUNCATE TABLE ${tableName}`);
+    await AppDataSource.query(`TRUNCATE TABLE \`${tableName}\``);
   }
 
   async cleanDatabase(): Promise<void> {
     await Promise.all(
       AppDataSource.entityMetadatas
         .filter((entity) => entity.tableName !== 'base_entity')
-        .map((entity) => AppDataSource.query(`TRUNCATE TABLE ${entity.tableName}`)),
+        .map((entity) => AppDataSource.query(`TRUNCATE TABLE \`${entity.tableName}\``)),
     );
   }
 

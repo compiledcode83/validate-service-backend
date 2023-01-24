@@ -16,6 +16,6 @@ export class ListingFactory {
     listing.endsAt = DateTime.now().plus({ days: 1 }).toJSDate();
     listing.eventId = data.eventId ? data.eventId : Math.floor(Math.random() * 1);
 
-    return AppDataSource.manager.getRepository(Listing).save({ ...listing });
+    return AppDataSource.manager.getRepository(Listing).save({ ...listing, ...data });
   }
 }

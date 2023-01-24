@@ -24,6 +24,26 @@ import { TicketTransferEventPattern, TicketTransferStatus } from '@app/ticket-tr
 import { UserEventPattern, UserStatus } from '@app/user/user.types';
 import kafkaConfig from '@app/common/configs/kafka.config';
 import { ConsumerService } from '@consumer/consumer.service';
+import { EventFactory } from '@app/database/factories/event.factory';
+import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
+import { OrderFactory } from '@app/database/factories/order.factory';
+import { OrderPaymentStatus, OrderStatus } from '@app/order/order.types';
+import { OrderPaymentFactory } from '@app/database/factories/order-payment.factory';
+import { OrderPrimaryFactory } from '@app/database/factories/order-primary.factory';
+import { OrderPrimaryTicketFactory } from '@app/database/factories/order-primary-ticket.factory';
+import { Order } from '@app/order/order.entity';
+import { MessageEventPattern, MessageStatus } from '@app/message/message.types';
+import { MessageFactory } from '@app/database/factories/message.factory';
+import { MessageSendReplyMessage } from '@app/message/messages/message-send-reply.message';
+import { Message } from '@app/message/message.entity';
+import { PaymentEventPattern, PaymentProviderType } from '@web/payment/payment.types';
+import { TicketTypeSaleStatus } from '@app/ticket-type/ticket-type.types';
+import { DateTime } from 'luxon';
+import { CurrencyEnum } from '@app/common/types/currency.enum';
+import { PaymentCancelPaywallMessage } from '@web/payment/messages/payment-cancel-paywall.message';
+import { OrderPayment } from '@app/order/order-payment.entity';
+import { PaymentService } from '@web/payment/payment.service';
+import { OrderService } from '@web/order/order.service';
 
 jest.setTimeout(30000);
 waitForExpect.defaults.timeout = 25000;
@@ -34,6 +54,8 @@ describe('Consumer microservice (e2e)', () => {
   let testHelper: TestHelper;
   let producerService: ProducerService;
   let consumerService: ConsumerService;
+  let paymentService: PaymentService;
+  let orderService: OrderService;
 
   beforeAll(async () => {
     const kafkaOptions = kafkaConfig();
@@ -60,12 +82,18 @@ describe('Consumer microservice (e2e)', () => {
 
     producerService = moduleFixture.get(ProducerService);
     consumerService = moduleFixture.get(ConsumerService);
+    paymentService = moduleFixture.get(PaymentService);
+    orderService = moduleFixture.get(OrderService);
     testHelper = new TestHelper(moduleFixture, jest);
 
     jest.spyOn(consumerService, 'handleTicketCreateReply');
     jest.spyOn(consumerService, 'handleTicketDeleteReply');
     jest.spyOn(consumerService, 'handleTicketTransferReply');
     jest.spyOn(consumerService, 'handleUserCreateReply');
+    jest.spyOn(consumerService, 'handleTicketCreateReply');
+    jest.spyOn(consumerService, 'handleMessageSendReply');
+    jest.spyOn(consumerService, 'handlePaymentPaywallCancel');
+    jest.spyOn(producerService, 'send');
 
     await AppDataSource.initialize();
     await app.startAllMicroservices();
@@ -178,6 +206,128 @@ describe('Consumer microservice (e2e)', () => {
           tokenId: null,
           transactionHash: null,
           errorData: replyMessage.errorData,
+        }),
+      );
+    });
+
+    it(`Expects to get a ${TicketEventPattern.TicketCreateReply} event and update order status to completed`, async () => {
+      const ticketProvider = await TicketProviderFactory.create();
+      const user = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: user.id,
+        status: TicketStatus.Creating,
+        contractId: null,
+        ipfsUri: null,
+        tokenId: null,
+        transactionHash: null,
+        eventId: event.id,
+      });
+
+      const order = await OrderFactory.create({ buyerId: user.id, status: OrderStatus.Paid }, [
+        { ticketTypeId: ticketType.id, quantity: 1 },
+      ]);
+      await OrderPaymentFactory.create({ orderId: order.id, externalId: faker.random.word() });
+      const orderPrimary = await OrderPrimaryFactory.create({ orderId: order.id, ticketTypeId: ticketType.id });
+      await OrderPrimaryTicketFactory.create({ orderPrimaryId: orderPrimary.id, ticketId: ticket.id });
+
+      const message = new TicketCreateReplyMessage({
+        ticket: {
+          ...ticket,
+          contractId: faker.finance.ethereumAddress(),
+          ipfsUri: faker.internet.url(),
+          tokenId: Number(faker.random.numeric(2)),
+          transactionHash: faker.finance.ethereumAddress(),
+          ticketType: {
+            ...ticketType,
+            event,
+          },
+        },
+        user,
+        operationUuid: uuid(),
+      });
+
+      await producerService.send(TicketEventPattern.TicketCreateReply, message);
+
+      await waitForExpect(() => {
+        expect(consumerService.handleTicketCreateReply).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            operationUuid: message.operationUuid,
+          }),
+        );
+      });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 500));
+
+      const updatedOrder = await AppDataSource.manager.getRepository(Order).findOne({ where: { uuid: order.uuid } });
+
+      expect(updatedOrder).toEqual(
+        expect.objectContaining({
+          uuid: order.uuid,
+          status: OrderStatus.Completed,
+        }),
+      );
+    });
+
+    it(`Expects to get a ${TicketEventPattern.TicketCreateReply} event and not update order status, because it's still unpaid`, async () => {
+      const ticketProvider = await TicketProviderFactory.create();
+      const user = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: user.id,
+        status: TicketStatus.Creating,
+        contractId: null,
+        ipfsUri: null,
+        tokenId: null,
+        transactionHash: null,
+        eventId: event.id,
+      });
+
+      const order = await OrderFactory.create({ buyerId: user.id, status: OrderStatus.Created }, [
+        { ticketTypeId: ticketType.id, quantity: 1 },
+      ]);
+      await OrderPaymentFactory.create({ orderId: order.id, externalId: faker.random.word() });
+      const orderPrimary = await OrderPrimaryFactory.create({ orderId: order.id, ticketTypeId: ticketType.id });
+      await OrderPrimaryTicketFactory.create({ orderPrimaryId: orderPrimary.id, ticketId: ticket.id });
+
+      const message = new TicketCreateReplyMessage({
+        ticket: {
+          ...ticket,
+          contractId: faker.finance.ethereumAddress(),
+          ipfsUri: faker.internet.url(),
+          tokenId: Number(faker.random.numeric(2)),
+          transactionHash: faker.finance.ethereumAddress(),
+          ticketType: {
+            ...ticketType,
+            event,
+          },
+        },
+        user,
+        operationUuid: uuid(),
+      });
+
+      await producerService.send(TicketEventPattern.TicketCreateReply, message);
+
+      await waitForExpect(() => {
+        expect(consumerService.handleTicketCreateReply).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            operationUuid: message.operationUuid,
+          }),
+        );
+      });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 500));
+
+      const updatedOrder = await AppDataSource.manager.getRepository(Order).findOne({ where: { uuid: order.uuid } });
+
+      expect(updatedOrder).toEqual(
+        expect.objectContaining({
+          uuid: order.uuid,
+          status: OrderStatus.Created,
         }),
       );
     });
@@ -399,6 +549,211 @@ describe('Consumer microservice (e2e)', () => {
         expect.objectContaining({
           status: UserStatus.Creating,
           errorData: replyMessage.errorData,
+        }),
+      );
+    });
+  });
+
+  describe(`Testing ${MessageEventPattern.SendReply} handling`, () => {
+    it(`Expects to get successfull ${MessageEventPattern.SendReply} event and save message status`, async () => {
+      const ticketProvider = await TicketProviderFactory.create();
+      const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: user.id,
+        status: TicketStatus.Creating,
+        contractId: null,
+        ipfsUri: null,
+        tokenId: null,
+        transactionHash: null,
+      });
+      const message = await MessageFactory.create({
+        ticketId: ticket.id,
+        status: MessageStatus.Sent,
+        sendTo: user.phoneNumber,
+      });
+      const sendReplyMessage = new MessageSendReplyMessage({
+        messageUuid: message.uuid,
+        status: MessageStatus.Sent,
+        operationUuid: uuid(),
+      });
+
+      await producerService.send(MessageEventPattern.SendReply, sendReplyMessage);
+
+      await waitForExpect(() => {
+        expect(consumerService.handleMessageSendReply).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            messageUuid: sendReplyMessage.messageUuid,
+          }),
+        );
+      });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 500));
+
+      const updatedMessage = await AppDataSource.manager.getRepository(Message).findOneBy({ uuid: message.uuid });
+
+      expect(updatedMessage).toEqual(
+        expect.objectContaining({
+          status: sendReplyMessage.status,
+        }),
+      );
+    });
+
+    it(`Expects to get error ${MessageEventPattern.SendReply} event and save message status and errorData`, async () => {
+      const ticketProvider = await TicketProviderFactory.create();
+      const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: user.id,
+        status: TicketStatus.Creating,
+        contractId: null,
+        ipfsUri: null,
+        tokenId: null,
+        transactionHash: null,
+      });
+      const message = await MessageFactory.create({
+        ticketId: ticket.id,
+        status: MessageStatus.Sent,
+        sendTo: user.phoneNumber,
+      });
+      const sendReplyMessage = new MessageSendReplyMessage({
+        messageUuid: message.uuid,
+        status: MessageStatus.Error,
+        errorData: JSON.stringify({ message: 'Error' }),
+        operationUuid: uuid(),
+      });
+
+      await producerService.send(MessageEventPattern.SendReply, sendReplyMessage);
+
+      await waitForExpect(() => {
+        expect(consumerService.handleMessageSendReply).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            messageUuid: sendReplyMessage.messageUuid,
+          }),
+        );
+      });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 500));
+
+      const updatedMessage = await AppDataSource.manager.getRepository(Message).findOneBy({ uuid: message.uuid });
+
+      expect(updatedMessage).toEqual(
+        expect.objectContaining({
+          status: sendReplyMessage.status,
+          errorData: sendReplyMessage.errorData,
+        }),
+      );
+    });
+  });
+
+  describe(`Testing ${PaymentEventPattern.CancelPaywall} handling`, () => {
+    it(`Expects to get ${PaymentEventPattern.CancelPaywall} event and cancel checkout session successfully`, async () => {
+      const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({
+        saleEnabled: TicketTypeSaleStatus.Enabled,
+        saleAmount: 4,
+        saleEnabledFromDate: DateTime.now().minus({ month: 1 }).toJSDate(),
+        saleEnabledToDate: DateTime.now().plus({ month: 1 }).toJSDate(),
+        salePrice: '100.00',
+        saleCurrency: CurrencyEnum.AED,
+        eventId: event.id,
+      });
+
+      const order = await OrderFactory.create({ buyerId: user.id }, [{ ticketTypeId: ticketType.id, quantity: 1 }]);
+      await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
+
+      const createdOrder = await orderService.findByUuid(order.uuid);
+
+      expect(createdOrder).toEqual(
+        expect.objectContaining({
+          uuid: order.uuid,
+          status: OrderStatus.Created,
+          payment: expect.objectContaining({
+            externalStatus: OrderPaymentStatus.Pending,
+          }),
+        }),
+      );
+
+      const paymentCancelPaywallMessage = new PaymentCancelPaywallMessage({ order: createdOrder });
+
+      await producerService.send(PaymentEventPattern.CancelPaywall, paymentCancelPaywallMessage);
+
+      await waitForExpect(() => {
+        expect(consumerService.handlePaymentPaywallCancel).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            order: expect.objectContaining({
+              uuid: createdOrder.uuid,
+            }),
+          }),
+        );
+      });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 500));
+
+      const canceledOrder = await orderService.findByUuid(order.uuid);
+
+      expect(canceledOrder).toEqual(
+        expect.objectContaining({
+          uuid: order.uuid,
+          status: OrderStatus.Canceled,
+          payment: expect.objectContaining({
+            externalStatus: OrderPaymentStatus.Declined,
+          }),
+        }),
+      );
+    });
+
+    it(`Expects to get ${PaymentEventPattern.CancelPaywall} event and skip canceling completed order`, async () => {
+      const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({
+        saleEnabled: TicketTypeSaleStatus.Enabled,
+        saleAmount: 4,
+        saleEnabledFromDate: DateTime.now().minus({ month: 1 }).toJSDate(),
+        saleEnabledToDate: DateTime.now().plus({ month: 1 }).toJSDate(),
+        salePrice: '100.00',
+        saleCurrency: CurrencyEnum.AED,
+        eventId: event.id,
+      });
+
+      const order = await OrderFactory.create({ buyerId: user.id, status: OrderStatus.Completed }, [
+        { ticketTypeId: ticketType.id, quantity: 1 },
+      ]);
+      await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
+      const createdOrder = await orderService.findByUuid(order.uuid);
+
+      await AppDataSource.manager
+        .getRepository(OrderPayment)
+        .update({ orderId: order.id }, { externalStatus: OrderPaymentStatus.Completed });
+      await AppDataSource.manager.getRepository(Order).update({ id: order.id }, { status: OrderStatus.Completed });
+
+      const paymentCancelPaywallMessage = new PaymentCancelPaywallMessage({ order: createdOrder });
+
+      await producerService.send(PaymentEventPattern.CancelPaywall, paymentCancelPaywallMessage);
+      await waitForExpect(() => {
+        expect(consumerService.handlePaymentPaywallCancel).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            order: expect.objectContaining({
+              uuid: createdOrder.uuid,
+            }),
+          }),
+        );
+      });
+
+      await new Promise((fulfill) => setTimeout(fulfill, 1500));
+
+      const completedOrder = await orderService.findByUuid(order.uuid);
+
+      expect(completedOrder).toEqual(
+        expect.objectContaining({
+          uuid: order.uuid,
+          status: OrderStatus.Completed,
+          payment: expect.objectContaining({
+            externalStatus: OrderPaymentStatus.Completed,
+          }),
         }),
       );
     });
