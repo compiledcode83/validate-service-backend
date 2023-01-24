@@ -1,4 +1,4 @@
-import { CurrencyEnum } from '@app/common';
+import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
 export class AddMissingPriceColumnsTicketType1671715911403 implements MigrationInterface {
