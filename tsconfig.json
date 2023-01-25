@@ -24,6 +24,9 @@
       "@web/*": [
         "apps/web/src/*"
       ],
+      "@admin/*": [
+        "apps/admin/src/*"
+      ],
       "@producer/*": [
         "apps/producer/src/*"
       ],

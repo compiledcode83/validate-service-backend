@@ -9,6 +9,7 @@
   "moduleNameMapper": {
     "^@api/(.*)$": "<rootDir>/apps/api/src/$1",
     "^@web/(.*)$": "<rootDir>/apps/web/src/$1",
+    "^@admin/(.*)$": "<rootDir>/apps/admin/src/$1",
     "^@producer/(.*)$": "<rootDir>/apps/producer/src/$1",
     "^@consumer/(.*)$": "<rootDir>/apps/consumer/src/$1",
     "^@app/database/(.*)$": "<rootDir>/libs/database/src/$1",

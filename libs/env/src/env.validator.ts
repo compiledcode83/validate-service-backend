@@ -19,50 +19,50 @@ export enum Environment {
 }
 
 export class EnvironmentVariables {
-  @IsEnum(Environment, { groups: ['api', 'producer', 'consumer', 'web'] })
+  @IsEnum(Environment, { groups: ['api', 'producer', 'consumer', 'web', 'admin'] })
   NODE_ENV: Environment;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_HOST: string;
 
-  @IsInt({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @Min(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsInt({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @Min(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_PORT: number;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_PASSWORD: string;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_DATABASE: string;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_USERNAME: string;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_CONNECTION: string;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_MIGRATIONS: string;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_MIGRATIONS_DIR: string;
 
-  @IsString({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsString({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @MinLength(1, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_LOGGING: string;
 
-  @IsInt({ groups: ['database', 'producer', 'consumer', 'web'] })
-  @Min(10, { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsInt({ groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
+  @Min(10, { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   TYPEORM_POOL_SIZE: number;
 
-  @IsIn(['true', 'false'], { groups: ['database', 'producer', 'consumer', 'web'] })
+  @IsIn(['true', 'false'], { groups: ['database', 'producer', 'consumer', 'web', 'admin'] })
   MYSQL_TLS: 'true' | 'false';
 
   @IsString({ groups: ['producer', 'consumer'] })
@@ -227,6 +227,34 @@ export class EnvironmentVariables {
   @IsString({ groups: ['web'] })
   @MinLength(1, { groups: ['web'] })
   STRIPE_WEBHOOK_SECRET: string;
+
+  @IsString({ groups: ['admin'] })
+  @MinLength(64, { groups: ['admin'] })
+  ADMIN_JWT_SECRET: string;
+
+  @IsString({ groups: ['admin'] })
+  @MinLength(1, { groups: ['admin'] })
+  ADMIN_JWT_REFRESH_TOKEN_COOKIE_DOMAIN: string;
+
+  @IsString({ groups: ['admin'] })
+  @MinLength(1, { groups: ['admin'] })
+  ADMIN_JWT_REFRESH_TOKEN_DURATION_DAYS: string;
+
+  @IsString({ groups: ['admin'] })
+  @MinLength(1, { groups: ['admin'] })
+  ADMIN_JWT_REFRESH_TOKEN_MAX_SESSIONS: string;
+
+  @IsString({ groups: ['admin'] })
+  @MinLength(1, { groups: ['admin'] })
+  ADMIN_JWT_ACCESS_TOKEN_DURATION_MINUTES: string;
+
+  @IsString({ groups: ['admin'] })
+  @IsIn(['true', 'false'], { groups: ['admin'] })
+  ADMIN_JWT_REFRESH_TOKEN_COOKIE_SECURE: 'true' | 'false';
+
+  @IsString({ groups: ['admin'] })
+  @IsIn(['true', 'false'], { groups: ['admin'] })
+  ADMIN_JWT_REFRESH_TOKEN_COOKIE_HTTPONLY: 'true' | 'false';
 }
 
 export function validateApi(config: Record<string, unknown>) {
@@ -243,6 +271,17 @@ export function validateApi(config: Record<string, unknown>) {
 export function validateWeb(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, { enableImplicitConversion: true });
   const errors = validateSync(validatedConfig, { skipMissingProperties: false, groups: ['web'] });
+
+  if (errors.length > 0) {
+    throw new Error(errors.toString());
+  }
+
+  return validatedConfig;
+}
+
+export function validateAdmin(config: Record<string, unknown>) {
+  const validatedConfig = plainToInstance(EnvironmentVariables, config, { enableImplicitConversion: true });
+  const errors = validateSync(validatedConfig, { skipMissingProperties: false, groups: ['admin'] });
 
   if (errors.length > 0) {
     throw new Error(errors.toString());

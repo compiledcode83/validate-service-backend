@@ -4,6 +4,7 @@ import { TicketProviderApiTokenFactory } from '@app/database/factories/ticket-pr
 import { User } from '@app/user/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenInterface } from '@web/auth/auth.types';
+import { Admin } from '@admin/admin/admin.entity';
 
 type JestType = typeof jest;
 
@@ -42,5 +43,16 @@ export class TestHelper {
     };
 
     return jwtService.signAsync(payload);
+  }
+
+  setAuthenticatedAdmin(admin: Admin): string {
+    const jwtService = this.moduleFixture.get<JwtService>(JwtService);
+    const adminMock = {
+      uuid: admin.uuid,
+      email: admin.email,
+      name: admin.name,
+    };
+
+    return jwtService.sign(adminMock);
   }
 }
