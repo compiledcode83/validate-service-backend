@@ -33,23 +33,8 @@ data "aws_subnet" "public_subnet_b" {
   }
 }
 
-data "aws_nat_gateway" "nat_gateway_a" {
-  filter {
-    name   = "tag:Name"
-    values = ["NAT GW West 1a"]
-  }
-}
-
-
-data "aws_nat_gateway" "nat_gateway_b" {
-  filter {
-    name   = "tag:Name"
-    values = ["NAT GW West 1b"]
-  }
-}
-
 resource "aws_security_group" "alb_sg" {
-  name   = "Validate ALB SG"
+  name   = "Valicit ALB SG"
   vpc_id = data.aws_vpc.vpc.id
 
   dynamic "ingress" {
@@ -75,14 +60,14 @@ resource "aws_security_group" "alb_sg" {
 }
 
 resource "aws_security_group" "instance_sg" {
-  name   = "Validate Instance SG"
+  name   = "Valicit Instance SG"
   vpc_id = data.aws_vpc.vpc.id
 
   ingress {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
+    cidr_blocks      = ["10.1.0.0/16"]
   }
 
   egress {

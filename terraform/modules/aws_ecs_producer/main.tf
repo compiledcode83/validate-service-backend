@@ -1,5 +1,5 @@
 data "aws_secretsmanager_secret_version" "current" {
-  secret_id = var.secret_manager_id_consumer
+  secret_id = var.secret_manager_id_producer
 }
 
 data "aws_ecr_image" "valicit_backend_image" {
@@ -13,8 +13,8 @@ locals {
   ]
 }
 
-resource "aws_ecs_cluster" "consumer_cluster" {
-  name = "consumer_cluster"
+resource "aws_ecs_cluster" "producer_cluster" {
+  name = "producer_cluster"
 }
 
 data "aws_ami" "amz_linux" {
@@ -27,40 +27,40 @@ data "aws_ami" "amz_linux" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "consumer" {
-  name = "consumer"
+resource "aws_cloudwatch_log_group" "producer" {
+  name = "producer"
 
   tags = {
     Environment = "production"
-    Application = "Consumer"
+    Application = "Producer"
   }
 }
 
-resource "aws_ecs_task_definition" "consumer_ecs_task_definition" {
-  family                = "consumer_ecs_task_definition"
+resource "aws_ecs_task_definition" "producer_ecs_task_definition" {
+  family                = "producer_ecs_task_definition"
   network_mode          = "bridge"
   container_definitions = jsonencode([
     {
-      command : ["npm", "run", "consumer:start:prod"],
+      command : ["npm", "run", "producer:start:prod"],
       environment : local.env_vars,
       memory : 600
       essential : true,
       image : "${var.valicit_backend_erc_url}@${data.aws_ecr_image.valicit_backend_image.image_digest}",
-      name : "consumer",
+      name : "producer",
       logConfiguration: {
         logDriver: "awslogs",
         options: {
-          awslogs-group: aws_cloudwatch_log_group.consumer.name,
+          awslogs-group: aws_cloudwatch_log_group.producer.name,
           awslogs-region: "eu-west-1",
-          awslogs-stream-prefix: "consumer"
+          awslogs-stream-prefix: "producer"
         }
       }
     }
   ])
 }
 
-resource "aws_launch_configuration" "consumer_launch_config" {
-  name_prefix                 = "ecs_consumer_"
+resource "aws_launch_configuration" "producer_launch_config" {
+  name_prefix                 = "ecs_producer_"
   enable_monitoring           = true
   image_id                    = data.aws_ami.amz_linux.id
   iam_instance_profile        = var.ecs_agent_name
@@ -69,7 +69,7 @@ resource "aws_launch_configuration" "consumer_launch_config" {
   key_name                    = "validate-ec2-key"
   user_data                   = <<EOF
 #!/bin/bash
-echo ECS_CLUSTER=${aws_ecs_cluster.consumer_cluster.name} >> /etc/ecs/ecs.config
+echo ECS_CLUSTER=${aws_ecs_cluster.producer_cluster.name} >> /etc/ecs/ecs.config
 sudo dd if=/dev/zero of=/swapfile bs=128M count=8
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
@@ -84,12 +84,12 @@ EOF
   }
 }
 
-resource "aws_autoscaling_group" "consumer_ecs_asg" {
-  name_prefix          = "consumer_asg"
-  launch_configuration = aws_launch_configuration.consumer_launch_config.name
+resource "aws_autoscaling_group" "producer_ecs_asg" {
+  name_prefix          = "producer_asg"
+  launch_configuration = aws_launch_configuration.producer_launch_config.name
   vpc_zone_identifier = [var.public_subnet_a_id, var.public_subnet_b_id]
   
-  desired_capacity          = 2
+  desired_capacity          = 1
   min_size                  = 1
   max_size                  = 10
   min_elb_capacity          = 1
@@ -103,17 +103,17 @@ resource "aws_autoscaling_group" "consumer_ecs_asg" {
   tag {
     key                 = "Name"
     propagate_at_launch = true
-    value               = "Consumer"
+    value               = "Producer"
   }
 }
 
-resource "aws_ecs_service" "consumer_service" {
-  name            = "consumer_service"
-  cluster         = aws_ecs_cluster.consumer_cluster.id
-  task_definition = aws_ecs_task_definition.consumer_ecs_task_definition.arn
-  desired_count   = 2
-  deployment_minimum_healthy_percent = 50
-  deployment_maximum_percent = 200
+resource "aws_ecs_service" "producer_service" {
+  name            = "producer_service"
+  cluster         = aws_ecs_cluster.producer_cluster.id
+  task_definition = aws_ecs_task_definition.producer_ecs_task_definition.arn
+  desired_count   = 1
+  deployment_minimum_healthy_percent = 0
+  deployment_maximum_percent = 100
   force_new_deployment = true
   wait_for_steady_state = true
 

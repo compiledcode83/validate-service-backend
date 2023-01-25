@@ -1,10 +1,10 @@
 data "aws_secretsmanager_secret_version" "current" {
-  secret_id = var.secret_manager_id
+  secret_id = var.secret_manager_id_api
 }
 
-data "aws_ecr_image" "api_gateway_image" {
-  repository_name = "api_gateway"
-  image_tag       = "latest"
+data "aws_ecr_image" "valicit_backend_image" {
+  repository_name = "valicit_backend"
+  image_tag       = "production"
 }
 
 locals {
@@ -13,8 +13,8 @@ locals {
   ]
 }
 
-resource "aws_ecs_cluster" "api_gateway_cluster" {
-  name = "api_gateway_cluster"
+resource "aws_ecs_cluster" "api_cluster" {
+  name = "api_cluster"
 }
 
 data "aws_ami" "amz_linux" {
@@ -27,26 +27,26 @@ data "aws_ami" "amz_linux" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "api_gateway" {
-  name = "api_gateway"
+resource "aws_cloudwatch_log_group" "api" {
+  name = "api"
 
   tags = {
     Environment = "production"
-    Application = "API Gateway"
+    Application = "API"
   }
 }
 
-resource "aws_ecs_task_definition" "api_gateway_ecs_task_definition" {
-  family                = "api_gateway_ecs_task_definition"
+resource "aws_ecs_task_definition" "api_ecs_task_definition" {
+  family                = "api_ecs_task_definition"
   network_mode          = "bridge"
   container_definitions = jsonencode([
     {
-      command : ["npm", "run", "start:prod"],
+      command : ["npm", "run", "api:start:prod"],
       environment : local.env_vars,
-      memory : 800
+      memory : 600
       essential : true,
-      image : "${var.api_gateway_erc_url}@${data.aws_ecr_image.api_gateway_image.image_digest}",
-      name : "api_gateway",
+      image : "${var.valicit_backend_erc_url}@${data.aws_ecr_image.valicit_backend_image.image_digest}",
+      name : "api",
       portMappings : [
         {
           "containerPort" : 3000,
@@ -56,17 +56,17 @@ resource "aws_ecs_task_definition" "api_gateway_ecs_task_definition" {
       logConfiguration: {
         logDriver: "awslogs",
         options: {
-          awslogs-group: aws_cloudwatch_log_group.api_gateway.name,
+          awslogs-group: aws_cloudwatch_log_group.api.name,
           awslogs-region: "eu-west-1",
-          awslogs-stream-prefix: "app"
+          awslogs-stream-prefix: "api"
         }
       }
     }
   ])
 }
 
-resource "aws_launch_configuration" "api_gateway_launch_config" {
-  name_prefix                 = "ecs_api_gateway_"
+resource "aws_launch_configuration" "api_launch_config" {
+  name_prefix                 = "ecs_api_"
   enable_monitoring           = true
   image_id                    = data.aws_ami.amz_linux.id
   iam_instance_profile        = var.ecs_agent_name
@@ -75,7 +75,7 @@ resource "aws_launch_configuration" "api_gateway_launch_config" {
   key_name                    = "validate-ec2-key"
   user_data                   = <<EOF
 #!/bin/bash
-echo ECS_CLUSTER=${aws_ecs_cluster.api_gateway_cluster.name} >> /etc/ecs/ecs.config
+echo ECS_CLUSTER=${aws_ecs_cluster.api_cluster.name} >> /etc/ecs/ecs.config
 sudo dd if=/dev/zero of=/swapfile bs=128M count=8
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
@@ -90,11 +90,11 @@ EOF
   }
 }
 
-resource "aws_autoscaling_group" "api_gateway_ecs_asg" {
-  name_prefix          = "api_gateway_asg"
-  launch_configuration = aws_launch_configuration.api_gateway_launch_config.name
-  target_group_arns = [aws_alb_target_group.api_gateway_tg.arn]
-  vpc_zone_identifier = [var.private_subnet_a_id, var.private_subnet_b_id]
+resource "aws_autoscaling_group" "api_ecs_asg" {
+  name_prefix          = "api_asg"
+  launch_configuration = aws_launch_configuration.api_launch_config.name
+  target_group_arns = [aws_alb_target_group.api_tg.arn]
+  vpc_zone_identifier = [var.public_subnet_a_id, var.public_subnet_b_id]
   
   desired_capacity          = 2
   min_size                  = 2
@@ -109,14 +109,14 @@ resource "aws_autoscaling_group" "api_gateway_ecs_asg" {
   tag {
     key                 = "Name"
     propagate_at_launch = true
-    value               = "API Gateway"
+    value               = "API"
   }
 }
 
-resource "aws_ecs_service" "api_gateway_service" {
-  name            = "api_gateway_service"
-  cluster         = aws_ecs_cluster.api_gateway_cluster.id
-  task_definition = aws_ecs_task_definition.api_gateway_ecs_task_definition.arn
+resource "aws_ecs_service" "api_service" {
+  name            = "api_service"
+  cluster         = aws_ecs_cluster.api_cluster.id
+  task_definition = aws_ecs_task_definition.api_ecs_task_definition.arn
   desired_count   = 2
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent = 200
@@ -129,8 +129,8 @@ resource "aws_ecs_service" "api_gateway_service" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.api_gateway_tg.arn
-    container_name   = "api_gateway"
+    target_group_arn = aws_alb_target_group.api_tg.arn
+    container_name   = "api"
     container_port   = 3000
   }
 
@@ -145,8 +145,8 @@ resource "aws_ecs_service" "api_gateway_service" {
   }
 }
 
-resource "aws_alb" "api_gateway_alb" {
-  name = "api-gateway-alb"
+resource "aws_alb" "api_alb" {
+  name = "api-alb"
   internal = false
   load_balancer_type = "application"
   security_groups = [var.alb_security_group_id]
@@ -154,8 +154,8 @@ resource "aws_alb" "api_gateway_alb" {
   enable_http2 = true
 }
 
-resource "aws_alb_target_group" "api_gateway_tg" {
-  name     = "api-gateway-tg"
+resource "aws_alb_target_group" "api_tg" {
+  name     = "api-tg"
   port     = 3000
   protocol = "HTTP"
   vpc_id   = var.vpc_id
@@ -172,7 +172,7 @@ resource "aws_alb_target_group" "api_gateway_tg" {
 }
 
 resource "aws_alb_listener" "http" {
-  load_balancer_arn = aws_alb.api_gateway_alb.arn
+  load_balancer_arn = aws_alb.api_alb.arn
   port              = "80"
   protocol          = "HTTP"
 
@@ -188,7 +188,7 @@ resource "aws_alb_listener" "http" {
 }
 
 resource "aws_alb_listener" "https" {
-  load_balancer_arn = aws_alb.api_gateway_alb.arn
+  load_balancer_arn = aws_alb.api_alb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
@@ -196,6 +196,6 @@ resource "aws_alb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_alb_target_group.api_gateway_tg.arn
+    target_group_arn = aws_alb_target_group.api_tg.arn
   }
 }

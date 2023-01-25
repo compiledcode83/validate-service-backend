@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "api_gateway" {
-  name = "api_gateway"
+resource "aws_ecr_repository" "valicit_backend" {
+  name = "valicit_backend"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
