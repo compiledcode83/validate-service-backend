@@ -70,4 +70,10 @@ resource "aws_ecs_service" "kafka_ui" {
     enable = true
     rollback = true
   }
+
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
 }

@@ -131,4 +131,10 @@ resource "aws_ecs_service" "producer_service" {
     type = "spread"
     field = "instanceId"
   }
+
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
 }

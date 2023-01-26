@@ -143,6 +143,12 @@ resource "aws_ecs_service" "web_service" {
     type = "spread"
     field = "instanceId"
   }
+
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
 }
 
 resource "aws_alb" "web_alb" {
