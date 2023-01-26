@@ -71,7 +71,7 @@ resource "aws_launch_configuration" "api_launch_config" {
   image_id                    = data.aws_ami.amz_linux.id
   iam_instance_profile        = var.ecs_agent_name
   security_groups             = [var.instance_security_group_id]
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   key_name                    = "validate-ec2-key"
   user_data                   = <<EOF
 #!/bin/bash
