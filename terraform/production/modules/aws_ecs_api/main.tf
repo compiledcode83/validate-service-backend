@@ -4,7 +4,7 @@ data "aws_secretsmanager_secret_version" "current" {
 
 data "aws_ecr_image" "valicit_backend_image" {
   repository_name = "valicit_backend"
-  image_tag       = "production"
+  image_tag       = "api-production"
 }
 
 locals {
