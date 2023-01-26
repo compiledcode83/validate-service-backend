@@ -81,11 +81,11 @@ output "aws_secret_manager_id_api" {
 }
 
 output "aws_secret_manager_id_web" {
-  value = data.aws_secretsmanager_secret_version.api_current.secret_id
+  value = data.aws_secretsmanager_secret_version.web_current.secret_id
 }
 
 output "aws_secret_manager_id_admin" {
-  value = data.aws_secretsmanager_secret_version.api_current.secret_id
+  value = data.aws_secretsmanager_secret_version.admin_current.secret_id
 }
 
 output "aws_secret_manager_id_producer" {
