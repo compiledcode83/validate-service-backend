@@ -1,14 +1,5 @@
-resource "aws_secretsmanager_secret" "kafka_ui" {
-  name                    = "kafka_ui/production"
-  recovery_window_in_days = 0
-
-  lifecycle {
-    prevent_destroy = false
-  }
-}
-
 data "aws_secretsmanager_secret_version" "current" {
-  secret_id = aws_secretsmanager_secret.kafka_ui.id
+  secret_id = var.secret_manager_id_kafka_ui
 }
 
 locals {
