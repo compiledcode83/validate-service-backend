@@ -99,7 +99,7 @@ module "ecs_producer" {
 module "ecs_kafka_ui" {
   source = "./modules/aws_ecs_kafka_ui"
 
-  depends_on = [module.ecr_repository, module.ecs_agent, module.networking, module.secrets_manager]
+  depends_on = [module.ecr_repository, module.ecs_agent, module.networking, module.secrets_manager, module.ecs_admin]
 
   secret_manager_id_kafka_ui = module.secrets_manager.aws_secret_manager_id_kafka_ui
 }
