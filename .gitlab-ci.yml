@@ -67,7 +67,7 @@ deploy-production:
     - docker tag valicit_backend:consumer $APP_REGISTRY_URL/valicit_backend:consumer-production
     - docker push $APP_REGISTRY_URL/valicit_backend:consumer-production
 
-    - cd terraform
+    - cd terraform/production
     - terraform init
     - terraform apply -auto-approve
 
