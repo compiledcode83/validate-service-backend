@@ -31,5 +31,5 @@ export default registerAs('databaseConfig', () => ({
     waitForConnections: process.env.MYSQL_WAIT_FOR_CONNECTIONS === 'true',
   },
   poolSize: process.env.TYPEORM_POOL_SIZE,
-  ssl: false,
+  ssl: { rejectUnauthorized: process.env.MYSQL_TLS === 'true' },
 }));
