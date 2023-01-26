@@ -1,0 +1,34 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": "spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@api/(.*)$": "<rootDir>/apps/api/src/$1",
+    "^@web/(.*)$": "<rootDir>/apps/web/src/$1",
+    "^@admin/(.*)$": "<rootDir>/apps/admin/src/$1",
+    "^@producer/(.*)$": "<rootDir>/apps/producer/src/$1",
+    "^@consumer/(.*)$": "<rootDir>/apps/consumer/src/$1",
+    "^@app/database/(.*)$": "<rootDir>/libs/database/src/$1",
+    "^@app/env/(.*)$": "<rootDir>/libs/env/src/$1",
+    "^@app/ticket-provider-encryption-key/(.*)$": "<rootDir>/libs/ticket-provider-encryption-key/src/$1",
+    "^@app/common/(.*)$": "<rootDir>/libs/common/src/$1",
+    "^@app/ticket-transfer/(.*)$": "<rootDir>/libs/ticket-transfer/src/$1",
+    "^@app/ticket-provider/(.*)$": "<rootDir>/libs/ticket-provider/src/$1",
+    "^@app/user/(.*)$": "<rootDir>/libs/user/src/$1",
+    "^@app/event/(.*)$": "<rootDir>/libs/event/src/$1",
+    "^@app/outbox/(.*)$": "<rootDir>/libs/outbox/src/$1",
+    "^@app/redis/(.*)$": "<rootDir>/libs/redis/src/$1",
+    "^@app/sentry/(.*)$": "<rootDir>/libs/sentry/src/$1",
+    "^@app/ticket/(.*)$": "<rootDir>/libs/ticket/src/$1",
+    "^@app/ticket-type/(.*)$": "<rootDir>/libs/ticket-type/src/$1",
+    "^@app/inbox/(.*)$": "<rootDir>/libs/inbox/src/$1",
+    "^@app/listing/(.*)$": "<rootDir>/libs/listing/src/$1",
+    "^@app/message/(.*)$": "<rootDir>/libs/message/src/$1",
+    "^@app/order/(.*)$": "<rootDir>/libs/order/src/$1",
+    "^@app/redeem/(.*)$": "<rootDir>/libs/redeem/src/$1"
+  }
+}
