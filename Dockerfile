@@ -1,3 +1,5 @@
+ARG BUILD_APP=api
+
 FROM node:16-buster
 
 WORKDIR /app
@@ -10,7 +12,7 @@ COPY . .
 
 COPY .env.test .env.test
 
-RUN chmod +x node_modules/.bin/nest && npm run build
+RUN chmod +x node_modules/.bin/nest && npm run build ${BUILD_APP}
 
 VOLUME /app/node_modules
 

@@ -46,10 +46,27 @@ deploy-production:
     - terraform -v
   environment: production
   script:
-    - docker build . -t validate-api-gateway
     - docker login -u AWS -p $(aws ecr get-login-password --region eu-west-1) $APP_REGISTRY_URL
-    - docker tag validate-api-gateway:latest $APP_REGISTRY_URL/$NODE_REPOSITORY_NAME:latest
-    - docker push $APP_REGISTRY_URL/$NODE_REPOSITORY_NAME:latest
+    - docker build . -t valicit_backend:api --build-arg BUILD_APP=api
+    - docker tag valicit_backend:api $APP_REGISTRY_URL/valicit_backend/api:production
+    - docker push $APP_REGISTRY_URL/valicit_backend/api:production
+
+    - docker build . -t valicit_backend:web --build-arg BUILD_APP=web
+    - docker tag valicit_backend:web $APP_REGISTRY_URL/valicit_backend/web:production
+    - docker push $APP_REGISTRY_URL/valicit_backend/web:production
+
+    - docker build . -t valicit_backend:admin --build-arg BUILD_APP=admin
+    - docker tag valicit_backend:admin $APP_REGISTRY_URL/valicit_backend/admin:production
+    - docker push $APP_REGISTRY_URL/valicit_backend/admin:production
+
+    - docker build . -t valicit_backend:producer --build-arg BUILD_APP=producer
+    - docker tag valicit_backend:producer $APP_REGISTRY_URL/valicit_backend/producer:production
+    - docker push $APP_REGISTRY_URL/valicit_backend/producer:production
+
+    - docker build . -t valicit_backend:consumer --build-arg BUILD_APP=consumer
+    - docker tag valicit_backend:consumer $APP_REGISTRY_URL/valicit_backend/consumer:production
+    - docker push $APP_REGISTRY_URL/valicit_backend/consumer:production
+
     - cd terraform
     - terraform init
     - terraform apply -auto-approve

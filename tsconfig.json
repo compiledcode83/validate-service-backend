@@ -33,6 +33,21 @@
       "@consumer/*": [
         "apps/consumer/src/*"
       ],
+      "@api": [
+        "apps/api/src"
+      ],
+      "@web": [
+        "apps/web/src"
+      ],
+      "@admin": [
+        "apps/admin/src"
+      ],
+      "@producer": [
+        "apps/producer/src"
+      ],
+      "@consumer": [
+        "apps/consumer/src"
+      ],
       "@app/ticket-provider-encryption-key": [
         "libs/ticket-provider-encryption-key/src"
       ],
