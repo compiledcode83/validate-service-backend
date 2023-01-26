@@ -9,21 +9,21 @@ variables:
   DOCKER_DRIVER: overlay
 
 stages:
-  # - test
+  - test
   - deploy-production
 
-# test:
-#   stage: test
-#   services:
-#   - name: docker:20-dind
-#     command: ["--tls=false"]
-#   script:
-#     - docker-compose run --rm api sh -c "npm run migration:run:ci && npm run test:ci"
-#   artifacts:
-#     when: always
-#     reports:
-#       junit:
-#         - junit.xml
+test:
+  stage: test
+  services:
+  - name: docker:20-dind
+    command: ["--tls=false"]
+  script:
+    - docker-compose run --rm api sh -c "npm run migration:run:ci && npm run test:ci"
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - junit.xml
 
 deploy-production:
   stage: deploy-production
