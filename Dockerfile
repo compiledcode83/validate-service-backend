@@ -1,4 +1,4 @@
-ARG BUILD_APP=api
+ARG BUILD_APP
 
 FROM node:16-buster
 
@@ -11,6 +11,8 @@ RUN npm install --no-optional && npm cache clean --force
 COPY . .
 
 COPY .env.test .env.test
+
+RUN echo "$BUILD_APP"
 
 RUN chmod +x node_modules/.bin/nest && npm run build ${BUILD_APP}
 
