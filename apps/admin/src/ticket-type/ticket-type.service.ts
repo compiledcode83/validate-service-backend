@@ -70,6 +70,7 @@ export class TicketTypeService {
       const createdTicketType = await queryRunner.manager.save(
         this.ticketTypeRepository.create({ ...ticketTypeParams, eventId: event.id }),
       );
+
       const ticketType = await queryRunner.manager.findOneBy(TicketType, { id: createdTicketType.id });
 
       const payload = new TicketTypeCreateMessage({ ticketType });
