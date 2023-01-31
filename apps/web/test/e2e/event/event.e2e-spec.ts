@@ -165,8 +165,6 @@ describe('Events (e2e)', () => {
                   },
                 },
               }),
-              dateStart: DateTime.now().plus({ days: 30 }).toUTC().toFormat(DATE_FORMAT),
-              dateEnd: DateTime.now().plus({ days: 45 }).toUTC().toFormat(DATE_FORMAT),
             }),
             expect.not.objectContaining({
               id: event2.id,
