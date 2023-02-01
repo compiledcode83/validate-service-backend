@@ -8,6 +8,7 @@ import { CurrencyEnum } from '@app/common/types/currency.enum';
 
 @Entity('event')
 export class Event {
+  @Exclude({ toPlainOnly: true })
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 

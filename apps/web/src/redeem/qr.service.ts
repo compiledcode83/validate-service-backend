@@ -5,13 +5,12 @@ import {
   QR_TICKET_HASH_PREFIX,
 } from '@app/redeem/redeem.types';
 import { RedisService } from '@app/redis/redis.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomBytes } from 'node:crypto';
 
 @Injectable()
 export class QrService {
-  private readonly logger = new Logger(QrService.name);
   constructor(private readonly redisService: RedisService, private readonly configService: ConfigService) {}
 
   async generateQrForTicket(redeemUuid: string, ticketUuid: string): Promise<QrGenerateResponse> {
@@ -55,15 +54,9 @@ export class QrService {
   }
 
   async checkRedeemDisplayKeyExists(redeemUuid: string) {
-    let displayToken;
+    const displayToken = await this.redisService.get(this.getRedeemDisplayKey(redeemUuid));
 
-    try {
-      displayToken = await this.redisService.get(this.getRedeemDisplayKey(redeemUuid));
-
-      return Boolean(displayToken);
-    } catch (err) {
-      this.logger.log(err);
-    }
+    return Boolean(displayToken);
   }
 
   getTicketHashKey(redeemUuid: string, ticketUuid: string): string {

@@ -23,7 +23,6 @@ export class EventController {
 
   @ApiOperation({ description: `Find events` })
   @ApiResponse(ApiResponseHelper.success(EventPaginatedResult))
-  @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
   async findAllPaginated(@Query() searchParams: FindEventsDto): Promise<EventPaginatedResult> {
