@@ -40,12 +40,8 @@ describe('Ticket Transfer (e2e)', () => {
 
   it('Checks that endpoint throws unauthorized error', () => {
     request(app.getHttpServer()).get('/api/v1/ticket-transfers').expect(HttpStatus.UNAUTHORIZED);
-    request(app.getHttpServer())
-      .get('/api/v1/ticket-transfers/test')
-      .expect(HttpStatus.UNAUTHORIZED);
-    request(app.getHttpServer())
-      .post('/api/v1/ticket-transfers')
-      .expect(HttpStatus.UNAUTHORIZED);
+    request(app.getHttpServer()).get('/api/v1/ticket-transfers/test').expect(HttpStatus.UNAUTHORIZED);
+    request(app.getHttpServer()).post('/api/v1/ticket-transfers').expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Should post a ticket transfer and return validation errors in response', async () => {
