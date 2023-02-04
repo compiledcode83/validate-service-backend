@@ -5,7 +5,7 @@ import { TicketProviderController } from './ticket-provider.controller';
 import { TicketProviderRepository } from './ticket-provider.repository';
 import { TicketProviderService } from './ticket-provider.service';
 import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
-/** dirty-fix to compile ticket-provider.subscriber */
+/** @todo dirty fix to compile ticket-provider.subscriber */
 import { TicketProviderSubscriber } from '@app/ticket-provider/ticket-provider.subscriber';
 @Module({
   imports: [TypeOrmModule.forFeature([TicketProvider]), TicketProviderEncryptionKeyModule],
