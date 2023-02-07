@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Redeem } from './redeem.entity';
+import { PaginatedResultCursor } from '@app/common/pagination/pagination.types';
 
 export enum RedeemStatus {
   NotRedeemed = 'notRedeemed',
@@ -23,4 +25,12 @@ export class QrGenerateResponse {
 
   @ApiProperty({ example: 1800, description: 'The QR code display time to live (in sec)' })
   qrDisplayTtl: number;
+}
+
+export class RedeemPaginatedResult {
+  @ApiProperty({ isArray: true, type: () => Redeem })
+  data: Redeem[];
+
+  @ApiProperty()
+  cursor: PaginatedResultCursor;
 }
