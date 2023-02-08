@@ -7,7 +7,7 @@ import { Listing } from '@app/listing/listing.entity';
 @Injectable()
 export class ListingRepository extends CommonRepository {
   async getPaginatedQueryBuilder(searchParams: FindListingDto): Promise<PagingResult<Listing>> {
-    const queryBuilder = this.createQueryBuilder('listing');
+    const queryBuilder = this.createQueryBuilder('listing').leftJoinAndMapOne('listing.user', 'listing.user', 'user');
 
     const paginator = buildPaginator({
       entity: Listing,

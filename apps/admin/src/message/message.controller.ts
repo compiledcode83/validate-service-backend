@@ -11,7 +11,7 @@ import { Message } from '@app/message/message.entity';
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @ApiOperation({ description: 'Find Listings' })
+  @ApiOperation({ description: 'Find Messages' })
   @ApiResponse(ApiResponseHelper.success(MessagePaginatedResult))
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -19,11 +19,11 @@ export class MessageController {
     return this.messageService.findAllPaginated(searchParams);
   }
 
-  @ApiOperation({ description: 'Find Listings' })
+  @ApiOperation({ description: 'Find One Message' })
   @ApiResponse(ApiResponseHelper.success(Message))
   @HttpCode(HttpStatus.OK)
   @Get(':uuid')
-  async getMessageInfo(@Param('uuid') uuid: string): Promise<Message> {
-    return this.messageService.getMessageInfo(uuid);
+  async findOne(@Param('uuid') uuid: string): Promise<Message> {
+    return this.messageService.findOne(uuid);
   }
 }

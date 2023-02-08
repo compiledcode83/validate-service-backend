@@ -29,7 +29,7 @@ export class MessageRepository extends CommonRepository {
     return paginator.paginate(queryBuilder);
   }
 
-  async getMessageInfo(uuid: string) {
+  async findOneMessage(uuid: string) {
     const result = await this.createQueryBuilder('message')
       .leftJoinAndMapOne('message.ticket', 'message.ticket', 'ticket')
       .leftJoinAndMapOne('message.user', 'message.user', 'user')

@@ -29,7 +29,7 @@ export class RedeemRepository extends CommonRepository {
     return paginator.paginate(queryBuilder);
   }
 
-  async getRedeemInfo(uuid: string) {
+  async findOneRedeem(uuid: string) {
     const result = await this.createQueryBuilder('message')
       .leftJoinAndMapOne('message.user', 'message.user', 'user')
       .where({ uuid })

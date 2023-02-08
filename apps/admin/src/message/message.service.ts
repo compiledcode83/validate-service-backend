@@ -12,7 +12,7 @@ export class MessageService {
     return this.messageRepository.getPaginatedQueryBuilder(searchParams);
   }
 
-  async getMessageInfo(uuid: string) {
-    return this.messageRepository.getMessageInfo(uuid);
+  async findOne(uuid: string) {
+    return this.messageRepository.findOneMessage(uuid);
   }
 }

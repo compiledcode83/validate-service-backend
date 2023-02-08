@@ -11,7 +11,7 @@ import { RedeemPaginatedResult } from '@app/redeem/types/redeem-paginated-result
 export class RedeemController {
   constructor(private readonly redeemService: RedeemService) {}
 
-  @ApiOperation({ description: 'Find Listings' })
+  @ApiOperation({ description: 'Find Redeems' })
   @ApiResponse(ApiResponseHelper.success(RedeemPaginatedResult))
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -19,11 +19,11 @@ export class RedeemController {
     return this.redeemService.findAllPaginated(searchParams);
   }
 
-  @ApiOperation({ description: 'Find Listings' })
+  @ApiOperation({ description: 'Find One Redeem' })
   @ApiResponse(ApiResponseHelper.success(Redeem))
   @HttpCode(HttpStatus.OK)
   @Get(':uuid')
-  async getRedeemInfo(@Param('uuid') uuid: string): Promise<Redeem> {
-    return this.redeemService.getRedeemInfo(uuid);
+  async findOne(@Param('uuid') uuid: string): Promise<Redeem> {
+    return this.redeemService.findOne(uuid);
   }
 }

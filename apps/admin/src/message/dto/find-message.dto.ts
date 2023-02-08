@@ -1,8 +1,9 @@
 import { CursorFilterDto } from '@app/common/pagination/cursor-filter.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsOptional, IsIn, IsInt, Min, Max, IsString } from 'class-validator';
 import { Message } from '@app/message/message.entity';
+import { ValidateHelper } from '@app/common/helpers/validate-helper';
 
 export class FindMessageDto extends CursorFilterDto {
   @ApiProperty({ example: 'createdAt', enum: ['createdAt'], required: false })
@@ -19,6 +20,7 @@ export class FindMessageDto extends CursorFilterDto {
   limit = 50;
 
   @ApiProperty({ example: '+1***********', required: false })
+  @Transform(({ value }) => ValidateHelper.sanitize(value))
   @IsOptional()
   @IsString()
   userPhoneNumber: string;

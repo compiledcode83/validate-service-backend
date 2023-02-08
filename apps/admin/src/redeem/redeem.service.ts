@@ -12,7 +12,7 @@ export class RedeemService {
     return this.redeemRepository.getPaginatedQueryBuilder(searchParams);
   }
 
-  async getRedeemInfo(uuid: string) {
-    return this.redeemRepository.getRedeemInfo(uuid);
+  async findOne(uuid: string) {
+    return this.redeemRepository.findOneRedeem(uuid);
   }
 }
