@@ -40,7 +40,7 @@ describe('Listing e2e', () => {
   });
 
   it('Checks that endpoint throws unauthorized error', () => {
-    request(app.getHttpServer()).get('/api/v1/listing').expect(HttpStatus.UNAUTHORIZED);
+    request(app.getHttpServer()).get('/api/v1/listings').expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Should get listing by pagination', async () => {
@@ -68,7 +68,7 @@ describe('Listing e2e', () => {
     });
 
     await request(app.getHttpServer())
-      .get(`/api/v1/listing?limit=1`)
+      .get(`/api/v1/listings?limit=1`)
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${token}`)
       .then(async (response) => {
@@ -83,7 +83,7 @@ describe('Listing e2e', () => {
         const afterCursor = response.body.cursor.afterCursor;
 
         await request(app.getHttpServer())
-          .get(`/api/v1/listing?limit=1&afterCursor=${afterCursor}`)
+          .get(`/api/v1/listings?limit=1&afterCursor=${afterCursor}`)
           .set('Accept', 'application/json')
           .set('Authorization', `Bearer ${token}`)
           .then((response) => {
@@ -95,6 +95,38 @@ describe('Listing e2e', () => {
               ]),
             );
           });
+        expect(response.status).toBe(HttpStatus.OK);
+      });
+  });
+
+  it('Should Cancel Listing', async () => {
+    const admin = await AdminFactory.create();
+    const token = testHelper.setAuthenticatedAdmin(admin);
+
+    const ticketProvider = await TicketProviderFactory.create();
+
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
+
+    const listing1 = await ListingFactory.create({
+      userId: user.id,
+      ticketId: ticket.id,
+      eventId: event.id,
+      status: ListingStatus.Active,
+    });
+
+    const listingData = {
+      listingUuid: listing1.uuid,
+      userUuid: user.uuid,
+    };
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/listings`)
+      .send(listingData)
+      .set('Accept', 'application/json')
+      .set('Authorization', `Bearer ${token}`)
+      .then((response) => {
         expect(response.status).toBe(HttpStatus.OK);
       });
   });
