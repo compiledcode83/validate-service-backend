@@ -2,9 +2,9 @@ import { Controller, HttpCode, HttpStatus, Get, Query, Param } from '@nestjs/com
 import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RedeemService } from './redeem.service';
-import { RedeemPaginatedResult } from '@app/redeem/redeem.types';
 import { FindRedeemDto } from './dto/find-redeem.dto';
 import { Redeem } from '@app/redeem/redeem.entity';
+import { RedeemPaginatedResult } from '@app/redeem/types/redeem-paginated-result';
 
 @ApiResponse(ApiResponseHelper.unauthorized())
 @Controller('redeems')
