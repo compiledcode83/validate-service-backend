@@ -34,7 +34,7 @@ describe('Redeem e2e', () => {
   });
 
   beforeEach(async () => {
-    // await testHelper.cleanDatabase();
+    await testHelper.cleanDatabase();
   });
 
   afterEach(() => {

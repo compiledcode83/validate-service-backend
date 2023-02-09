@@ -26,7 +26,7 @@ export class ListingController {
   @ApiOperation({ description: 'Update Listing' })
   @ApiResponse(ApiResponseHelper.success(''))
   @HttpCode(HttpStatus.OK)
-  @Post()
+  @Post('cancel')
   async cancelListing(@Body() data: CancelListingDto) {
     return this.commonLisitingService.cancel(data.listingUuid, data.userUuid);
   }

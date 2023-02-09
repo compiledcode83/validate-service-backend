@@ -66,6 +66,5 @@ export class ListingController {
   @Post(':listingUuid/cancel')
   async cancel(@Param() params: ListingCancelDto) {
     return this.commonLisitingService.cancel(params.listingUuid, params.user.uuid);
-    // return this.listingService.cancel(params.listingUuid, params.user.uuid);
   }
 }

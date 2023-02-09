@@ -122,7 +122,7 @@ describe('Listing e2e', () => {
     };
 
     await request(app.getHttpServer())
-      .post(`/api/v1/listings`)
+      .post(`/api/v1/listings/cancel`)
       .send(listingData)
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${token}`)
