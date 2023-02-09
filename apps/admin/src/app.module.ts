@@ -18,8 +18,12 @@ import { validateAdmin } from '@app/env/env.validator';
 import { TicketProviderApiTokenModule } from './ticket-provider-api-token/ticket-provider-api-token.module';
 import { TicketProviderEncryptionKeyModule } from './ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import { TicketTransferModule } from './ticket-transfer/ticket-transfer.module';
+import { OutboxModule } from './outbox/outbox.module';
 import appConfig from './config/app.config';
 import jwtConfig from './config/jwt.config';
+import { ListingModule } from './listing/listing.module';
+import { MessageModule } from './message/message.module';
+import { RedeemModule } from './redeem/redeem.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -45,6 +49,10 @@ EnvHelper.verifyNodeEnv();
     TicketProviderApiTokenModule,
     TicketProviderEncryptionKeyModule,
     TicketTransferModule,
+    OutboxModule,
+    ListingModule,
+    MessageModule,
+    RedeemModule,
   ],
   controllers: [AppController],
   providers: [AppService],
