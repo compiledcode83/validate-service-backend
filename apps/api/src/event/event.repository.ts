@@ -1,14 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { QueryRunner } from 'typeorm';
+import { FindOptionsWhere, QueryRunner } from 'typeorm';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindEventsDto } from './dto/find-events.dto';
 import { EventRepository as CommonRepository } from '@app/event/event.repository';
 import { Event } from '@app/event/event.entity';
+import { EntityName } from '@app/translation/translation.types';
 
 @Injectable()
 export class EventRepository extends CommonRepository {
   async getPaginatedQueryBuilder(searchParams: FindEventsDto, ticketProviderId: number): Promise<PagingResult<Event>> {
-    const queryBuilder = this.createQueryBuilder('event').where({ ticketProviderId });
+    const queryBuilder = this.createQueryBuilder('event')
+      .where({ ticketProviderId })
+      .leftJoinAndSelect(
+        'event.translations',
+        'translations',
+        'translations.entity_name = :entityName AND translations.entity_id = event.id',
+        { entityName: EntityName.Event },
+      );
 
     const paginator = buildPaginator({
       entity: Event,
@@ -39,5 +47,17 @@ export class EventRepository extends CommonRepository {
     const [insertedValues] = generatedMaps;
 
     return queryRunner.manager.findOneBy(Event, { id: insertedValues.id });
+  }
+
+  async findOneBy(where: FindOptionsWhere<Event> | FindOptionsWhere<Event>[]): Promise<Event> {
+    return this.createQueryBuilder()
+      .where(where)
+      .leftJoinAndSelect(
+        'event.translations',
+        'translations',
+        'translations.entity_name = :entityName AND translations.entity_id = event.id',
+        { entityName: EntityName.Event },
+      )
+      .getOne();
   }
 }

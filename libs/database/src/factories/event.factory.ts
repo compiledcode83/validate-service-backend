@@ -7,8 +7,6 @@ export class EventFactory {
   static async create(data?: Partial<Event>) {
     const event = new Event();
     event.uuid = uuid();
-    event.name = faker.name.firstName();
-    event.description = faker.random.words(10);
     event.imageUrl = faker.image.imageUrl();
     event.websiteUrl = faker.internet.url();
 

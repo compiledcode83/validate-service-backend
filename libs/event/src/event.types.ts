@@ -19,3 +19,15 @@ export enum EventResaleStatus {
   Disabled,
   Enabled,
 }
+
+export enum EventWeekday {
+  Monday = 'monday',
+  Tuesday = 'tuesday',
+  Wednesday = 'wednesday',
+  Thursday = 'thursday',
+  Friday = 'friday',
+  Saturday = 'saturday',
+  Sunday = 'sunday',
+}
+
+export const EventTranslatableAttributes = ['name', 'shortDescription', 'longDescription']

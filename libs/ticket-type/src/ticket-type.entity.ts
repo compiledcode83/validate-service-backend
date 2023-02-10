@@ -6,9 +6,11 @@ import { TicketTypeResaleStatus, TicketTypeSaleStatus } from './ticket-type.type
 import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { Event } from '@app/event/event.entity';
 import { OrderPrimary } from '@app/order/order-primary.entity';
+import { Translatable } from '@app/translation/translation.types';
+import { Translation } from '@app/translation/translation.entity';
 
 @Entity('ticket_type')
-export class TicketType {
+export class TicketType implements Translatable {
   @Exclude({ toPlainOnly: true })
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
@@ -115,6 +117,11 @@ export class TicketType {
   @OneToMany(() => OrderPrimary, (orderPrimary) => orderPrimary.ticketType)
   @JoinColumn({ name: 'id', referencedColumnName: 'ticketTypeId' })
   primarySales: OrderPrimary[];
+
+  @Exclude()
+  @OneToMany(() => Translation, (translation) => translation.ticketType)
+  @JoinColumn({ name: 'id', referencedColumnName: 'entity_id' })
+  translations: Translation[];
 
   @ApiProperty({ example: 10 })
   saleAmountAvailable: number;

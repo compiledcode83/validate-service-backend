@@ -4,6 +4,7 @@ import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-bo
 import { RequestToQueryInterceptor } from '@app/common/interceptors/request-to-query.interceptor';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
 import { TicketTypePaginatedResult } from '@app/ticket-type/ticket-type.types';
+import { Locale } from '@app/translation/translation.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -17,6 +18,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
@@ -31,8 +33,11 @@ export class TicketTypeController {
   @UseInterceptors(ClassSerializerInterceptor, new RequestToQueryInterceptor('ticketProvider', 'ticketProvider'))
   @HttpCode(HttpStatus.OK)
   @Get()
-  async findAllPaginated(@Query() searchParams: FindTicketTypesDto): Promise<TicketTypePaginatedResult> {
-    return this.ticketTypeService.findAllPaginated(searchParams);
+  async findAllPaginated(
+    @Query() searchParams: FindTicketTypesDto,
+    @I18n() i18n: I18nContext,
+  ): Promise<TicketTypePaginatedResult> {
+    return this.ticketTypeService.findAllPaginated(searchParams, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Create a new ticket type` })
@@ -40,8 +45,8 @@ export class TicketTypeController {
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'))
   @Post()
-  async create(@Body() body: CreateTicketTypeDto): Promise<TicketType> {
-    return this.ticketTypeService.create(body);
+  async create(@Body() body: CreateTicketTypeDto, @I18n() i18n: I18nContext): Promise<TicketType> {
+    return this.ticketTypeService.create(body, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Update ticket type` })
@@ -53,7 +58,7 @@ export class TicketTypeController {
     new ParamToBodyInterceptor('uuid', 'uuid'),
   )
   @Patch(':uuid')
-  async update(@Body() body: UpdateTicketTypeDto): Promise<TicketType> {
-    return this.ticketTypeService.update(body);
+  async update(@Body() body: UpdateTicketTypeDto, @I18n() i18n: I18nContext): Promise<TicketType> {
+    return this.ticketTypeService.update(body, i18n.lang as Locale);
   }
 }

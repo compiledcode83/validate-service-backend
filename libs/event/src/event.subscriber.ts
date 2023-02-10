@@ -26,10 +26,5 @@ export class EventSubscriber implements EntitySubscriberInterface<Event> {
 
   afterLoad(entity: Event): void {
     entity.ticketsInformation = EventHelper.getTicketsInformation(entity);
-
-    const dates = EventHelper.getEventDates(entity);
-
-    entity.dateStart = dates.dateStart;
-    entity.dateEnd = dates.dateEnd;
   }
 }

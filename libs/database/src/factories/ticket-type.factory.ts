@@ -7,7 +7,6 @@ export class TicketTypeFactory {
   static async create(data?: Partial<TicketType>) {
     const ticketType = new TicketType();
     ticketType.uuid = uuid();
-    ticketType.name = faker.name.firstName();
     ticketType.ticketDateStart = faker.date.future();
     ticketType.ticketDateEnd = faker.date.future();
 

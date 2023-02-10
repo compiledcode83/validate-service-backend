@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import path = require('path');
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,6 +18,9 @@ import { TicketTypeModule } from './ticket-type/ticket-type.module';
 import { DatabaseModule } from '@app/database/database.module';
 import { RedisModule } from '@app/redis/redis.module';
 import { SentryModule } from '@app/sentry/sentry.module';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+import { Locale } from '@app/translation/translation.types';
+import { TranslationModule } from '@app/translation/translation.module';
 import appConfig from './config/app.config';
 import jwtConfig from './config/jwt.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
@@ -32,6 +36,18 @@ EnvHelper.verifyNodeEnv();
       load: [appConfig, kafkaConfig, jwtConfig, redisConfig],
       validate: validateApi,
     }),
+    I18nModule.forRoot({
+      fallbackLanguage: Locale.en_US,
+      loaderOptions: {
+        path: path.join(__dirname, '../../../i18n/'),
+        watch: true,
+      },
+      fallbacks: {
+        'en-*': Locale.en_US,
+        pt: Locale.pt_BR,
+      },
+      resolvers: [AcceptLanguageResolver],
+    }),
     DatabaseModule,
     TicketProviderModule,
     UserModule,
@@ -45,6 +61,7 @@ EnvHelper.verifyNodeEnv();
     RedisModule,
     SentryModule,
     TicketTypeModule,
+    TranslationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

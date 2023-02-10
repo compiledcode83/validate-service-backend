@@ -12,6 +12,7 @@ import { PaginatedResult } from '@app/common/pagination/pagination.types';
 import { TicketTypeCreateMessage } from '@app/ticket-type/messages/ticket-type-create.message';
 import { TicketTypeEventPattern } from '@app/ticket-type/ticket-type.types';
 import { TicketTypeUpdateMessage } from '@app/ticket-type/messages/ticket-type-update.message';
+import { Locale } from '@app/translation/translation.types';
 
 @Injectable()
 export class TicketTypeService {
@@ -48,15 +49,15 @@ export class TicketTypeService {
     return this.ticketTypeRepository.findOneBy(findParams);
   }
 
-  async findAllPaginated(searchParams: FindTicketTypesDto): Promise<PaginatedResult<TicketType>> {
-    const event = await this.eventService.findByUuid(searchParams.eventUuid);
+  async findAllPaginated(searchParams: FindTicketTypesDto, locale: Locale): Promise<PaginatedResult<TicketType>> {
+    const event = await this.eventService.findByUuid(searchParams.eventUuid, locale);
 
     return this.ticketTypeRepository.getPaginatedQueryBuilder(searchParams, event.id);
   }
 
-  async create(body: CreateTicketTypeDto): Promise<TicketType> {
+  async create(body: CreateTicketTypeDto, locale: Locale): Promise<TicketType> {
     const { ticketProvider, ...ticketTypeParams } = body;
-    const event = await this.eventService.findByUuid(body.eventUuid);
+    const event = await this.eventService.findByUuid(body.eventUuid, locale);
     const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
 
     try {
@@ -83,7 +84,7 @@ export class TicketTypeService {
     }
   }
 
-  async update(body: UpdateTicketTypeDto): Promise<TicketType> {
+  async update(body: UpdateTicketTypeDto, locale: Locale): Promise<TicketType> {
     const { ticketProvider, uuid, ...ticketTypeParams } = body;
 
     const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
