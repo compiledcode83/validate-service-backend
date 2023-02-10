@@ -19,6 +19,21 @@ import { TicketTypeService } from '../ticket-type/ticket-type.service';
 import { TicketTypeRepository } from '../ticket-type/ticket-type.repository';
 import { Ticket } from '@app/ticket/ticket.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
+import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
+
+import { TicketService as CommonTicketService } from '@app/ticket/ticket.service';
+import { TicketRepository as CommonTicketRepository } from '@app/ticket/ticket.repository';
+import { EventService as CommonEventService } from '@app/event/event.service';
+import { EventRepository as CommonEventRepository } from '@app/event/event.repository';
+import { UserService } from '@app/user/user.service';
+import { UserRepository } from '@app/user/user.repository';
+import { TicketTypeService as CommonTicketTypeService } from '@app/ticket-type/ticket-type.service';
+import { TicketTypeRepository as CommonTicketTypeRepository } from '@app/ticket-type/ticket-type.repository';
+import { TicketProviderEncryptionService } from '@app/ticket-provider-encryption-key/ticket-provider-encryption.service';
+import { TicketProviderEncryptionKeyRepository } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.repository';
+import { TicketProviderEncryptionKeyService as CommonTicketProviderEncryptionKeyService } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
+import { TicketProviderRepository } from '@app/ticket-provider/ticket-provider.repository';
+import { TicketProviderService } from '@app/ticket-provider/ticket-provider.service';
 
 @Module({
   imports: [
@@ -29,6 +44,7 @@ import { OutboxModule } from '@app/outbox/outbox.module';
     TicketProviderEncryptionKeyModule,
     TicketTypeModule,
     OutboxModule,
+    CommonTicketModule,
   ],
   controllers: [TicketController],
   providers: [
@@ -43,6 +59,19 @@ import { OutboxModule } from '@app/outbox/outbox.module';
     TicketProviderExistsValidator,
     TicketTypeService,
     TicketTypeRepository,
+    CommonTicketService,
+    CommonTicketRepository,
+    CommonEventService,
+    CommonEventRepository,
+    UserService,
+    UserRepository,
+    TicketProviderEncryptionService,
+    TicketProviderEncryptionKeyRepository,
+    CommonTicketTypeService,
+    CommonTicketTypeRepository,
+    CommonTicketProviderEncryptionKeyService,
+    TicketProviderRepository,
+    TicketProviderService,
   ],
   exports: [TicketService],
 })

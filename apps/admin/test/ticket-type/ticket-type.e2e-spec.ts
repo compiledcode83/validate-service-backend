@@ -100,7 +100,6 @@ describe('Ticket Type (e2e)', () => {
       .then((response) => {
         expect(response.body.message).toEqual(
           expect.arrayContaining([
-            // 'ticketProviderId must be an integer number',
             'saleEnabledFromDate must be a valid ISO 8601 date string',
             'saleEnabledToDate must be a valid ISO 8601 date string',
             'saleAmount must not be greater than 1000000',

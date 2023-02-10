@@ -6,3 +6,4 @@ export * from './ticket.entity';
 export * from './messages/ticket-create.message';
 export * from './messages/ticket-delete.message';
 export * from './messages/ticket-validate.message';
+export * from './ticket.service';

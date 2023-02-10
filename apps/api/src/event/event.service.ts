@@ -11,10 +11,13 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { FindEventsDto } from './dto/find-events.dto';
 import { UpdateEventDto } from './dto/update-ticket-type.dto';
 import { EventRepository } from './event.repository';
+import { EventService as CommonEventService } from '@app/event/event.service';
 
 @Injectable()
-export class EventService {
-  constructor(private readonly eventRepository: EventRepository, private readonly outboxService: OutboxService) {}
+export class EventService extends CommonEventService {
+  constructor(private readonly eventRepository: EventRepository, private readonly outboxService: OutboxService) {
+    super(eventRepository);
+  }
 
   async findByUuidAndTicketProvider(uuid: string, ticketProviderId: number): Promise<Event> {
     return this.eventRepository.findOneBy({ uuid, ticketProviderId });
@@ -36,10 +39,6 @@ export class EventService {
 
   async findAllPaginated(searchParams: FindEventsDto, ticketProviderId: number): Promise<PaginatedResult<Event>> {
     return this.eventRepository.getPaginatedQueryBuilder(searchParams, ticketProviderId);
-  }
-
-  async findOrCreate(queryRunner: QueryRunner, name: string, ticketProviderId: number): Promise<Event> {
-    return this.eventRepository.findOrCreate(queryRunner, name, ticketProviderId);
   }
 
   async create(body: CreateEventDto): Promise<Event> {

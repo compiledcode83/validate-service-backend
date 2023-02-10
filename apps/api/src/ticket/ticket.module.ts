@@ -13,6 +13,18 @@ import { EventModule } from '@api/event/event.module';
 import { Ticket } from '@app/ticket/ticket.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
 import { TicketProviderEncryptionKeyModule } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.module';
+import { TicketService as CommonTicketService } from '@app/ticket/ticket.service';
+import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
+import { TicketRepository as CommonTicketRepository } from '@app/ticket/ticket.repository';
+import { EventService as CommonEventService } from '@app/event/event.service';
+import { EventRepository as CommonEventRepository } from '@app/event/event.repository';
+import { UserService } from '@app/user/user.service';
+import { UserRepository } from '@app/user/user.repository';
+import { TicketTypeService } from '@app/ticket-type/ticket-type.service';
+import { TicketTypeRepository } from '@app/ticket-type/ticket-type.repository';
+import { TicketProviderEncryptionService } from '@app/ticket-provider-encryption-key/ticket-provider-encryption.service';
+import { TicketProviderEncryptionKeyRepository } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.repository';
+import { TicketProviderModule } from '@app/ticket-provider/ticket-provider.module';
 
 @Module({
   imports: [
@@ -23,6 +35,8 @@ import { TicketProviderEncryptionKeyModule } from '@app/ticket-provider-encrypti
     OutboxModule,
     TicketTypeModule,
     TicketProviderEncryptionKeyModule,
+    CommonTicketModule,
+    TicketProviderModule,
   ],
   providers: [
     TicketService,
@@ -30,6 +44,16 @@ import { TicketProviderEncryptionKeyModule } from '@app/ticket-provider-encrypti
     TicketUserExistsAndActiveValidator,
     TicketIsValidatableValidator,
     TicketIsDeletableValidator,
+    CommonTicketService,
+    CommonTicketRepository,
+    CommonEventService,
+    CommonEventRepository,
+    UserService,
+    UserRepository,
+    TicketTypeRepository,
+    TicketTypeService,
+    TicketProviderEncryptionService,
+    TicketProviderEncryptionKeyRepository,
   ],
   controllers: [TicketController],
   exports: [TicketService],

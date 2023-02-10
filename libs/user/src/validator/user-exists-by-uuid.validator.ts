@@ -1,0 +1,19 @@
+import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UserService } from '../user.service';
+
+@ValidatorConstraint({ name: 'userExistsByUuidValidator', async: true })
+export class UserExistsByUuidValidator implements ValidatorConstraintInterface {
+  constructor(private readonly userService: UserService) {}
+
+  async validate(uuid: string, args: ValidationArguments): Promise<boolean> {
+    const { ticketProvider } = args.object as UpdateUserDto;
+    const user = await this.userService.findByUuidAndProvider(uuid, ticketProvider?.id ? ticketProvider?.id : 0);
+
+    return Boolean(user);
+  }
+
+  defaultMessage() {
+    return 'User not found';
+  }
+}
