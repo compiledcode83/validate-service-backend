@@ -11,14 +11,4 @@ export class CreateTicketEventDto {
   @IsString()
   @MinLength(1)
   name: string;
-
-  @ApiProperty({
-    example: 'John Doe Concert',
-    required: true,
-    description: 'Name of the event',
-    minLength: 1,
-  })
-  @IsString()
-  @MinLength(1)
-  eventUuid: string;
 }

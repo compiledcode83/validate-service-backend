@@ -10,31 +10,38 @@ import { TicketProviderService } from '@admin/ticket-provider/ticket-provider.se
 import { TicketTypeService } from '../ticket-type/ticket-type.service';
 import { TicketStatus } from '@app/ticket/ticket.types';
 import { Ticket } from '@app/ticket/ticket.entity';
-import { TicketService as CommonTicketService } from '@app/ticket/ticket.service';
-import { OutboxService } from '@app/outbox/outbox.service';
-import { EventService } from '@app/event/event.service';
-import { TicketProviderEncryptionKeyService } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
 
 @Injectable()
-export class TicketService extends CommonTicketService {
+export class TicketService {
   constructor(
-    public readonly ticketRepository: TicketRepository,
-    public readonly userService: UserService,
-    public readonly ticketProviderService: TicketProviderService,
-    public readonly ticketTypeService: TicketTypeService,
-    public readonly outboxService: OutboxService,
-    public readonly eventService: EventService,
-    public readonly ticketProviderEncryptionKeyService: TicketProviderEncryptionKeyService,
-  ) {
-    super(
-      ticketRepository,
-      userService,
-      ticketTypeService,
-      ticketProviderService,
-      outboxService,
-      eventService,
-      ticketProviderEncryptionKeyService,
-    );
+    private readonly ticketRepository: TicketRepository,
+    private readonly userService: UserService,
+    private readonly ticketProviderService: TicketProviderService,
+    private readonly ticketTypeService: TicketTypeService,
+  ) {}
+
+  async create(createTicketDto: CreateTicketValidationDto) {
+    const { user, ...ticketData } = createTicketDto;
+    const newCreatedUser = await this.userService.findOrCreate(user, ticketData.ticketProviderId);
+    const ticketProvider = await this.ticketProviderService.findById(createTicketDto.ticketProviderId);
+    const ticketType = await this.ticketTypeService.findByUuid(ticketData.ticketTypeUuid);
+
+    const ticket = await this.ticketRepository.save({
+      ...createTicketDto,
+      user: newCreatedUser,
+      eventId: ticketData.eventId,
+      ticketProviderId: ticketProvider.id,
+      ticketTypeId: ticketType.id,
+      imageUrl:
+        createTicketDto.imageUrl ||
+        'https://loremflickr.com/cache/resized/65535_51819602222_b063349f16_c_640_480_nofilter.jpg',
+    });
+
+    const savedTicket = await this.findById(ticket.id);
+
+    /** @todo create record in outbox table */
+
+    return ticket;
   }
 
   async retryMinting(retryTicketMintingDto: RetryTicketMinting): Promise<Ticket> {

@@ -8,7 +8,6 @@ import { UserStatus } from './user.types';
 import { Order } from '@app/order/order.entity';
 import { UserRefreshToken } from '@web/user-refresh-token/user-refresh-token.entity';
 import { Message } from '@app/message/message.entity';
-import { Listing } from '@app/listing/listing.entity';
 
 @Entity('user')
 export class User {
@@ -91,7 +90,4 @@ export class User {
 
   @OneToMany(() => Message, (message) => message.user)
   messages: Message;
-
-  @OneToMany(() => Listing, (listing) => listing.user)
-  listings: Listing;
 }

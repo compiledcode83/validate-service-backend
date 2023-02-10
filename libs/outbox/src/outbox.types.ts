@@ -13,21 +13,10 @@ import { MessageEventPattern } from '@app/message';
 import { MessageSendMessage } from '@app/message/messages/message-send.message';
 import { PaymentEventPattern } from '@web/payment/payment.types';
 import { PaymentCancelPaywallMessage } from '@web/payment/messages/payment-cancel-paywall.message';
-import { ApiProperty } from '@nestjs/swagger';
-import { PaginatedResultCursor } from '@app/common/pagination/pagination.types';
-import { Outbox } from './outbox.entity';
 
 export enum OutboxStatus {
   Created = 'created',
   Sent = 'sent',
-}
-
-export class OutboxPaginatedResult {
-  @ApiProperty({ isArray: true, type: () => Event })
-  data: Outbox[];
-
-  @ApiProperty()
-  cursor: PaginatedResultCursor;
 }
 
 export type OutboxEventName =

@@ -8,13 +8,10 @@ import { UserCreateMessage } from '@app/user/messages/user-create.message';
 import { User } from '@app/user/user.entity';
 import { UserEventPattern, UserStatus } from '@app/user/user.types';
 import { OutboxService } from '@app/outbox/outbox.service';
-import { UserService as CommonUserService } from '@app/user/user.service';
 
 @Injectable()
-export class UserService extends CommonUserService {
-  constructor(private readonly userRepository: UserRepository, private readonly outboxService: OutboxService) {
-    super(userRepository);
-  }
+export class UserService {
+  constructor(private readonly userRepository: UserRepository, private readonly outboxService: OutboxService) {}
 
   async findByUuidAndProvider(uuid: string, ticketProviderId: number): Promise<User> {
     return this.userRepository.findOne({ where: { uuid, ticketProviderId } });

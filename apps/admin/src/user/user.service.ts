@@ -6,13 +6,10 @@ import { UserFilterDto } from './dto/user.filter.dto';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { CreateTicketUserDto } from '@admin/ticket/dto/create-ticket-user.dto';
 import { User } from '@app/user/user.entity';
-import { UserService as CommonUserService } from '@app/user/user.service';
 
 @Injectable()
-export class UserService extends CommonUserService {
-  constructor(private readonly userRepository: UserRepository) {
-    super(userRepository);
-  }
+export class UserService {
+  constructor(private readonly userRepository: UserRepository) {}
 
   async create(createUserData: CreateUserValidationDto) {
     const user = await this.userRepository.save(createUserData);
@@ -58,5 +55,19 @@ export class UserService extends CommonUserService {
     const user = await this.userRepository.findOne({ where: { id } });
 
     return user !== null;
+  }
+
+  async findOrCreate(user: CreateTicketUserDto, ticketProviderId: number): Promise<User> {
+    if (user?.userId) {
+      return this.findById(user?.userId);
+    }
+
+    return this.userRepository.save({
+      ...this.userRepository.create({
+        ...user,
+        ticketProviderId,
+      }),
+      ticketProviderId,
+    });
   }
 }

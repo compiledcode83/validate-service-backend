@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Not, QueryRunner, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { Ticket } from './ticket.entity';
 import { TicketStatus } from './ticket.types';
 
@@ -11,9 +11,5 @@ export class TicketRepository extends Repository<Ticket> {
 
   async findByUuid(uuid: string, relations: string[] = ['user']): Promise<Ticket> {
     return this.findOne({ where: { uuid, status: Not(TicketStatus.Deleted) }, relations });
-  }
-
-  async createTicket(queryRunner: QueryRunner, data: Partial<Ticket>) {
-    return queryRunner.manager.save(this.create(data));
   }
 }

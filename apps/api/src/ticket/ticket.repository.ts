@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Not } from 'typeorm';
+import { Not, QueryRunner } from 'typeorm';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { TicketRepository as CommonRepository } from '@app/ticket/ticket.repository';
@@ -8,6 +8,10 @@ import { TicketStatus } from '@app/ticket/ticket.types';
 
 @Injectable()
 export class TicketRepository extends CommonRepository {
+  async createTicket(queryRunner: QueryRunner, data: Partial<Ticket>) {
+    return queryRunner.manager.save(this.create(data));
+  }
+
   async findByUuid(uuid: string, relations: string[] = ['user']): Promise<Ticket> {
     return this.findOne({ where: { uuid, status: Not(TicketStatus.Deleted) }, relations });
   }

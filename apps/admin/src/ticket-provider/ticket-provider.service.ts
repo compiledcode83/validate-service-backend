@@ -6,16 +6,13 @@ import { TicketProviderFilterDto } from './dto/ticket-provider.filter.dto';
 import { PagingResult } from 'typeorm-cursor-pagination';
 import { TicketProviderEncryptionKeyService } from '@admin/ticket-provider-encryption-key/ticket-provider-encryption-key.service';
 import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
-import { TicketProviderService as CommonTicketProviderService } from '@app/ticket-provider/ticket-provider.service';
 
 @Injectable()
-export class TicketProviderService extends CommonTicketProviderService {
+export class TicketProviderService {
   constructor(
     private readonly ticketProviderRepository: TicketProviderRepository,
     private readonly ticketProviderEncryptionKeyService: TicketProviderEncryptionKeyService,
-  ) {
-    super(ticketProviderRepository);
-  }
+  ) {}
 
   async create(createTicketProviderDto: CreateTicketProviderValidationDto) {
     const ticketProvider = await this.ticketProviderRepository.save(createTicketProviderDto);

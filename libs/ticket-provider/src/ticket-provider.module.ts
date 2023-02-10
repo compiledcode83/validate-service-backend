@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TicketProviderRepository } from './ticket-provider.repository';
-import { TicketProviderService } from './ticket-provider.service';
 
 @Module({
-  providers: [TicketProviderRepository, TicketProviderService],
-  exports: [TicketProviderService],
+  providers: [TicketProviderRepository],
 })
 export class TicketProviderModule {}

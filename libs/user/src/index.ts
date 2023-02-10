@@ -4,4 +4,3 @@ export * from './user.repository';
 export * from './user.subscriber';
 export * from './user.types';
 export * from './messages/user-create.message';
-export * from './user.service';

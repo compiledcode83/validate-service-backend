@@ -9,7 +9,6 @@ import { TicketProviderService } from '../ticket-provider/ticket-provider.servic
 import { TicketProviderRepository } from '../ticket-provider/ticket-provider.repository';
 import { TicketProviderEncryptionKeyService } from '../ticket-provider-encryption-key/ticket-provider-encryption-key.service';
 import { TicketProviderEncryptionKeyRepository } from '../ticket-provider-encryption-key/ticket-provider-encryption-key.repository';
-import { TicketProviderEncryptionKeyRepository as CommonTicketProviderEncryptionKeyRepository } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.repository';
 import { Event } from '@app/event/event.entity';
 import { TicketProviderEncryptionService } from '@app/ticket-provider-encryption-key/ticket-provider-encryption.service';
 
@@ -25,7 +24,6 @@ import { TicketProviderEncryptionService } from '@app/ticket-provider-encryption
     TicketProviderRepository,
     TicketProviderEncryptionKeyService,
     TicketProviderEncryptionKeyRepository,
-    CommonTicketProviderEncryptionKeyRepository,
     TicketProviderEncryptionService,
   ],
   exports: [EventService],

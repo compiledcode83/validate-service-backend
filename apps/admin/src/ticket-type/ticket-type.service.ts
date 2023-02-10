@@ -12,17 +12,14 @@ import { PaginatedResult } from '@app/common/pagination/pagination.types';
 import { TicketTypeEventPattern } from '@app/ticket-type/ticket-type.types';
 import { TicketTypeCreateMessage } from '@app/ticket-type/messages/ticket-type-create.message';
 import { TicketTypeUpdateMessage } from '@app/ticket-type/messages/ticket-type-update.message';
-import { TicketTypeService as CommonTicketTypeService } from '@app/ticket-type/ticket-type.service';
 
 @Injectable()
-export class TicketTypeService extends CommonTicketTypeService {
+export class TicketTypeService {
   constructor(
     private readonly ticketTypeRepository: TicketTypeRepository,
     private readonly eventService: EventService,
     private readonly outboxService: OutboxService,
-  ) {
-    super(ticketTypeRepository);
-  }
+  ) {}
 
   async findByUuid(uuid: string): Promise<TicketType> {
     return this.ticketTypeRepository.findOneBy({ uuid });
@@ -121,5 +118,37 @@ export class TicketTypeService extends CommonTicketTypeService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findOrCreate(
+    eventId: number,
+    name: string,
+    ticketDateStart: any,
+    ticketDateEnd?: any,
+    saleAmount?: number,
+    saleStartFromDate?: any,
+    saleEndDate?: any,
+  ): Promise<TicketType> {
+    const existingTicketType = await this.ticketTypeRepository.findOneBy({
+      name,
+      ticketDateStart,
+      ticketDateEnd,
+      eventId,
+    });
+
+    if (existingTicketType) {
+      return existingTicketType;
+    }
+
+    return this.ticketTypeRepository.save({
+      name,
+      ticketDateStart,
+      ticketDateEnd,
+      eventId,
+      saleEnabled: saleStartFromDate ? 1 : 0,
+      saleEnabledToDate: saleEndDate ? saleEndDate : null,
+      saleEnabledFromDate: saleStartFromDate ? saleStartFromDate : null,
+      saleAmount: saleStartFromDate ? saleAmount : 0,
+    });
   }
 }

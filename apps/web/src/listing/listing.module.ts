@@ -14,13 +14,10 @@ import { IsUserActiveListingValidator } from './validator/is-user-active-listing
 import { IsTicketOnSaleValidator } from './validator/is-ticket-on-sale.validator';
 import { ListingValidator } from './listing.validator';
 import { UserModule } from '@web/user/user.module';
-import { UserModule as CommonUserModule } from '@app/user/user.module';
 import { UserService } from '@web/user/user.service';
 import { UserRepository } from '@web/user/user.repository';
 import { EventExistsValidator } from '@web/event/validators/event-exists.validator';
 import { EventModule } from '@web/event/event.module';
-import { ListingService as CommonListingService } from '@app/listing/listing.service';
-import { ListingRepository as CommonListingRepository } from '@app/listing/listing.repository';
 
 @Module({
   imports: [
@@ -28,7 +25,6 @@ import { ListingRepository as CommonListingRepository } from '@app/listing/listi
     TicketModule,
     UserModule,
     EventModule,
-    CommonUserModule,
   ],
   controllers: [ListingController],
   providers: [
@@ -45,8 +41,6 @@ import { ListingRepository as CommonListingRepository } from '@app/listing/listi
     UserRepository,
     IsTicketOnSaleValidator,
     EventExistsValidator,
-    CommonListingService,
-    CommonListingRepository,
   ],
   exports: [ListingService],
 })

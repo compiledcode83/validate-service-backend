@@ -1,5 +1,9 @@
-import { QR_DISPLAY_PREFIX, QR_PURCHASE_HASH_PREFIX, QR_TICKET_HASH_PREFIX } from '@app/redeem/redeem.types';
-import { QrGenerateResponse } from '@app/redeem/types/qr-generate-response';
+import {
+  QrGenerateResponse,
+  QR_DISPLAY_PREFIX,
+  QR_PURCHASE_HASH_PREFIX,
+  QR_TICKET_HASH_PREFIX,
+} from '@app/redeem/redeem.types';
 import { RedisService } from '@app/redis/redis.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
