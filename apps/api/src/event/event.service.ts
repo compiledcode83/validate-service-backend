@@ -13,6 +13,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { FindEventsDto } from './dto/find-events.dto';
 import { UpdateEventDto } from './dto/update-ticket-type.dto';
 import { EventRepository } from './event.repository';
+import { EventService as CommonEventService } from '@app/event/event.service';
 
 @Injectable()
 export class EventService {
@@ -21,6 +22,10 @@ export class EventService {
     private readonly outboxService: OutboxService,
     private readonly translationService: TranslationService,
   ) {}
+export class EventService extends CommonEventService {
+  constructor(private readonly eventRepository: EventRepository, private readonly outboxService: OutboxService) {
+    super(eventRepository);
+  }
 
   async findByUuidAndTicketProvider(uuid: string, ticketProviderId: number): Promise<Event> {
     return this.eventRepository.findOneBy({ uuid, ticketProviderId });

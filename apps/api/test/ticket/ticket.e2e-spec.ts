@@ -112,9 +112,11 @@ describe('Ticket (e2e)', () => {
       },
       event: {
         name: event.name,
+        eventUuid: event.uuid,
       },
       ticketType: {
         name: ticketType.name,
+        ticketTypeUuid: ticketType.uuid,
         ticketDateStart: DateTime.fromJSDate(ticketType.ticketDateStart).toFormat(DATE_FORMAT),
         ticketDateEnd: DateTime.fromJSDate(ticketType.ticketDateEnd).toFormat(DATE_FORMAT),
       },
@@ -170,8 +172,10 @@ describe('Ticket (e2e)', () => {
       },
       event: {
         name: faker.random.word(),
+        eventUuid: faker.datatype.uuid(),
       },
       ticketType: {
+        ticketTypeUuid: faker.datatype.uuid(),
         name: faker.random.word(),
         ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
         ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
@@ -237,9 +241,11 @@ describe('Ticket (e2e)', () => {
       },
       event: {
         name: faker.random.word(),
+        eventUuid: faker.datatype.uuid(),
       },
       ticketType: {
         name: faker.random.word(),
+        ticketTypeUuid: faker.datatype.uuid(),
         ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
         ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
       },
@@ -325,8 +331,10 @@ describe('Ticket (e2e)', () => {
       },
       event: {
         name: faker.random.word(),
+        eventUuid: faker.datatype.uuid(),
       },
       ticketType: {
+        ticketTypeUuid: faker.datatype.uuid(),
         name: faker.random.word(),
         ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
         ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),

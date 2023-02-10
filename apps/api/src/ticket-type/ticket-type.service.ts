@@ -12,15 +12,17 @@ import { PaginatedResult } from '@app/common/pagination/pagination.types';
 import { TicketTypeCreateMessage } from '@app/ticket-type/messages/ticket-type-create.message';
 import { TicketTypeEventPattern } from '@app/ticket-type/ticket-type.types';
 import { TicketTypeUpdateMessage } from '@app/ticket-type/messages/ticket-type-update.message';
-import { Locale } from '@app/translation/translation.types';
+import { TicketTypeService as CommonTicketTypeService } from '@app/ticket-type/ticket-type.service';
 
 @Injectable()
-export class TicketTypeService {
+export class TicketTypeService extends CommonTicketTypeService {
   constructor(
     private readonly ticketTypeRepository: TicketTypeRepository,
     private readonly eventService: EventService,
     private readonly outboxService: OutboxService,
-  ) {}
+  ) {
+    super(ticketTypeRepository);
+  }
 
   async findByUuid(uuid: string): Promise<TicketType> {
     return this.ticketTypeRepository.findOneBy({ uuid });
@@ -114,15 +116,5 @@ export class TicketTypeService {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  async findOrCreate(
-    queryRunner: QueryRunner,
-    eventId: number,
-    name: string,
-    ticketDateStart: any,
-    ticketDateEnd?: any,
-  ): Promise<TicketType> {
-    return this.ticketTypeRepository.findOrCreate(queryRunner, eventId, name, ticketDateStart, ticketDateEnd);
   }
 }

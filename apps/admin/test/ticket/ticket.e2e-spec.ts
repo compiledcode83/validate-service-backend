@@ -11,6 +11,8 @@ import { UserFactory } from '@app/database/factories/user.factory';
 import { AdminFactory } from '@app/database/factories/admin.factory';
 import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
 import { EventFactory } from '@app/database/factories/event.factory';
+import { DateTime } from 'luxon';
+import { TicketStatus } from '@app/ticket/ticket.types';
 
 describe('Ticket (e2e)', () => {
   let app: INestApplication;
@@ -52,7 +54,9 @@ describe('Ticket (e2e)', () => {
     const admin = await AdminFactory.create();
     const token = testHelper.setAuthenticatedAdmin(admin);
 
-    const ticketData = {};
+    const ticketData = {
+      ticketProviderId: faker.random.numeric(1),
+    };
 
     await request(app.getHttpServer())
       .post('/api/v1/tickets')
@@ -60,9 +64,7 @@ describe('Ticket (e2e)', () => {
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${token}`)
       .then((response) => {
-        expect(response.body.message).toEqual(
-          expect.arrayContaining(['ticketProviderId must be an integer number', 'Ticket provider is not valid.']),
-        );
+        expect(response.body.message).toEqual(expect.arrayContaining(['Ticket provider is not valid.']));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
   });
@@ -135,13 +137,19 @@ describe('Ticket (e2e)', () => {
     const ticketData = {
       additionalData: JSON.stringify({ id: 0 }),
       ticketProviderId: ticketProvider.id,
+      imageUrl: faker.internet.url(),
       user: {
         name: faker.name.firstName(),
         email: faker.internet.email(),
         phoneNumber: '+923244081140',
       },
-      eventId: event.id,
-      ticketTypeUuid: ticketType.uuid,
+      event: {
+        eventUuid: event.uuid,
+      },
+      ticketType: {
+        ticketTypeUuid: ticketType.uuid,
+        ticketDateStart: DateTime.fromISO(ticketType.ticketDateStart.toISOString()).toFormat('yyyy-MM-dd'),
+      },
     };
 
     await request(app.getHttpServer())
@@ -152,23 +160,10 @@ describe('Ticket (e2e)', () => {
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
-            ...ticketData,
-            additionalData: ticketData.additionalData,
-            contractId: response.body.contractId,
-            id: response.body.id,
-            deletedAt: null,
-            imageUrl: response.body.imageUrl,
-            ticketTypeId: response.body.ticketTypeId,
-            validatedAt: response.body.validatedAt,
-            errorData: null,
-            tokenId: response.body.tokenId,
-            transactionHash: response.body.transactionHash,
-            userId: response.body.user.id,
-            user: { ...response.body.user, ...ticketData.user },
-            ticketProviderId: ticketType.id,
-            ticketTypeUuid: ticketType.uuid,
-            uuid: response.body.uuid,
             eventId: event.id,
+            uuid: response.body.uuid,
+            ticketTypeId: ticketType.id,
+            status: TicketStatus.Creating,
           }),
         );
         expect(response.status).toBe(HttpStatus.CREATED);
