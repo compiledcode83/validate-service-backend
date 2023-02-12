@@ -73,13 +73,7 @@ export class OrderService {
   async findByTicketId(ticketId: number, locale: Locale = Locale.en_US): Promise<Order> {
     const order = await this.orderRepository
       .getQbWithRelations()
-      .where({
-        primaryPurchases: {
-          tickets: {
-            ticketId,
-          },
-        },
-      })
+      .where('tickets.ticketId = :ticketId', { ticketId })
       .getOne();
 
     this.mapTranslations(order, locale);
