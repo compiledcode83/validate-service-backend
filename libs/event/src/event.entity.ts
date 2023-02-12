@@ -32,11 +32,11 @@ export class Event implements Translatable {
   websiteUrl: string;
 
   @ApiProperty({ description: 'Event start date', required: true, example: '2024-05-01' })
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'date', nullable: true })
   dateStart: string;
 
   @ApiProperty({ description: 'Event end date', required: true, example: '2024-05-02' })
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ type: 'date', nullable: true })
   dateEnd: string;
 
   @ApiProperty({ description: 'Name of the location of the event', maximum: 512, minimum: 1, required: false })

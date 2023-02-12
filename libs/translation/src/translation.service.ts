@@ -38,7 +38,7 @@ export class TranslationService {
           .values({
             entityName,
             entityId,
-            entityAttribute: item.name,
+            entityAttribute: item.name as any,
             text: item.value,
             locale,
           })
@@ -50,9 +50,9 @@ export class TranslationService {
     return insertResults.map((insertResult) => plainToInstance(Translation, insertResult.generatedMaps.at(0)));
   }
 
-  mapEntity<T extends Translatable>(entity: T, locale: Locale) {
+  static mapEntity<T extends Translatable>(entity: T, locale: Locale) {
     const translations = entity.translations
-      .filter((item) => item.locale === locale)
+      .filter((item) => item.locale === locale && item.entityName === entity.constructor.name)
       .reduce((acc, item) => {
         acc[item.entityAttribute] = item.text;
 

@@ -8,10 +8,10 @@ import { OutboxService } from '@app/outbox/outbox.service';
 import { TranslationService } from '@app/translation/translation.service';
 import { EntityAttribute, EntityName, Locale } from '@app/translation/translation.types';
 import { Injectable } from '@nestjs/common';
-import { Not, QueryRunner } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 import { CreateEventDto } from './dto/create-event.dto';
 import { FindEventsDto } from './dto/find-events.dto';
-import { UpdateEventDto } from './dto/update-ticket-type.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
 import { EventRepository } from './event.repository';
 
 @Injectable()
@@ -23,23 +23,13 @@ export class EventService {
   ) {}
 
   async findByUuidAndTicketProvider(uuid: string, ticketProviderId: number): Promise<Event> {
-    return this.eventRepository.findOneBy({ uuid, ticketProviderId });
-  }
-
-  async findByNameAndTicketProvider(name: string, ticketProviderId: number, excludeUuid?: string): Promise<Event> {
-    const findParams = { name, ticketProviderId };
-
-    if (excludeUuid) {
-      findParams['uuid'] = Not(excludeUuid);
-    }
-
-    return this.eventRepository.findOneBy(findParams);
+    return this.eventRepository.createQueryBuilder('event').where({ uuid, ticketProviderId }).getOne();
   }
 
   async findByUuid(uuid: string, locale: Locale = Locale.en_US): Promise<Event> {
     const event = await this.eventRepository.findOneBy({ uuid });
 
-    return this.translationService.mapEntity(event, locale);
+    return TranslationService.mapEntity(event, locale);
   }
 
   async findAllPaginated(
@@ -49,13 +39,9 @@ export class EventService {
   ): Promise<PaginatedResult<Event>> {
     const events = await this.eventRepository.getPaginatedQueryBuilder(searchParams, ticketProviderId);
 
-    events.data.map((event) => this.translationService.mapEntity(event, locale));
+    events.data.map((event) => TranslationService.mapEntity(event, locale));
 
     return events;
-  }
-
-  async findOrCreate(queryRunner: QueryRunner, name: string, ticketProviderId: number): Promise<Event> {
-    return this.eventRepository.findOrCreate(queryRunner, name, ticketProviderId);
   }
 
   async create(body: CreateEventDto, locale: Locale): Promise<Event> {
@@ -71,7 +57,7 @@ export class EventService {
         this.eventRepository.create({ ...eventParams, ticketProviderId: ticketProvider.id }),
       );
       const event = await queryRunner.manager.findOneBy(Event, { id: createdEvent.id });
-      await this.saveTranslations(queryRunner, event, body, locale);
+      await this.saveTranslations(queryRunner, createdEvent.id, body, locale);
 
       const payload = new EventCreateMessage({ event });
       await this.outboxService.create(queryRunner, EventEventPattern.Create, payload);
@@ -89,7 +75,7 @@ export class EventService {
   }
 
   async update(body: UpdateEventDto, locale: Locale): Promise<Event> {
-    const { ticketProvider, uuid, ...eventParams } = body;
+    const { ticketProvider, uuid, name, shortDescription, longDescription, ...eventParams } = body;
 
     const queryRunner = this.eventRepository.dataSource.createQueryRunner();
 
@@ -105,7 +91,7 @@ export class EventService {
         .execute();
 
       const updatedEvent = await queryRunner.manager.findOneBy(Event, { uuid });
-      await this.saveTranslations(queryRunner, updatedEvent, body, locale);
+      await this.saveTranslations(queryRunner, updatedEvent.id, body, locale);
       const payload = new EventUpdateMessage({ event: updatedEvent });
 
       await this.outboxService.create(queryRunner, EventEventPattern.Update, payload);
@@ -123,14 +109,15 @@ export class EventService {
 
   private async saveTranslations(
     queryRunner: QueryRunner,
-    event: Event,
+    eventId: number,
     dto: CreateEventDto | UpdateEventDto,
     locale: Locale,
   ) {
     const saveTranslations: EntityAttribute[] = [];
+    const eventTranslatableAttributes = Object.values<string>(EventTranslatableAttributes);
 
     for (const attributeName of Object.keys(dto)) {
-      if (EventTranslatableAttributes.includes(attributeName)) {
+      if (eventTranslatableAttributes.includes(attributeName)) {
         saveTranslations.push({
           name: attributeName,
           value: dto[attributeName],
@@ -138,6 +125,6 @@ export class EventService {
       }
     }
 
-    await this.translationService.saveTranslations(queryRunner, EntityName.Event, event.id, saveTranslations, locale);
+    await this.translationService.saveTranslations(queryRunner, EntityName.Event, eventId, saveTranslations, locale);
   }
 }

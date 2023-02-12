@@ -6,8 +6,8 @@ export enum Locale {
 }
 
 export enum EntityName {
-  Event = 'event',
-  TicketType = 'ticketType',
+  Event = 'Event',
+  TicketType = 'TicketType',
 }
 
 export interface Translatable {

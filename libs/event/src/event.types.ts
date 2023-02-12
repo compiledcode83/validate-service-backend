@@ -30,4 +30,8 @@ export enum EventWeekday {
   Sunday = 'sunday',
 }
 
-export const EventTranslatableAttributes = ['name', 'shortDescription', 'longDescription']
+export enum EventTranslatableAttributes {
+  Name = 'name',
+  ShortDescription = 'shortDescription',
+  LongDescription = 'longDescription',
+}

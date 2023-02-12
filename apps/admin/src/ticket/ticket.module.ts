@@ -19,6 +19,8 @@ import { TicketTypeService } from '../ticket-type/ticket-type.service';
 import { TicketTypeRepository } from '../ticket-type/ticket-type.repository';
 import { Ticket } from '@app/ticket/ticket.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
+import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
+import { TicketTypeModule as CommonTicketTypeModule } from '@app/ticket-type/ticket-type.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { OutboxModule } from '@app/outbox/outbox.module';
     TicketProviderEncryptionKeyModule,
     TicketTypeModule,
     OutboxModule,
+    CommonTicketModule,
+    CommonTicketTypeModule,
   ],
   controllers: [TicketController],
   providers: [

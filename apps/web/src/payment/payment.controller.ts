@@ -1,5 +1,6 @@
 import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
+import { Locale } from '@app/translation/translation.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -15,6 +16,7 @@ import {
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public } from '@web/auth/decorators/public.decorator';
 import { Request } from 'express';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { WebhookDto } from './dto/webhook.dto';
 import { PaymentService } from './payment.service';
@@ -30,8 +32,8 @@ export class PaymentController {
   @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('user', 'user'))
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async create(@Body() body: CreatePaymentDto): Promise<any> {
-    return this.paymentService.create(body);
+  async create(@Body() body: CreatePaymentDto, @I18n() i18n: I18nContext): Promise<any> {
+    return this.paymentService.create(body, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Webhook to handle payment notification` })

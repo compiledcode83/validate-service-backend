@@ -10,21 +10,20 @@ import {
   Post,
   Query,
   UseGuards,
-  ClassSerializerInterceptor,
-  UseInterceptors,
   HttpCode,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
-import { CreateTicketValidationDto } from './dto/create.ticket.validation.dto';
 import { UpdateTicketValidationDto } from './dto/update.ticket.validation.dto';
 import { TicketFilterDto } from './dto/ticket.filter.dto';
 import { RetryTicketMinting } from './dto/retry.minting.ticket.validation.dto';
 import { JwtAuthGuard } from '@admin/auth/guards/jwt-auth.guard';
 import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { Ticket } from '@app/ticket/ticket.entity';
-import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
 import { PaginatedResult } from '@app/common/pagination/pagination.types';
+import { CreateTicketValidationDto } from './dto/create.ticket.validation.dto';
+import { I18n, I18nContext } from 'nestjs-i18n';
+import { Locale } from '@app/translation/translation.types';
 
 @ApiResponse(ApiResponseHelper.unauthorized())
 @UseGuards(JwtAuthGuard)
@@ -33,16 +32,11 @@ export class TicketController {
   constructor(private readonly ticketService: TicketService) {}
 
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
-  @ApiOperation({ description: `Create a ticket ` })
+  @ApiOperation({ description: `Create a ticket` })
   @ApiResponse(ApiResponseHelper.success(Ticket, HttpStatus.CREATED))
-  @UseInterceptors(
-    ClassSerializerInterceptor,
-    new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'),
-    new RequestToBodyInterceptor('ticketProvider', 'user.ticketProvider'),
-  )
   @Post()
-  async create(@Body() createTicketDto: CreateTicketValidationDto) {
-    return this.ticketService.create(createTicketDto);
+  async create(@Body() createTicketDto: CreateTicketValidationDto, @I18n() i18n: I18nContext) {
+    return this.ticketService.create(createTicketDto, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Update Ticket  properties` })

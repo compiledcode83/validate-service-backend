@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { MoreThanOrEqual, QueryRunner, SelectQueryBuilder } from 'typeorm';
+import { QueryRunner, SelectQueryBuilder } from 'typeorm';
 import { OrderRepository as CommonRepository } from '@app/order/order.repository';
 import { Order } from '@app/order/order.entity';
 import { OrderStatus } from '@app/order/order.types';
-import { DateTime } from 'luxon';
+import { EntityName } from '@app/translation/translation.types';
 
 @Injectable()
 export class OrderRepository extends CommonRepository {
@@ -52,29 +52,25 @@ export class OrderRepository extends CommonRepository {
     return Number(result.ordersCount);
   }
 
-  async findPayableOrder(uuid: string, userId: number): Promise<Order> {
-    const queryBuilder = this.createQueryBuilder('order');
-
-    this.addRelations(queryBuilder);
-
-    return queryBuilder
-      .where({
-        uuid,
-        buyerId: userId,
-        status: OrderStatus.Created,
-        reservedUntil: MoreThanOrEqual(DateTime.now().toJSDate()),
-      })
-      .andWhere('payment.id IS NULL')
-      .getOne();
-  }
-
-  private addRelations(queryBuilder: SelectQueryBuilder<Order>): SelectQueryBuilder<Order> {
-    queryBuilder
+  getQbWithRelations(queryRunner?: QueryRunner): SelectQueryBuilder<Order> {
+    const queryBuilder = this.createQueryBuilder('order', queryRunner)
       .leftJoinAndSelect('order.primaryPurchases', 'primaryPurchases')
       .leftJoinAndSelect('order.secondaryPurchases', 'secondaryPurchases')
       .leftJoinAndSelect('primaryPurchases.tickets', 'tickets')
       .leftJoinAndSelect('primaryPurchases.ticketType', 'ticketType')
       .leftJoinAndSelect('ticketType.event', 'event')
+      .leftJoinAndSelect(
+        'ticketType.translations',
+        'ticketTypeTranslations',
+        'ticketTypeTranslations.entity_name = :ticketTypeEntityName AND ticketTypeTranslations.entity_id = ticketType.id',
+        { ticketTypeEntityName: EntityName.TicketType },
+      )
+      .leftJoinAndSelect(
+        'event.translations',
+        'eventTranslations',
+        'eventTranslations.entity_name = :eventEntityName AND eventTranslations.entity_id = event.id',
+        { eventEntityName: EntityName.Event },
+      )
       .leftJoinAndSelect('order.buyer', 'buyer')
       .leftJoinAndSelect('order.seller', 'seller')
       .leftJoinAndSelect('order.payment', 'payment');

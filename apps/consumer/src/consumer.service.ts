@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { TicketTransferService } from '@api/ticket-transfer/ticket-transfer.service';
-import { TicketService } from '@api/ticket/ticket.service';
-import { UserService } from '@api/user/user.service';
 import { TicketDeleteReplyMessage } from './messages/ticket-delete-reply.message';
 import { TicketCreateReplyMessage } from './messages/ticket-create-reply.message';
 import { TicketTransferReplyMessage } from './messages/ticket-transfer-reply.message';
@@ -13,6 +11,8 @@ import { PaymentService } from '@web/payment/payment.service';
 import { MessageService } from '@web/message/message.service';
 import { PaymentCancelPaywallMessage } from '@web/payment/messages/payment-cancel-paywall.message';
 import { PaymentProviderType } from '@web/payment/payment.types';
+import { TicketService } from '@app/ticket/ticket.service';
+import { UserService } from '@app/user/user.service';
 
 @Injectable()
 export class ConsumerService {

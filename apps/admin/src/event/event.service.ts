@@ -25,6 +25,10 @@ export class EventService {
     return this.eventRepository.findOneBy({ uuid });
   }
 
+  async findById(id: number): Promise<Event> {
+    return this.eventRepository.findOneBy({ id });
+  }
+
   async findByUuidAndTicketProvider(uuid: string, ticketProviderId: number): Promise<Event> {
     return this.eventRepository.findOneBy({ uuid, ticketProviderId });
   }

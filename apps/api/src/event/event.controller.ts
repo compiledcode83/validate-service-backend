@@ -25,7 +25,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { CreateEventDto } from './dto/create-event.dto';
 import { FindEventsDto } from './dto/find-events.dto';
-import { UpdateEventDto } from './dto/update-ticket-type.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
 import { EventService } from './event.service';
 
 @ApiResponse(ApiResponseHelper.unauthorized())

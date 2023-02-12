@@ -44,6 +44,7 @@ import { PaymentCancelPaywallMessage } from '@web/payment/messages/payment-cance
 import { OrderPayment } from '@app/order/order-payment.entity';
 import { PaymentService } from '@web/payment/payment.service';
 import { OrderService } from '@web/order/order.service';
+import { Locale } from '@app/translation/translation.types';
 
 jest.setTimeout(30000);
 waitForExpect.defaults.timeout = 25000;
@@ -664,7 +665,7 @@ describe('Consumer microservice (e2e)', () => {
       const order = await OrderFactory.create({ buyerId: user.id }, [{ ticketTypeId: ticketType.id, quantity: 1 }]);
       await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
 
-      const createdOrder = await orderService.findByUuid(order.uuid);
+      const createdOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       expect(createdOrder).toEqual(
         expect.objectContaining({
@@ -692,7 +693,7 @@ describe('Consumer microservice (e2e)', () => {
 
       await new Promise((fulfill) => setTimeout(fulfill, 500));
 
-      const canceledOrder = await orderService.findByUuid(order.uuid);
+      const canceledOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       expect(canceledOrder).toEqual(
         expect.objectContaining({
@@ -723,7 +724,7 @@ describe('Consumer microservice (e2e)', () => {
         { ticketTypeId: ticketType.id, quantity: 1 },
       ]);
       await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
-      const createdOrder = await orderService.findByUuid(order.uuid);
+      const createdOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       await AppDataSource.manager
         .getRepository(OrderPayment)
@@ -745,7 +746,7 @@ describe('Consumer microservice (e2e)', () => {
 
       await new Promise((fulfill) => setTimeout(fulfill, 1500));
 
-      const completedOrder = await orderService.findByUuid(order.uuid);
+      const completedOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       expect(completedOrder).toEqual(
         expect.objectContaining({

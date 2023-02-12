@@ -152,22 +152,16 @@ describe('Ticket (e2e)', () => {
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
-            ...ticketData,
-            additionalData: ticketData.additionalData,
             contractId: response.body.contractId,
-            id: response.body.id,
             deletedAt: null,
-            imageUrl: response.body.imageUrl,
-            ticketTypeId: response.body.ticketTypeId,
-            validatedAt: response.body.validatedAt,
-            errorData: null,
-            tokenId: response.body.tokenId,
-            transactionHash: response.body.transactionHash,
-            userId: response.body.user.id,
-            user: { ...response.body.user, ...ticketData.user },
+            ticketType: expect.objectContaining({
+              uuid: ticketType.uuid,
+            }),
+            user: expect.objectContaining({
+              name: ticketData.user.name,
+            }),
             ticketProviderId: ticketType.id,
-            ticketTypeUuid: ticketType.uuid,
-            uuid: response.body.uuid,
+            uuid: expect.any(String),
             eventId: event.id,
           }),
         );

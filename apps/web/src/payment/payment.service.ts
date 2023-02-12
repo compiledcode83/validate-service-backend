@@ -1,4 +1,5 @@
 import { OrderPaymentStatus } from '@app/order/order.types';
+import { Locale } from '@app/translation/translation.types';
 import { Injectable, InternalServerErrorException, Logger, RawBodyRequest } from '@nestjs/common';
 import { OrderService } from '@web/order/order.service';
 import { Request } from 'express';
@@ -15,8 +16,8 @@ export class PaymentService {
     private readonly orderService: OrderService,
   ) {}
 
-  async create(body: CreatePaymentDto): Promise<CreatePaymentResponse> {
-    const order = await this.orderService.findByUuid(body.orderUuid);
+  async create(body: CreatePaymentDto, locale: Locale): Promise<CreatePaymentResponse> {
+    const order = await this.orderService.findByUuid(body.orderUuid, locale);
     const paymentProvider = this.paymentProviderFactory.getProvider(body.paymentProviderType);
     const paywall = await paymentProvider.createPaywall(order);
 
@@ -24,7 +25,7 @@ export class PaymentService {
       throw new InternalServerErrorException(`Error creating a paywall`);
     }
 
-    await this.orderService.createOrderPayment(order.id, paywall.id, JSON.stringify(paywall.raw));
+    await this.orderService.createOrderPayment(order.id, paywall.id, JSON.stringify(paywall.raw), locale);
 
     return {
       url: paywall.url,
@@ -32,7 +33,7 @@ export class PaymentService {
   }
 
   async cancel(orderUuid: string, paymentProviderType: PaymentProviderType): Promise<void> {
-    const order = await this.orderService.findByUuid(orderUuid);
+    const order = await this.orderService.findByUuid(orderUuid, Locale.en_US);
     const paymentProvider = this.paymentProviderFactory.getProvider(paymentProviderType);
     const cancelPaywallResponse = await paymentProvider.cancelPaywall(order);
 

@@ -1,10 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
-import { Allow, IsString, MaxLength, MinLength, Validate } from 'class-validator';
-import { EventDuplicateValidator } from '../validators/event-duplicate.validator';
-import { EventDto } from './event.dto';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
-export class CreateEventDto extends EventDto {
+export class CreateTicketEventDto {
   @ApiProperty({
     example: 'John Doe Concert',
     required: true,
@@ -25,9 +22,5 @@ export class CreateEventDto extends EventDto {
   @IsString()
   @MinLength(1)
   @MaxLength(36)
-  @Validate(EventDuplicateValidator)
   uuid: string;
-
-  @Allow()
-  ticketProvider: TicketProvider;
 }

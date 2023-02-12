@@ -1,6 +1,7 @@
 import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
 import { Order } from '@app/order/order.entity';
+import { Locale } from '@app/translation/translation.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -17,6 +18,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthRequest } from '@web/auth/auth.types';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderService } from './order.service';
 
@@ -30,8 +32,8 @@ export class OrderController {
   @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('user', 'user'))
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async create(@Body() body: CreateOrderDto): Promise<any> {
-    return this.orderService.create(body);
+  async create(@Body() body: CreateOrderDto, @I18n() i18n: I18nContext): Promise<any> {
+    return this.orderService.create(body, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Get order information` })
@@ -39,8 +41,12 @@ export class OrderController {
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get(':uuid')
-  async findOne(@Param('uuid', ParseUUIDPipe) uuid: string, @Req() req: AuthRequest): Promise<Order> {
-    const order = await this.orderService.findByUuidAndUser(uuid, req.user.id);
+  async findOne(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Req() req: AuthRequest,
+    @I18n() i18n: I18nContext,
+  ): Promise<Order> {
+    const order = await this.orderService.findByUuidAndUser(uuid, req.user.id, i18n.lang as Locale);
 
     if (!order) {
       throw new NotFoundException();

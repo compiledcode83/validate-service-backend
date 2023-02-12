@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketProvider } from '@app/ticket-provider/ticket-provider.entity';
 import { Type } from 'class-transformer';
-import { Allow, IsObject, IsOptional, IsUrl, MaxLength, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional, IsUrl, MaxLength, ValidateNested } from 'class-validator';
 import { CreateTicketEventDto } from './create-ticket-event.dto';
 import { CreateTicketTicketTypeDto } from './create-ticket-ticket-type.dto';
 import { CreateTicketUserDto } from './create-ticket-user.dto';
@@ -55,6 +55,6 @@ export class CreateTicketDto {
   @IsObject()
   additionalData: TicketAdditionalData;
 
-  @Allow()
+  @IsNotEmpty()
   ticketProvider: TicketProvider;
 }

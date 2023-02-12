@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   EntitySubscriberInterface,
   EventSubscriber as EventSubscriberDecorator,
@@ -9,6 +10,7 @@ import { Event } from './event.entity';
 import { EventHelper } from './event.helper';
 
 @EventSubscriberDecorator()
+@Injectable()
 export class EventSubscriber implements EntitySubscriberInterface<Event> {
   listenTo(): any {
     return Event;

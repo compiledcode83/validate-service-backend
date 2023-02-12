@@ -4,7 +4,6 @@ import { CreateUserValidationDto } from './dto/create-user.validation.dto';
 import { UpdateUserValidationDto } from './dto/update-user.validation.dto';
 import { UserFilterDto } from './dto/user.filter.dto';
 import { PagingResult } from 'typeorm-cursor-pagination';
-import { CreateTicketUserDto } from '@admin/ticket/dto/create-ticket-user.dto';
 import { User } from '@app/user/user.entity';
 
 @Injectable()
@@ -55,19 +54,5 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { id } });
 
     return user !== null;
-  }
-
-  async findOrCreate(user: CreateTicketUserDto, ticketProviderId: number): Promise<User> {
-    if (user?.userId) {
-      return this.findById(user?.userId);
-    }
-
-    return this.userRepository.save({
-      ...this.userRepository.create({
-        ...user,
-        ticketProviderId,
-      }),
-      ticketProviderId,
-    });
   }
 }

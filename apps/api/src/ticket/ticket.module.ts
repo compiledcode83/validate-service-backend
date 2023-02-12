@@ -13,6 +13,7 @@ import { EventModule } from '@api/event/event.module';
 import { Ticket } from '@app/ticket/ticket.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
 import { TicketProviderEncryptionKeyModule } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.module';
+import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TicketProviderEncryptionKeyModule } from '@app/ticket-provider-encrypti
     OutboxModule,
     TicketTypeModule,
     TicketProviderEncryptionKeyModule,
+    CommonTicketModule,
   ],
   providers: [
     TicketService,

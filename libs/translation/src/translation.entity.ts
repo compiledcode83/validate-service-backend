@@ -1,5 +1,7 @@
+import { EventTranslatableAttributes } from '@app/event';
 import { Event } from '@app/event/event.entity';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
+import { TicketTypeTranslatableAttributes } from '@app/ticket-type/ticket-type.types';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
@@ -21,7 +23,7 @@ export class Translation {
 
   @ApiProperty({ description: `Entity attribute`, maximum: 64 })
   @Column({ type: 'varchar', nullable: false, length: 64 })
-  entityAttribute: string;
+  entityAttribute: EventTranslatableAttributes | TicketTypeTranslatableAttributes;
 
   @ApiProperty({ description: `Locale (ISO language code and ISO country code)`, enum: Locale })
   @Column({ type: 'enum', enum: Locale })

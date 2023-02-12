@@ -1,5 +1,6 @@
 import { Event } from '@app/event/event.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
+import { TranslationModule } from '@app/translation/translation.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventController } from './event.controller';
@@ -9,7 +10,7 @@ import { EventDuplicateValidator } from './validators/event-duplicate.validator'
 import { EventExistsValidator } from './validators/event-exists.validator';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Event]), OutboxModule],
+  imports: [TypeOrmModule.forFeature([Event]), OutboxModule, TranslationModule],
   controllers: [EventController],
   providers: [EventService, EventRepository, EventDuplicateValidator, EventExistsValidator],
   exports: [EventService],
