@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
+import { EntityName } from '@app/translation/translation.types';
 
 @Injectable()
 export class TicketTypeRepository extends Repository<TicketType> {
@@ -30,5 +31,17 @@ export class TicketTypeRepository extends Repository<TicketType> {
     });
 
     return paginator.paginate(queryBuilder);
+  }
+
+  async findOneBy(where: FindOptionsWhere<TicketType> | FindOptionsWhere<TicketType>[]): Promise<TicketType> {
+    return this.createQueryBuilder('ticket_type')
+      .where(where)
+      .leftJoinAndSelect(
+        'ticket_type.translations',
+        'translations',
+        'translations.entity_name = :entityName AND translations.entity_id = ticket_type.id',
+        { entityName: EntityName.TicketType },
+      )
+      .getOne();
   }
 }

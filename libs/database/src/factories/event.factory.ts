@@ -24,18 +24,21 @@ export class EventFactory {
         entityId: savedEvent.id,
         text: faker.random.word(),
         entityAttribute: EventTranslatableAttributes.Name,
+        locale,
       }),
       TranslationFactory.create({
         entityName: EntityName.Event,
         entityId: savedEvent.id,
         text: faker.random.words(10),
         entityAttribute: EventTranslatableAttributes.ShortDescription,
+        locale,
       }),
       TranslationFactory.create({
         entityName: EntityName.Event,
         entityId: savedEvent.id,
         text: faker.random.words(100),
         entityAttribute: EventTranslatableAttributes.LongDescription,
+        locale,
       }),
     ]);
 

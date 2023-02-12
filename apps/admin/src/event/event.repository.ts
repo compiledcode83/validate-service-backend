@@ -3,11 +3,18 @@ import { buildPaginator, PagingResult } from 'typeorm-cursor-pagination';
 import { FindEventsDto } from './dto/find-events.dto';
 import { EventRepository as CommonRepository } from '@app/event/event.repository';
 import { Event } from '@app/event/event.entity';
+import { FindOptionsWhere } from 'typeorm';
+import { EntityName } from '@app/translation/translation.types';
 
 @Injectable()
 export class EventRepository extends CommonRepository {
   async getPaginatedQueryBuilder(searchParams: FindEventsDto): Promise<PagingResult<Event>> {
-    const queryBuilder = this.createQueryBuilder('event');
+    const queryBuilder = this.createQueryBuilder('event').leftJoinAndSelect(
+      'event.translations',
+      'translations',
+      'translations.entity_name = :entityName AND translations.entity_id = event.id',
+      { entityName: EntityName.Event },
+    );
 
     if (searchParams.ticketProviderId) {
       queryBuilder.where({
@@ -46,5 +53,17 @@ export class EventRepository extends CommonRepository {
     }
 
     return existingEvent;
+  }
+
+  async findOneBy(where: FindOptionsWhere<Event> | FindOptionsWhere<Event>[]): Promise<Event> {
+    return this.createQueryBuilder('event')
+      .where(where)
+      .leftJoinAndSelect(
+        'event.translations',
+        'translations',
+        'translations.entity_name = :entityName AND translations.entity_id = event.id',
+        { entityName: EntityName.Event },
+      )
+      .getOne();
   }
 }

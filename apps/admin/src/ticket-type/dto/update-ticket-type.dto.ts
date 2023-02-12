@@ -23,7 +23,7 @@ export class UpdateTicketTypeDto extends TicketTypeDto {
   @IsUUID()
   @IsOptional()
   @Validate(TicketTypeExistsValidator)
-  uuid?: string;
+  uuid: string;
 
   @ApiProperty({ example: 1, required: false })
   @Type(() => Number)

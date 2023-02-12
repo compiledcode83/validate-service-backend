@@ -13,6 +13,7 @@ import { CreateTicketValidationDto } from './dto/create.ticket.validation.dto';
 import { TicketTypeService } from '@app/ticket-type/ticket-type.service';
 import { EventService } from '@admin/event/event.service';
 import { Locale } from '@app/translation/translation.types';
+import { TranslationService } from '@app/translation/translation.service';
 
 @Injectable()
 export class TicketService {
@@ -44,15 +45,20 @@ export class TicketService {
     return ticket;
   }
 
-  async update(id: number, updateTicketDto: UpdateTicketValidationDto) {
+  async update(id: number, updateTicketDto: UpdateTicketValidationDto, locale: Locale) {
     const { ticketTypeUuid, ...updateTicketParams } = updateTicketDto;
+
     await this.ticketRepository.update({ id }, updateTicketParams);
 
     return this.findById(id);
   }
 
-  async findAllPaginated(searchParams: TicketFilterDto): Promise<PagingResult<Ticket>> {
-    return this.ticketRepository.getPaginatedQueryBuilder(searchParams);
+  async findAllPaginated(searchParams: TicketFilterDto, locale: Locale): Promise<PagingResult<Ticket>> {
+    const ticketPaginatedResult = await this.ticketRepository.getPaginatedQueryBuilder(searchParams);
+
+    ticketPaginatedResult.data.map((ticket) => this.mapTranslations(ticket, locale));
+
+    return ticketPaginatedResult;
   }
 
   async delete(id: number) {
@@ -72,5 +78,10 @@ export class TicketService {
     const ticket = await this.ticketRepository.findOne({ where: { id } });
 
     return ticket !== null;
+  }
+
+  private mapTranslations(ticket: Ticket, locale: Locale): void {
+    TranslationService.mapEntity(ticket.ticketType, locale);
+    delete ticket.ticketType.translations;
   }
 }

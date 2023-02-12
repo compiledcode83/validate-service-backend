@@ -663,7 +663,10 @@ describe('Consumer microservice (e2e)', () => {
       });
 
       const order = await OrderFactory.create({ buyerId: user.id }, [{ ticketTypeId: ticketType.id, quantity: 1 }]);
-      await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
+      await paymentService.create(
+        { orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe },
+        Locale.en_US,
+      );
 
       const createdOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
@@ -723,7 +726,10 @@ describe('Consumer microservice (e2e)', () => {
       const order = await OrderFactory.create({ buyerId: user.id, status: OrderStatus.Completed }, [
         { ticketTypeId: ticketType.id, quantity: 1 },
       ]);
-      await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
+      await paymentService.create(
+        { orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe },
+        Locale.en_US,
+      );
       const createdOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       await AppDataSource.manager

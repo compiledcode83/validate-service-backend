@@ -7,11 +7,18 @@ import { ListingStatus } from '@app/listing/listing.types';
 import { Event } from '@app/event/event.entity';
 import { EventRepository as CommonRepository } from '@app/event/event.repository';
 import { TicketTypeSaleStatus } from '@app/ticket-type/ticket-type.types';
+import { EntityName } from '@app/translation/translation.types';
+import { FindOptionsWhere } from 'typeorm';
 
 @Injectable()
 export class EventRepository extends CommonRepository {
   async getPaginatedQueryBuilder(searchParams: FindEventsDto): Promise<PagingResult<Event>> {
-    const queryBuilder = this.createQueryBuilder('event');
+    const queryBuilder = this.createQueryBuilder('event').leftJoinAndSelect(
+      'event.translations',
+      'translations',
+      'translations.entity_name = :entityName AND translations.entity_id = event.id',
+      { entityName: EntityName.Event },
+    );
 
     if (searchParams.marketType === MarketType.Secondary) {
       queryBuilder
@@ -37,5 +44,17 @@ export class EventRepository extends CommonRepository {
     });
 
     return paginator.paginate(queryBuilder);
+  }
+
+  async findOneBy(where: FindOptionsWhere<Event> | FindOptionsWhere<Event>[]): Promise<Event> {
+    return this.createQueryBuilder('event')
+      .where(where)
+      .leftJoinAndSelect(
+        'event.translations',
+        'translations',
+        'translations.entity_name = :entityName AND translations.entity_id = event.id',
+        { entityName: EntityName.Event },
+      )
+      .getOne();
   }
 }

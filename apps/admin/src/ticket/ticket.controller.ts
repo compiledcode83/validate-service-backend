@@ -43,16 +43,23 @@ export class TicketController {
   @ApiResponse(ApiResponseHelper.success(Ticket, HttpStatus.OK))
   @ApiResponse(ApiResponseHelper.validationError(`Validation failed (uuid is expected)`))
   @Patch(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateTicketDto: UpdateTicketValidationDto) {
-    return this.ticketService.update(id, updateTicketDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTicketDto: UpdateTicketValidationDto,
+    @I18n() i18n: I18nContext,
+  ) {
+    return this.ticketService.update(id, updateTicketDto, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Get All Tickets` })
   @ApiResponse(ApiResponseHelper.success(PaginatedResult<Ticket>))
   @HttpCode(HttpStatus.OK)
   @Get()
-  async findAllPaginated(@Query() searchParams: TicketFilterDto): Promise<PaginatedResult<Ticket>> {
-    return this.ticketService.findAllPaginated(searchParams);
+  async findAllPaginated(
+    @Query() searchParams: TicketFilterDto,
+    @I18n() i18n: I18nContext,
+  ): Promise<PaginatedResult<Ticket>> {
+    return this.ticketService.findAllPaginated(searchParams, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Get a ticket  by id` })

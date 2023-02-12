@@ -2,26 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { QueryRunner } from 'typeorm';
 import { Translation } from './translation.entity';
-import { TranslationRepository } from './translation.repository';
 import { EntityAttribute, EntityName, Locale, Translatable } from './translation.types';
 
 @Injectable()
 export class TranslationService {
-  constructor(private readonly translationRepository: TranslationRepository) {}
-
-  async getTranslations(
-    entityName: string,
-    entityId: number,
-    entityAttributes: string[],
-    locale: Locale,
-  ): Promise<Translation[]> {
-    return this.translationRepository
-      .createQueryBuilder()
-      .where({ entityName, entityId, locale })
-      .andWhere('entityAttribute IN (:entityAttributes)', { entityAttributes })
-      .getMany();
-  }
-
   async saveTranslations(
     queryRunner: QueryRunner,
     entityName: EntityName,

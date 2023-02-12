@@ -49,7 +49,7 @@ export class TicketTypeService {
     return queryRunner.manager.findOneBy(TicketType, { id: insertedValues.id });
   }
 
-  private async saveTranslations(
+  async saveTranslations(
     queryRunner: QueryRunner,
     ticketTypeId: number,
     ticketTypeLikeDto: Partial<TicketType>,
