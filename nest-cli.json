@@ -17,7 +17,7 @@
       "compilerOptions": {
         "tsConfigPath": "apps/api/tsconfig.app.json",
         "assets": [
-          { "include": "i18n/**/*", "watchAssets": true, "outDir": "dist/apps/api" }
+          { "include": "i18n/**/*", "watchAssets": true, "outDir": "dist/apps/api/i18n" }
         ]
       }
     },
@@ -27,7 +27,10 @@
       "entryFile": "main",
       "sourceRoot": "apps/web/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/web/tsconfig.app.json"
+        "tsConfigPath": "apps/web/tsconfig.app.json",
+        "assets": [
+          { "include": "i18n/**/*", "watchAssets": true, "outDir": "dist/apps/web/i18n" }
+        ]
       }
     },
     "ticket-provider-encryption-key": {
@@ -63,7 +66,10 @@
       "entryFile": "main",
       "sourceRoot": "apps/producer/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/producer/tsconfig.app.json"
+        "tsConfigPath": "apps/producer/tsconfig.app.json",
+        "assets": [
+          { "include": "i18n/**/*", "watchAssets": true, "outDir": "dist/apps/producer/i18n" }
+        ]
       }
     },
     "common": {
@@ -81,7 +87,10 @@
       "entryFile": "main",
       "sourceRoot": "apps/consumer/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/consumer/tsconfig.app.json"
+        "tsConfigPath": "apps/consumer/tsconfig.app.json",
+        "assets": [
+          { "include": "i18n/**/*", "watchAssets": true, "outDir": "dist/apps/consumer/i18n" }
+        ]
       }
     },
     "ticket": {
@@ -216,7 +225,10 @@
       "entryFile": "main",
       "sourceRoot": "apps/admin/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/admin/tsconfig.app.json"
+        "tsConfigPath": "apps/admin/tsconfig.app.json",
+        "assets": [
+          { "include": "i18n/**/*", "watchAssets": true, "outDir": "dist/apps/admin/i18n" }
+        ]
       }
     },
     "translation": {

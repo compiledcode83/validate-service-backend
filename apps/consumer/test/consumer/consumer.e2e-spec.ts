@@ -115,6 +115,8 @@ describe('Consumer microservice (e2e)', () => {
     it('Expects to get a successfull ticket create reply and update ticket data', async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -123,6 +125,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
 
       const replyMessage = new TicketCreateReplyMessage({
@@ -166,6 +170,8 @@ describe('Consumer microservice (e2e)', () => {
     it('Expects to get an error for ticket create reply and update ticket data with it', async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -174,6 +180,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
 
       const replyMessage = new TicketCreateReplyMessage({
@@ -224,6 +232,7 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
         eventId: event.id,
       });
 
@@ -286,6 +295,7 @@ describe('Consumer microservice (e2e)', () => {
         tokenId: null,
         transactionHash: null,
         eventId: event.id,
+        ticketTypeId: ticketType.id,
       });
 
       const order = await OrderFactory.create({ buyerId: user.id, status: OrderStatus.Created }, [
@@ -338,10 +348,14 @@ describe('Consumer microservice (e2e)', () => {
     it('Expects to get an error for ticket delete reply and update ticket data', async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
 
       const replyMessage = new TicketDeleteReplyMessage({
@@ -379,7 +393,14 @@ describe('Consumer microservice (e2e)', () => {
       const ticketProvider = await TicketProviderFactory.create();
       const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-      const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: userFrom.id,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
+      });
       const ticketTransfer = await TicketTransferFactory.create({
         ticketProviderId: ticketProvider.id,
         userIdFrom: userFrom.id,
@@ -433,7 +454,14 @@ describe('Consumer microservice (e2e)', () => {
       const ticketProvider = await TicketProviderFactory.create();
       const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-      const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: userFrom.id,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
+      });
       const ticketTransfer = await TicketTransferFactory.create({
         ticketProviderId: ticketProvider.id,
         userIdFrom: userFrom.id,
@@ -559,6 +587,8 @@ describe('Consumer microservice (e2e)', () => {
     it(`Expects to get successfull ${MessageEventPattern.SendReply} event and save message status`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -567,6 +597,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const message = await MessageFactory.create({
         ticketId: ticket.id,
@@ -603,6 +635,8 @@ describe('Consumer microservice (e2e)', () => {
     it(`Expects to get error ${MessageEventPattern.SendReply} event and save message status and errorData`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -611,6 +645,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const message = await MessageFactory.create({
         ticketId: ticket.id,

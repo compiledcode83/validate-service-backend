@@ -31,7 +31,7 @@ import orderConfig from './config/order.config';
 import stripeConfig from './config/stripe.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
 import kafkaConfig from '../../../libs/common/src/configs/kafka.config';
-import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
 import { Locale } from '@app/translation/translation.types';
 
 EnvHelper.verifyNodeEnv();
@@ -54,7 +54,7 @@ EnvHelper.verifyNodeEnv();
         'en-*': Locale.en_US,
         pt: Locale.pt_BR,
       },
-      resolvers: [AcceptLanguageResolver, new QueryResolver(['lang', 'l'])],
+      resolvers: [AcceptLanguageResolver],
     }),
     DatabaseModule,
     TicketProviderModule,
