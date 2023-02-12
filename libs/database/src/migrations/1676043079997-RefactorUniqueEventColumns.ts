@@ -6,6 +6,10 @@ export class RefactorUniqueEventColumns1676043079997 implements MigrationInterfa
     await queryRunner.dropIndex('ticket_type', 'idx_ticket_type_unique_name');
     await queryRunner.dropIndex('event', 'idx_event_ticket_unique_name');
 
+    try {
+      await queryRunner.dropIndex('event', 'idx_event_name_ticket_type_tp');
+    } catch (e) {}
+
     await queryRunner.createIndex(
       'ticket_type',
       new TableIndex({
@@ -28,5 +32,4 @@ export class RefactorUniqueEventColumns1676043079997 implements MigrationInterfa
   public async down(): Promise<void> {
     return;
   }
-
 }
