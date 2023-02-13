@@ -88,10 +88,10 @@ describe('Events (e2e)', () => {
         expect(response.body.data).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
-              id: event1.id,
+              uuid: event1.uuid,
             }),
             expect.not.objectContaining({
-              id: event2.id,
+              uuid: event2.uuid,
             }),
           ]),
         );
@@ -163,7 +163,7 @@ describe('Events (e2e)', () => {
         expect(response.body.data).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
-              id: event1.id,
+              uuid: event1.uuid,
               ticketsInformation: expect.objectContaining({
                 primary: {
                   startingPrice: {
@@ -176,10 +176,10 @@ describe('Events (e2e)', () => {
               dateEnd: DateTime.now().plus({ days: 45 }).toUTC().toFormat(DATE_FORMAT),
             }),
             expect.not.objectContaining({
-              id: event2.id,
+              uuid: event2.uuid,
             }),
             expect.not.objectContaining({
-              id: event3.id,
+              uuid: event3.uuid,
             }),
           ]),
         );

@@ -27,6 +27,7 @@ export class EventController {
 
   @ApiOperation({ description: `Find events` })
   @ApiResponse(ApiResponseHelper.success(EventPaginatedResult))
+  @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.OK)
   @Public()
   @Get()
