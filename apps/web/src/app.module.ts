@@ -34,8 +34,6 @@ import stripeConfig from './config/stripe.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
 import kafkaConfig from '../../../libs/common/src/configs/kafka.config';
 
-console.log(path.join(__dirname, '../../../../../i18n/'));
-
 EnvHelper.verifyNodeEnv();
 
 @Module({
@@ -49,7 +47,7 @@ EnvHelper.verifyNodeEnv();
     I18nModule.forRoot({
       fallbackLanguage: Locale.en_US,
       loaderOptions: {
-        path: path.join(__dirname, '../../../i18n'),
+        path: EnvHelper.isTest() ? path.join(__dirname, '../i18n') : path.join(__dirname, '../../../i18n'),
         watch: true,
       },
       fallbacks: {
