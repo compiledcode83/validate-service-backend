@@ -1,7 +1,3 @@
-import { PaginatedResultCursor } from '@app/common/pagination/pagination.types';
-import { ApiProperty } from '@nestjs/swagger';
-import { Message } from './message.entity';
-
 export enum MessageType {
   TicketLink = 'ticketLink',
   RedeemCode = 'redeemCode',
@@ -23,12 +19,4 @@ export enum MessageStatus {
 export enum MessageEventPattern {
   Send = 'message.send',
   SendReply = 'message.send.reply',
-}
-
-export class MessagePaginatedResult {
-  @ApiProperty({ isArray: true, type: () => Message })
-  data: Message[];
-
-  @ApiProperty()
-  cursor: PaginatedResultCursor;
 }

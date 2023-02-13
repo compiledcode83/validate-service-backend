@@ -54,10 +54,13 @@ describe('Events (e2e)', () => {
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const event1 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
     const event2 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event1.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event1.id,
     });
 
     await ListingFactory.create({ ticketId: ticket.id, userId: user.id, eventId: event1.id });
@@ -98,7 +101,11 @@ describe('Events (e2e)', () => {
 
   it('should get list of events on a primary market', async () => {
     const ticketProvider = await TicketProviderFactory.create();
-    const event1 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const event1 = await EventFactory.create({
+      ticketProviderId: ticketProvider.id,
+      dateStart: DateTime.now().plus({ days: 30 }).toUTC().toFormat(DATE_FORMAT),
+      dateEnd: DateTime.now().plus({ days: 45 }).toUTC().toFormat(DATE_FORMAT),
+    });
     const event2 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
     const event3 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
 

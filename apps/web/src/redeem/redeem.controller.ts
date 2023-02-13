@@ -19,6 +19,8 @@ import { ShowRedeemQrResponseDto } from './dto/show-redeem-qr-response.dto';
 import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { Redeem } from '@app/redeem/redeem.entity';
 import { ParamToBodyInterceptor } from '@app/common/interceptors/param-to-body.interceptor';
+import { I18n, I18nContext } from 'nestjs-i18n';
+import { Locale } from '@app/translation/translation.types';
 
 @Controller('redeem')
 export class RedeemController {
@@ -53,7 +55,7 @@ export class RedeemController {
   @UseInterceptors(ClassSerializerInterceptor, new ParamToBodyInterceptor('uuid', 'redeemUuid'))
   @HttpCode(HttpStatus.OK)
   @Post(':uuid/qr')
-  async getQr(@Body() body: ShowRedeemQrDto): Promise<ShowRedeemQrResponseDto[]> {
-    return this.redeemService.getRedeemQrCodes(body.redeemUuid);
+  async getQr(@Body() body: ShowRedeemQrDto, @I18n() i18n: I18nContext): Promise<ShowRedeemQrResponseDto[]> {
+    return this.redeemService.getRedeemQrCodes(body.redeemUuid, i18n.lang as Locale);
   }
 }

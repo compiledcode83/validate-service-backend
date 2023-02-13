@@ -4,14 +4,14 @@ import { ConsumerController } from './consumer.controller';
 import { ConfigModule } from '@nestjs/config';
 import { EnvHelper } from '@app/env/env.helper';
 import { validateConsumer } from '@app/env/env.validator';
-import { UserModule } from '@api/user/user.module';
-import { TicketModule } from '@api/ticket/ticket.module';
 import { TicketTransferModule } from '@api/ticket-transfer/ticket-transfer.module';
 import { DatabaseModule } from '@app/database/database.module';
 import { MessageModule } from '@web/message/message.module';
 import { InboxModule } from '@app/inbox/inbox.module';
 import { PaymentModule } from '@web/payment/payment.module';
 import { OrderModule } from '@web/order/order.module';
+import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
+import { UserModule as CommonUserModule } from '@app/user/user.module';
 import kafkaConfig from '../../../libs/common/src/configs/kafka.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
 import appConfig from './config/app.config';
@@ -29,8 +29,8 @@ EnvHelper.verifyNodeEnv();
       validate: validateConsumer,
     }),
     DatabaseModule,
-    UserModule,
-    TicketModule,
+    CommonUserModule,
+    CommonTicketModule,
     TicketTransferModule,
     MessageModule,
     InboxModule,

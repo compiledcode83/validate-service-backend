@@ -13,6 +13,7 @@ import { ShowRedeemQrResponseDto } from './dto/show-redeem-qr-response.dto';
 import { RedeemTicket } from '../../../../libs/redeem/src/redeem-ticket.entity';
 import { Redeem } from '@app/redeem/redeem.entity';
 import { RedeemMode, RedeemStatus } from '@app/redeem/redeem.types';
+import { Locale } from '@app/translation/translation.types';
 
 @Injectable()
 export class RedeemService {
@@ -97,7 +98,7 @@ export class RedeemService {
     return this.redeemRepository.findForRedeem(uuid);
   }
 
-  async getRedeemQrCodes(redeemUuid: string): Promise<ShowRedeemQrResponseDto[]> {
+  async getRedeemQrCodes(redeemUuid: string, locale: Locale): Promise<ShowRedeemQrResponseDto[]> {
     const redeem = await this.findForRedeem(redeemUuid);
     const qrCodes: ShowRedeemQrResponseDto[] = [];
 
@@ -107,7 +108,7 @@ export class RedeemService {
           const qrCode = await this.qrService.generateQrForTicket(redeem.uuid, ticket.uuid);
           qrCodes.push({
             ...qrCode,
-            tickets: [new TicketRedeemDto(ticket)],
+            tickets: [new TicketRedeemDto(ticket, locale)],
           });
         }
         break;
@@ -116,7 +117,7 @@ export class RedeemService {
         const qrCode = await this.qrService.generateQrForPurchase(redeem.uuid, ticket.purchaseId);
         qrCodes.push({
           ...qrCode,
-          tickets: redeem.tickets.map((ticket) => new TicketRedeemDto(ticket)),
+          tickets: redeem.tickets.map((ticket) => new TicketRedeemDto(ticket, locale)),
         });
     }
 

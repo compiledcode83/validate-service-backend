@@ -5,6 +5,7 @@ import { RequestToQueryInterceptor } from '@app/common/interceptors/request-to-q
 import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
 import { TicketTypePaginatedResult } from '@app/ticket-type/ticket-type.types';
+import { Locale } from '@app/translation/translation.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -18,6 +19,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
@@ -40,8 +42,8 @@ export class TicketTypeController {
   @ApiResponse(ApiResponseHelper.success(TicketType, HttpStatus.CREATED))
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @Post()
-  async create(@Body() body: CreateTicketTypeDto): Promise<TicketType> {
-    return this.ticketTypeService.create(body);
+  async create(@Body() body: CreateTicketTypeDto, @I18n() i18n: I18nContext): Promise<TicketType> {
+    return this.ticketTypeService.create(body, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Update ticket type` })
@@ -53,8 +55,8 @@ export class TicketTypeController {
     new ParamToBodyInterceptor('uuid', 'uuid'),
   )
   @Patch(':uuid')
-  async update(@Body() body: UpdateTicketTypeDto): Promise<TicketType> {
-    return this.ticketTypeService.update(body);
+  async update(@Body() body: UpdateTicketTypeDto, @I18n() i18n: I18nContext): Promise<TicketType> {
+    return this.ticketTypeService.update(body, i18n.lang as Locale);
   }
 
   @Get('/currencies')

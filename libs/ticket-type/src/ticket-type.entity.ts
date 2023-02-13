@@ -6,9 +6,11 @@ import { TicketTypeResaleStatus, TicketTypeSaleStatus } from './ticket-type.type
 import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { Event } from '@app/event/event.entity';
 import { OrderPrimary } from '@app/order/order-primary.entity';
+import { Translatable } from '@app/translation/translation.types';
+import { Translation } from '@app/translation/translation.entity';
 
 @Entity('ticket_type')
-export class TicketType {
+export class TicketType implements Translatable {
   @Exclude({ toPlainOnly: true })
   @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
@@ -20,26 +22,6 @@ export class TicketType {
   @Exclude({ toPlainOnly: true })
   @Column({ type: 'int', nullable: false })
   eventId: number;
-
-  @ApiProperty({
-    description: 'Name of the ticket type',
-    example: 'VIP ticket',
-    maximum: 255,
-    minimum: 1,
-    required: true,
-  })
-  @Column({ type: 'varchar', nullable: false, length: 255 })
-  name: string;
-
-  @ApiProperty({
-    description: 'Description of the ticket type',
-    example: 'Premium feeling',
-    maximum: 255,
-    minimum: 1,
-    required: true,
-  })
-  @Column({ type: 'varchar', nullable: true, length: 255 })
-  description: string;
 
   @ApiProperty({ description: 'Ticket date start', required: true })
   @Column({ type: 'date', nullable: true })
@@ -116,6 +98,17 @@ export class TicketType {
   @JoinColumn({ name: 'id', referencedColumnName: 'ticketTypeId' })
   primarySales: OrderPrimary[];
 
+  @Exclude()
+  @OneToMany(() => Translation, (translation) => translation.ticketType)
+  @JoinColumn({ name: 'id', referencedColumnName: 'entity_id' })
+  translations: Translation[];
+
   @ApiProperty({ example: 10 })
   saleAmountAvailable: number;
+
+  @ApiProperty({ description: 'Name of the ticket type', maximum: 255, minimum: 1, required: true })
+  name: string = null;
+
+  @ApiProperty({ description: 'Description of the ticket type', maximum: 1000, minimum: 1, required: true })
+  description: string = null;
 }

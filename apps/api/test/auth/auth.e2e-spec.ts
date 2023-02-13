@@ -13,6 +13,8 @@ import { UserFactory } from '@app/database/factories/user.factory';
 import { TicketFactory } from '@app/database/factories/ticket.factory';
 import { AuthService } from '@api/auth/auth.service';
 import { TicketProviderRefreshToken } from '@api/ticket-provider-refresh-token/ticket-provider-refresh-token.entity';
+import { EventFactory } from '@app/database/factories/event.factory';
+import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
 
 describe('Auth (e2e)', () => {
   let app: INestApplication;
@@ -57,7 +59,14 @@ describe('Auth (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .get(`/api/v1/tickets/${ticket.uuid}`)
@@ -76,7 +85,14 @@ describe('Auth (e2e)', () => {
   it('Checks that JWT strategy works for protected endpoints', async () => {
     const ticketProvider = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
     const method = 'createAccessToken';
     const accessToken = await authService[method](ticketProvider);
 

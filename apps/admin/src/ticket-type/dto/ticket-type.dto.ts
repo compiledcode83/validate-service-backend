@@ -13,7 +13,7 @@ export class TicketTypeDto {
   })
   @IsOptional()
   @Validate(DateValidator)
-  ticketDateStart?: string;
+  ticketDateStart?: Date;
 
   @ApiProperty({
     example: '2025-06-23',
@@ -22,7 +22,7 @@ export class TicketTypeDto {
   })
   @Validate(DateValidator)
   @IsOptional()
-  ticketDateEnd?: string;
+  ticketDateEnd?: Date;
 
   @ApiProperty({
     example: 1,

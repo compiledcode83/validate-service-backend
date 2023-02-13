@@ -16,6 +16,7 @@ import { EventFactory } from '@app/database/factories/event.factory';
 import { DateTime } from 'luxon';
 import { RedeemFactory } from '@app/database/factories/redeem.factory';
 import { CurrencyEnum } from '@app/common/types/currency.enum';
+import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
 
 describe('Listing (e2e)', () => {
   let app: INestApplication;
@@ -50,12 +51,16 @@ describe('Listing (e2e)', () => {
 
   it('should post a new ticket for sale and get the validation error of ticket is already in redeeming process', async () => {
     const ticketProvider = await TicketProviderFactory.create();
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const token = await testHelper.setWebAuthenticatedUser(user);
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const ticketRedeem = await RedeemFactory.create({ purchaseId: ticket.purchaseId, userId: user.id });
     const userAgent = faker.internet.userAgent();
@@ -83,12 +88,16 @@ describe('Listing (e2e)', () => {
 
   it('should post a new listing and get back in response', async () => {
     const ticketProvider = await TicketProviderFactory.create();
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const token = await testHelper.setWebAuthenticatedUser(user);
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const userAgent = faker.internet.userAgent();
 
@@ -117,10 +126,13 @@ describe('Listing (e2e)', () => {
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
     const event2 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const listing1 = await ListingFactory.create({ ticketId: ticket.id, userId: user.id, eventId: event.id });
     const listing2 = await ListingFactory.create({ ticketId: ticket.id, userId: user.id, eventId: event2.id });
@@ -147,12 +159,16 @@ describe('Listing (e2e)', () => {
 
   it('should cancel the active listing', async () => {
     const ticketProvider = await TicketProviderFactory.create();
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const token = await testHelper.setWebAuthenticatedUser(user);
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const userAgent = faker.internet.userAgent();
 

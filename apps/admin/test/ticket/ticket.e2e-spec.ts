@@ -152,22 +152,16 @@ describe('Ticket (e2e)', () => {
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
-            ...ticketData,
-            additionalData: ticketData.additionalData,
             contractId: response.body.contractId,
-            id: response.body.id,
             deletedAt: null,
-            imageUrl: response.body.imageUrl,
-            ticketTypeId: response.body.ticketTypeId,
-            validatedAt: response.body.validatedAt,
-            errorData: null,
-            tokenId: response.body.tokenId,
-            transactionHash: response.body.transactionHash,
-            userId: response.body.user.id,
-            user: { ...response.body.user, ...ticketData.user },
+            ticketType: expect.objectContaining({
+              uuid: ticketType.uuid,
+            }),
+            user: expect.objectContaining({
+              name: ticketData.user.name,
+            }),
             ticketProviderId: ticketType.id,
-            ticketTypeUuid: ticketType.uuid,
-            uuid: response.body.uuid,
+            uuid: expect.any(String),
             eventId: event.id,
           }),
         );
@@ -178,11 +172,22 @@ describe('Ticket (e2e)', () => {
   it(`should get ticket by pagination`, async () => {
     const admin = await AdminFactory.create();
     const token = testHelper.setAuthenticatedAdmin(admin);
-
     const ticketProvider = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
-    const ticket2 = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
+    const ticket2 = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .get(`/api/v1/tickets`)
@@ -209,12 +214,16 @@ describe('Ticket (e2e)', () => {
   it.skip('Should update a ticket and get updated data in response', async () => {
     const admin = await AdminFactory.create();
     const token = testHelper.setAuthenticatedAdmin(admin);
-
     const ticketProvider = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
     const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
     const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
     const updatedTicket = {
       ticketProviderId: ticket.ticketProviderId,
       ticketTypeUuid: ticketType.uuid,
@@ -249,10 +258,16 @@ describe('Ticket (e2e)', () => {
   it(`should get a ticket by id`, async () => {
     const admin = await AdminFactory.create();
     const token = testHelper.setAuthenticatedAdmin(admin);
-
     const ticketProvider = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .get(`/api/v1/tickets/${ticket.id}`)
@@ -272,10 +287,16 @@ describe('Ticket (e2e)', () => {
   it(`should delete a ticket by id`, async () => {
     const admin = await AdminFactory.create();
     const token = testHelper.setAuthenticatedAdmin(admin);
-
     const ticketProvider = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .delete(`/api/v1/tickets/${ticket.id}`)

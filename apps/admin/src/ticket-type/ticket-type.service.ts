@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { EventService } from '../event/event.service';
-import { Not } from 'typeorm';
 import { CreateTicketTypeDto } from './dto/create-ticket-type.dto';
 import { FindTicketTypesDto } from './dto/find-ticket-types.dto';
 import { UpdateTicketTypeDto } from './dto/update-ticket-type.dto';
@@ -12,6 +11,9 @@ import { PaginatedResult } from '@app/common/pagination/pagination.types';
 import { TicketTypeEventPattern } from '@app/ticket-type/ticket-type.types';
 import { TicketTypeCreateMessage } from '@app/ticket-type/messages/ticket-type-create.message';
 import { TicketTypeUpdateMessage } from '@app/ticket-type/messages/ticket-type-update.message';
+import { TicketTypeService as CommonTicketTypeService } from '@app/ticket-type/ticket-type.service';
+import { Locale } from '@app/translation/translation.types';
+import { TranslationService } from '@app/translation/translation.service';
 
 @Injectable()
 export class TicketTypeService {
@@ -19,14 +21,23 @@ export class TicketTypeService {
     private readonly ticketTypeRepository: TicketTypeRepository,
     private readonly eventService: EventService,
     private readonly outboxService: OutboxService,
+    private readonly commonTicketTypeService: CommonTicketTypeService,
   ) {}
 
-  async findByUuid(uuid: string): Promise<TicketType> {
-    return this.ticketTypeRepository.findOneBy({ uuid });
+  async findByUuid(uuid: string, locale: Locale): Promise<TicketType> {
+    const ticketType = await this.ticketTypeRepository.findOneBy({ uuid });
+
+    TranslationService.mapEntity(ticketType, locale);
+
+    return ticketType;
   }
 
-  async findById(id: number): Promise<TicketType> {
-    return this.ticketTypeRepository.findOneBy({ id });
+  async findById(id: number, locale: Locale): Promise<TicketType> {
+    const ticketType = await this.ticketTypeRepository.findOneBy({ id });
+
+    TranslationService.mapEntity(ticketType, locale);
+
+    return ticketType;
   }
 
   async findByUuidAndTicketProvider(uuid: string, ticketProviderId: number): Promise<TicketType> {
@@ -36,30 +47,14 @@ export class TicketTypeService {
     });
   }
 
-  async findByNameAndEvent(
-    name: string,
-    eventId: number,
-    ticketDateStart: any,
-    ticketDateEnd: any,
-    excludeUuid?: string,
-  ): Promise<TicketType> {
-    const findParams = { name, eventId, ticketDateStart, ticketDateEnd: ticketDateEnd ?? null };
-
-    if (excludeUuid) {
-      findParams['uuid'] = Not(excludeUuid);
-    }
-
-    return this.ticketTypeRepository.findOneBy(findParams);
-  }
-
   async findAllPaginated(searchParams: FindTicketTypesDto): Promise<PaginatedResult<TicketType>> {
     const event = await this.eventService.findByUuid(searchParams.eventUuid);
 
     return this.ticketTypeRepository.getPaginatedQueryBuilder(searchParams, event.id);
   }
 
-  async create(body: CreateTicketTypeDto): Promise<TicketType> {
-    const { ticketProviderId, ...ticketTypeParams } = body;
+  async create(body: CreateTicketTypeDto, locale: Locale): Promise<TicketType> {
+    const { ticketProviderId, name, description, ...ticketTypeParams } = body;
     const event = await this.eventService.findByUuid(body.eventUuid);
     const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
 
@@ -72,13 +67,14 @@ export class TicketTypeService {
       );
 
       const ticketType = await queryRunner.manager.findOneBy(TicketType, { id: createdTicketType.id });
+      await this.commonTicketTypeService.saveTranslations(queryRunner, createdTicketType.id, body, locale);
 
       const payload = new TicketTypeCreateMessage({ ticketType });
       await this.outboxService.create(queryRunner, TicketTypeEventPattern.Create, payload);
 
       await queryRunner.commitTransaction();
 
-      return this.findByUuid(ticketType.uuid);
+      return this.findByUuid(ticketType.uuid, locale);
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
@@ -88,8 +84,8 @@ export class TicketTypeService {
     }
   }
 
-  async update(body?: UpdateTicketTypeDto): Promise<TicketType> {
-    const { ticketProviderId, ticketTypeId, ...ticketTypeParams } = body;
+  async update(body: UpdateTicketTypeDto, locale: Locale): Promise<TicketType> {
+    const { ticketProviderId, ticketTypeId, name, ...ticketTypeParams } = body;
 
     const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
 
@@ -105,12 +101,13 @@ export class TicketTypeService {
         .execute();
 
       const updatedTicketType = await queryRunner.manager.findOneBy(TicketType, { id: ticketTypeId });
+      await this.commonTicketTypeService.saveTranslations(queryRunner, ticketTypeId, body, locale);
       const payload = new TicketTypeUpdateMessage({ ticketType: updatedTicketType });
 
       await this.outboxService.create(queryRunner, TicketTypeEventPattern.Update, payload);
       await queryRunner.commitTransaction();
 
-      return this.ticketTypeRepository.findOneBy({ id: ticketTypeId });
+      return this.findByUuid(updatedTicketType.uuid, locale);
     } catch (err) {
       await queryRunner.rollbackTransaction();
 

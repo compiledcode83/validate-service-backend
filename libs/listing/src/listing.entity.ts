@@ -4,7 +4,6 @@ import { ListingStatus } from './listing.types';
 import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { Event } from '@app/event/event.entity';
 import { Ticket } from '@app/ticket/ticket.entity';
-import { User } from '@app/user/user.entity';
 
 @Entity('listing')
 export class Listing {
@@ -64,7 +63,4 @@ export class Listing {
 
   @ManyToOne(() => Ticket, (ticket) => ticket.listings)
   ticket: Ticket;
-
-  @ManyToOne(() => User, (user) => user.listings)
-  user: User;
 }

@@ -11,9 +11,10 @@ import { TicketType } from '@app/ticket-type/ticket-type.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
 import { OutboxService } from '@app/outbox/outbox.service';
 import { OutboxRepository } from '@app/outbox/outbox.repository';
+import { TicketTypeModule as CommonTicketTypeModule } from '@app/ticket-type/ticket-type.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TicketType]), EventModule, OutboxModule],
+  imports: [TypeOrmModule.forFeature([TicketType]), EventModule, OutboxModule, CommonTicketTypeModule],
   providers: [
     TicketTypeService,
     TicketTypeRepository,

@@ -69,8 +69,8 @@ describe('Ticket-types (e2e)', () => {
             'eventUuid must be a UUID',
             'Event not found',
             'name must be shorter than or equal to 255 characters',
-            'Ticket type with this name already exists',
             'Acceptable date format is yyyy-MM-dd.',
+            'uuid must be shorter than or equal to 36 characters',
           ]),
         );
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -123,11 +123,12 @@ describe('Ticket-types (e2e)', () => {
         eventUuid: event.uuid,
         name: ticketType.name,
         ticketDateStart: date,
+        uuid: ticketType.uuid,
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
       .then((response) => {
-        expect(response.body.message).toEqual(expect.arrayContaining([`Ticket type with this name already exists`]));
+        expect(response.body.message).toEqual(expect.arrayContaining([`Ticket type with this uuid already exists`]));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
 
@@ -143,6 +144,7 @@ describe('Ticket-types (e2e)', () => {
         saleAmount: 1000,
         salePrice: '100.00',
         saleCurrency: CurrencyEnum.AED,
+        uuid: faker.datatype.uuid(),
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
@@ -182,27 +184,12 @@ describe('Ticket-types (e2e)', () => {
       });
   });
 
-  it('should check for ticket type duplicates when updating an existing item', async () => {
+  it('should check that ticket type update works', async () => {
     const ticketProvider = await TicketProviderFactory.create({ userIdentifier: TicketProviderUserIdentifier.Email });
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
     const date = DateTime.now().plus({ days: 10 }).toFormat(DATE_FORMAT);
     const ticketType = await TicketTypeFactory.create({ eventId: event.id, ticketDateStart: date as any });
-    const ticketType2 = await TicketTypeFactory.create({ eventId: event.id, ticketDateStart: date as any });
-
-    await request(app.getHttpServer())
-      .patch(`/api/v1/ticket-types/${ticketType.uuid}`)
-      .send({
-        name: ticketType2.name,
-        ticketDateStart: date,
-      })
-      .set('Accept', 'application/json')
-      .set('Api-Key', token)
-      .then((response) => {
-        expect(response.body.message).toEqual(expect.arrayContaining([`Ticket type with this name already exists`]));
-        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      });
-
     const newName = faker.commerce.department();
 
     await request(app.getHttpServer())

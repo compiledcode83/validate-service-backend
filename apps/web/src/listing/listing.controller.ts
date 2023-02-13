@@ -24,14 +24,10 @@ import { AuthRequest } from '@web/auth/auth.types';
 import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { Listing } from '@app/listing/listing.entity';
 import { RequestToParamInterceptor } from '@app/common/interceptors/request-to-param.interceptor';
-import { ListingService as CommonListingService } from '@app/listing/listing.service';
 
 @Controller('listings')
 export class ListingController {
-  constructor(
-    private readonly listingService: ListingService,
-    private readonly commonLisitingService: CommonListingService,
-  ) {}
+  constructor(private readonly listingService: ListingService) {}
 
   @ApiOperation({ description: `Get listing by filters` })
   @ApiResponse(ApiResponseHelper.success(ListingPaginatedResult))
@@ -65,6 +61,6 @@ export class ListingController {
   @HttpCode(HttpStatus.OK)
   @Post(':listingUuid/cancel')
   async cancel(@Param() params: ListingCancelDto) {
-    return this.commonLisitingService.cancel(params.listingUuid, params.user.uuid);
+    return this.listingService.cancel(params.listingUuid, params.user.uuid);
   }
 }

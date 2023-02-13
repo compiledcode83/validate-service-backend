@@ -77,18 +77,19 @@ describe('Events (e2e)', () => {
     await request(app.getHttpServer())
       .post('/api/v1/events')
       .send({
-        name: event.name,
+        uuid: event.uuid,
       })
       .set('Accept', 'application/json')
       .set('Api-Key', token)
       .then((response) => {
-        expect(response.body.message).toEqual(expect.arrayContaining([`Event with this name already exists`]));
+        expect(response.body.message).toEqual(expect.arrayContaining([`Event with this uuid already exists`]));
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
 
     await request(app.getHttpServer())
       .post('/api/v1/events')
       .send({
+        uuid: faker.random.word(),
         name: faker.random.word(),
       })
       .set('Accept', 'application/json')
@@ -127,26 +128,12 @@ describe('Events (e2e)', () => {
       });
   });
 
-  it('should check for event duplicates when updating an existing item', async () => {
+  it('should check that event updates successfully', async () => {
     const ticketProvider = await TicketProviderFactory.create({ userIdentifier: TicketProviderUserIdentifier.Email });
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
     const event2 = await EventFactory.create({ ticketProviderId: ticketProvider.id });
-
-    await request(app.getHttpServer())
-      .patch(`/api/v1/events/${event.uuid}`)
-      .send({
-        name: event2.name,
-        ticketDateStart: DateTime.now().toFormat(DATE_FORMAT),
-      })
-      .set('Accept', 'application/json')
-      .set('Api-Key', token)
-      .then((response) => {
-        expect(response.body.message).toEqual(expect.arrayContaining([`Event with this name already exists`]));
-        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      });
-
-    const newName = faker.commerce.department();
+    const newName = faker.random.words(3);
 
     await request(app.getHttpServer())
       .patch(`/api/v1/events/${event.uuid}`)

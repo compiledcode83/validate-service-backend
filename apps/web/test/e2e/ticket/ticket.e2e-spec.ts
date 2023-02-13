@@ -71,6 +71,7 @@ describe('Ticket (e2e)', () => {
       userId: user.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
       purchaseId,
     });
     const ticket2 = await TicketFactory.create({
@@ -78,18 +79,21 @@ describe('Ticket (e2e)', () => {
       userId: user.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const ticket3 = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user2.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const ticket4 = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user2.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
       purchaseId,
     });
 
@@ -145,6 +149,7 @@ describe('Ticket (e2e)', () => {
       userId: user.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
       purchaseId,
     });
     const ticket2 = await TicketFactory.create({
@@ -152,18 +157,21 @@ describe('Ticket (e2e)', () => {
       userId: user.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const ticket3 = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user2.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const ticket4 = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user2.id,
       status: TicketStatus.Active,
       ticketTypeId: ticketType.id,
+      eventId: event.id,
       purchaseId,
     });
     const redeem = await RedeemFactory.create({

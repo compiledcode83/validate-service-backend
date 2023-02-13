@@ -11,7 +11,8 @@ export class TicketRepository extends CommonRepository {
     const queryBuilder = this.createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.ticketProvider', 'ticketProvider')
       .leftJoinAndSelect('ticket.user', 'user')
-      .leftJoinAndSelect('ticket.ticketType', 'ticketType');
+      .leftJoinAndSelect('ticket.ticketType', 'ticketType')
+      .leftJoinAndSelect('ticketType.translations', 'ticketTypeTranslations');
 
     if ('ticketProviderId' in searchParams) {
       queryBuilder.andWhere({ ticketProviderId: searchParams.ticketProviderId });

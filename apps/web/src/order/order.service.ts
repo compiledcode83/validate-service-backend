@@ -7,7 +7,7 @@ import { PaymentEventPattern } from '@web/payment/payment.types';
 import { TicketTypeService } from '@web/ticket-type/ticket-type.service';
 import { TicketService } from '@web/ticket/ticket.service';
 import { DateTime } from 'luxon';
-import { IsNull, MoreThanOrEqual, QueryRunner, Repository } from 'typeorm';
+import { MoreThanOrEqual, QueryRunner, Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { MessageService } from '@web/message/message.service';
 import { OrderRepository } from './order.repository';
@@ -21,6 +21,8 @@ import { OrderPrimary } from '@app/order/order-primary.entity';
 import { TicketCreateMessage } from '@app/ticket/messages/ticket-create.message';
 import { Ticket } from '@app/ticket/ticket.entity';
 import { DEFAULT_IMAGE, TicketEventPattern } from '@app/ticket/ticket.types';
+import { TranslationService } from '@app/translation/translation.service';
+import { Locale } from '@app/translation/translation.types';
 
 @Injectable()
 export class OrderService {
@@ -38,60 +40,88 @@ export class OrderService {
     private readonly messageService: MessageService,
   ) {}
 
-  async findByUuid(uuid: string): Promise<Order> {
-    return this.orderRepository.findOne({
-      where: { uuid },
-      relations: this.getRelations(),
-    });
+  async findByUuid(uuid: string, locale: Locale): Promise<Order> {
+    const order = await this.orderRepository.getQbWithRelations().where({ uuid }).getOne();
+
+    this.mapTranslations(order, locale);
+
+    return order;
   }
 
-  async findByUuidAndUser(uuid: string, userId: number): Promise<Order> {
-    return this.orderRepository.findOne({
-      where: [
+  async findById(queryRunner: QueryRunner, id: number, locale: Locale): Promise<Order> {
+    const order = await this.orderRepository.getQbWithRelations(queryRunner).where({ id }).getOne();
+
+    this.mapTranslations(order, locale);
+
+    return order;
+  }
+
+  async findByUuidAndUser(uuid: string, userId: number, locale: Locale): Promise<Order> {
+    const order = await this.orderRepository
+      .getQbWithRelations()
+      .where([
         { buyerId: userId, uuid },
         { sellerId: userId, uuid },
-      ],
-      relations: this.getRelations(),
-    });
+      ])
+      .getOne();
+
+    this.mapTranslations(order, locale);
+
+    return order;
   }
 
-  async findByTicketId(ticketId: number): Promise<Order> {
-    return this.orderRepository.findOne({
-      where: {
-        primaryPurchases: {
-          tickets: {
-            ticketId,
-          },
-        },
-      },
-      relations: this.getRelations(),
-    });
+  async findByTicketId(ticketId: number, locale: Locale = Locale.en_US): Promise<Order> {
+    const order = await this.orderRepository
+      .getQbWithRelations()
+      .where('tickets.ticketId = :ticketId', { ticketId })
+      .getOne();
+
+    this.mapTranslations(order, locale);
+
+    return order;
   }
 
-  async findPayableOrder(uuid: string, userId: number): Promise<Order> {
-    return this.orderRepository.findPayableOrder(uuid, userId);
+  async findPayableOrder(uuid: string, userId: number, locale: Locale = Locale.en_US): Promise<Order> {
+    const order = await this.orderRepository
+      .getQbWithRelations()
+      .where({
+        uuid,
+        buyerId: userId,
+        status: OrderStatus.Created,
+        reservedUntil: MoreThanOrEqual(DateTime.now().toJSDate()),
+      })
+      .andWhere('payment.id IS NULL')
+      .getOne();
+
+    this.mapTranslations(order, locale);
+
+    return order;
   }
 
-  async findCompletableByExternalId(externalId: string): Promise<Order> {
-    return this.orderRepository.findOne({
-      where: {
+  async findCompletableByExternalId(externalId: string, locale: Locale = Locale.en_US): Promise<Order> {
+    const order = await this.orderRepository
+      .getQbWithRelations()
+      .where({
         payment: {
           externalId,
           externalStatus: OrderPaymentStatus.Pending,
         },
         status: OrderStatus.Created,
-      },
-      relations: this.getRelations(),
-    });
+      })
+      .getOne();
+
+    this.mapTranslations(order, locale);
+
+    return order;
   }
 
-  async create(body: CreateOrderDto): Promise<Order> {
+  async create(body: CreateOrderDto, locale: Locale): Promise<Order> {
     if (body.marketType === OrderMarketType.Primary) {
-      return this.createPrimarySale(body);
+      return this.createPrimarySale(body, locale);
     }
   }
 
-  async createPrimarySale(body: CreateOrderDto): Promise<Order> {
+  async createPrimarySale(body: CreateOrderDto, locale: Locale): Promise<Order> {
     const queryRunner = this.orderRepository.dataSource.createQueryRunner();
 
     try {
@@ -160,7 +190,7 @@ export class OrderService {
       await queryRunner.manager.insert(OrderPrimary, orderPrimaryValues);
       await queryRunner.commitTransaction();
 
-      return this.findByUuid(order.uuid);
+      return this.findByUuid(order.uuid, locale);
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
@@ -170,7 +200,12 @@ export class OrderService {
     }
   }
 
-  async createOrderPayment(orderId: number, externalId: string, externalData: string): Promise<OrderPayment> {
+  async createOrderPayment(
+    orderId: number,
+    externalId: string,
+    externalData: string,
+    locale: Locale,
+  ): Promise<OrderPayment> {
     const queryRunner = this.orderRepository.dataSource.createQueryRunner();
 
     try {
@@ -186,10 +221,7 @@ export class OrderService {
         }),
       );
 
-      const order = await queryRunner.manager.findOne(Order, {
-        where: { id: orderId },
-        relations: this.getRelations(),
-      });
+      const order = await this.findById(queryRunner, orderId, locale);
       const payload = new PaymentCancelPaywallMessage({ order });
 
       await this.outboxService.create(queryRunner, PaymentEventPattern.CancelPaywall, payload, order.reservedUntil);
@@ -328,8 +360,12 @@ export class OrderService {
 
         const ticket = await queryRunner.manager.findOne(Ticket, {
           where: { id: createdTicket.id },
-          relations: ['ticketType', 'ticketType.event', 'user'],
+          relations: ['ticketType', 'ticketType.translations', 'ticketType.event.translations', 'user'],
         });
+
+        /** @todo we don't know what locale to use in here */
+        TranslationService.mapEntity(ticket.ticketType, Locale.en_US);
+        TranslationService.mapEntity(ticket.ticketType.event, Locale.en_US);
 
         const payload = new TicketCreateMessage({
           ticket,
@@ -342,16 +378,12 @@ export class OrderService {
     await this.messageService.createTicketsPurchaseMessages(queryRunner, purchaseId, order.buyer);
   }
 
-  private getRelations(): string[] {
-    return [
-      'primaryPurchases',
-      'secondaryPurchases',
-      'primaryPurchases.tickets',
-      'primaryPurchases.ticketType',
-      'primaryPurchases.ticketType.event',
-      'buyer',
-      'seller',
-      'payment',
-    ];
+  private mapTranslations(order: Order, locale: Locale): void {
+    order?.primaryPurchases.map((primaryPurchase) => {
+      TranslationService.mapEntity(primaryPurchase.ticketType, locale);
+      TranslationService.mapEntity(primaryPurchase.ticketType.event, locale);
+      delete primaryPurchase.ticketType.translations;
+      delete primaryPurchase.ticketType.event.translations;
+    });
   }
 }

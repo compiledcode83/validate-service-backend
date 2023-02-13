@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import path = require('path');
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
 import { RedisModule } from '@app/redis/redis.module';
 import { SentryModule } from '@app/sentry/sentry.module';
 import { EventModule } from './event/event.module';
+import { TranslationModule } from '@app/translation/translation.module';
 import appConfig from './config/app.config';
 import redeemConfig from './config/redeem.config';
 import jwtConfig from './config/jwt.config';
@@ -29,6 +31,8 @@ import orderConfig from './config/order.config';
 import stripeConfig from './config/stripe.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
 import kafkaConfig from '../../../libs/common/src/configs/kafka.config';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+import { Locale } from '@app/translation/translation.types';
 
 EnvHelper.verifyNodeEnv();
 
@@ -39,6 +43,18 @@ EnvHelper.verifyNodeEnv();
       isGlobal: true,
       load: [appConfig, kafkaConfig, redeemConfig, redisConfig, jwtConfig, authConfig, orderConfig, stripeConfig],
       validate: validateWeb,
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: Locale.en_US,
+      loaderOptions: {
+        path: path.join(__dirname, '../../../i18n/'),
+        watch: true,
+      },
+      fallbacks: {
+        'en-*': Locale.en_US,
+        pt: Locale.pt_BR,
+      },
+      resolvers: [AcceptLanguageResolver],
     }),
     DatabaseModule,
     TicketProviderModule,
@@ -57,6 +73,7 @@ EnvHelper.verifyNodeEnv();
     OrderModule,
     PaymentModule,
     StripeModule,
+    TranslationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
