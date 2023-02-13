@@ -12,7 +12,7 @@ COPY . .
 
 COPY .env.test .env.test
 
-RUN chmod +x node_modules/.bin/nest && npm run build ${BUILD_APP}
+RUN chmod +x node_modules/.bin/nest && npm run build ${BUILD_APP} && npm run i18n:copy:${BUILD_APP}
 
 VOLUME /app/node_modules
 

@@ -23,6 +23,8 @@ import { RedisModule } from '@app/redis/redis.module';
 import { SentryModule } from '@app/sentry/sentry.module';
 import { EventModule } from './event/event.module';
 import { TranslationModule } from '@app/translation/translation.module';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+import { Locale } from '@app/translation/translation.types';
 import appConfig from './config/app.config';
 import redeemConfig from './config/redeem.config';
 import jwtConfig from './config/jwt.config';
@@ -31,8 +33,8 @@ import orderConfig from './config/order.config';
 import stripeConfig from './config/stripe.config';
 import redisConfig from '../../../libs/common/src/configs/redis.config';
 import kafkaConfig from '../../../libs/common/src/configs/kafka.config';
-import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
-import { Locale } from '@app/translation/translation.types';
+
+console.log(path.join(__dirname, '../../../../../i18n/'));
 
 EnvHelper.verifyNodeEnv();
 
@@ -47,7 +49,7 @@ EnvHelper.verifyNodeEnv();
     I18nModule.forRoot({
       fallbackLanguage: Locale.en_US,
       loaderOptions: {
-        path: path.join(__dirname, '../../../i18n/'),
+        path: path.join(__dirname, '../../../i18n'),
         watch: true,
       },
       fallbacks: {

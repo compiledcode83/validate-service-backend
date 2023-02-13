@@ -38,7 +38,7 @@ EnvHelper.verifyNodeEnv();
     I18nModule.forRoot({
       fallbackLanguage: Locale.en_US,
       loaderOptions: {
-        path: path.join(__dirname, '../../../i18n/'),
+        path: path.join(__dirname, '../../../i18n'),
         watch: true,
       },
       fallbacks: {
