@@ -7,6 +7,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BUILD_APP: api
     environment:
       - NODE_ENV=test
     depends_on:
