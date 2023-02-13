@@ -230,9 +230,9 @@ describe('Translation (e2e)', () => {
             expect.arrayContaining([
               expect.objectContaining({
                 uuid: event.uuid,
-                name: 'English Name',
-                shortDescription: 'English ShortDescription',
-                longDescription: 'English LongDescription',
+                name: 'Portugese Name',
+                shortDescription: 'Portugese ShortDescription',
+                longDescription: 'Portugese LongDescription',
               }),
             ]),
           );

@@ -23,7 +23,7 @@ import { RedisModule } from '@app/redis/redis.module';
 import { SentryModule } from '@app/sentry/sentry.module';
 import { EventModule } from './event/event.module';
 import { TranslationModule } from '@app/translation/translation.module';
-import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+import { AcceptLanguageResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
 import { Locale } from '@app/translation/translation.types';
 import appConfig from './config/app.config';
 import redeemConfig from './config/redeem.config';
@@ -46,13 +46,13 @@ EnvHelper.verifyNodeEnv();
     }),
     I18nModule.forRoot({
       fallbackLanguage: Locale.en_US,
+      loader: I18nJsonLoader,
       loaderOptions: {
         path: EnvHelper.isTest() ? path.join(__dirname, '../i18n') : path.join(__dirname, '../../../i18n'),
         watch: true,
       },
       fallbacks: {
-        'en-*': Locale.en_US,
-        pt: Locale.pt_BR,
+        'pt-*': Locale.pt_BR,
       },
       resolvers: [AcceptLanguageResolver],
     }),

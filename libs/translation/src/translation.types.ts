@@ -1,8 +1,8 @@
 import { Translation } from './translation.entity';
 
 export enum Locale {
-  en_US = 'en_US',
-  pt_BR = 'pt_BR',
+  en_US = 'en-US',
+  pt_BR = 'pt-BR',
 }
 
 export enum EntityName {
