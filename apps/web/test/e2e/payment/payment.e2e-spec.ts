@@ -30,6 +30,8 @@ import { Outbox } from '@app/outbox/outbox.entity';
 import { OutboxStatus } from '@app/outbox/outbox.types';
 import { TicketCreateMessage } from '@app/ticket/messages/ticket-create.message';
 import { MessageSendMessage } from '@app/message/messages/message-send.message';
+import { Locale } from '@app/translation/translation.types';
+import { TicketService } from '@web/ticket/ticket.service';
 
 describe('Payments (e2e)', () => {
   let app: INestApplication;
@@ -38,6 +40,7 @@ describe('Payments (e2e)', () => {
   let orderService: OrderService;
   let stripeService: StripeService;
   let configService: ConfigService;
+  let ticketService: TicketService;
 
   beforeAll(async () => {
     const testingModuleBuilder = AppBootstrapManager.getTestingModuleBuilder();
@@ -45,6 +48,7 @@ describe('Payments (e2e)', () => {
     orderService = moduleFixture.get<OrderService>(OrderService);
     stripeService = moduleFixture.get<StripeService>(StripeService);
     configService = moduleFixture.get<ConfigService>(ConfigService);
+    ticketService = moduleFixture.get<TicketService>(TicketService);
 
     app = moduleFixture.createNestApplication();
     AppBootstrapManager.setAppDefaults(app as NestExpressApplication);
@@ -276,7 +280,7 @@ describe('Payments (e2e)', () => {
           expect(response.status).toBe(HttpStatus.CREATED);
           expect(response.body.url.startsWith('https://checkout.stripe.com')).toBeTruthy();
 
-          const updatedOrder = await orderService.findByUuid(order.uuid);
+          const updatedOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
           expect(updatedOrder).toEqual(
             expect.objectContaining({
@@ -650,13 +654,15 @@ describe('Payments (e2e)', () => {
           expect(response.body).toEqual({});
           expect(response.status).toBe(HttpStatus.OK);
 
-          const updatedOrder = await orderService.findByUuid(order.uuid);
-          const createdTickets = await AppDataSource.manager
+          const updatedOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
+          const createdTicketsCount = await AppDataSource.manager
             .getRepository(Ticket)
-            .find({ where: { id: MoreThan(0) }, relations: ['ticketType', 'ticketType.event', 'user'] });
+            .count({ where: { id: MoreThan(0) } });
 
-          expect(createdTickets.length).toBe(3);
-          const [ticket1, ticket2, ticket3] = createdTickets;
+          expect(createdTicketsCount).toBe(3);
+          const ticket1 = await ticketService.findById(1, Locale.en_US);
+          const ticket2 = await ticketService.findById(2, Locale.en_US);
+          const ticket3 = await ticketService.findById(3, Locale.en_US);
 
           expect(updatedOrder).toEqual(
             expect.objectContaining({
@@ -941,7 +947,7 @@ describe('Payments (e2e)', () => {
           expect(response.body).toEqual({});
           expect(response.status).toBe(HttpStatus.OK);
 
-          const updatedOrder = await orderService.findByUuid(order.uuid);
+          const updatedOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
           expect(updatedOrder).toEqual(
             expect.objectContaining({
               uuid: order.uuid,

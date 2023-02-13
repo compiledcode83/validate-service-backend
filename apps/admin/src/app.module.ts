@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import path = require('path');
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -18,6 +19,9 @@ import { validateAdmin } from '@app/env/env.validator';
 import { TicketProviderApiTokenModule } from './ticket-provider-api-token/ticket-provider-api-token.module';
 import { TicketProviderEncryptionKeyModule } from './ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import { TicketTransferModule } from './ticket-transfer/ticket-transfer.module';
+import { TranslationModule } from '@app/translation/translation.module';
+import { AcceptLanguageResolver, I18nJsonLoader, I18nModule } from 'nestjs-i18n';
+import { Locale } from '@app/translation/translation.types';
 import appConfig from './config/app.config';
 import jwtConfig from './config/jwt.config';
 
@@ -30,6 +34,18 @@ EnvHelper.verifyNodeEnv();
       isGlobal: true,
       load: [appConfig, jwtConfig],
       validate: validateAdmin,
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: Locale.en_US,
+      loader: I18nJsonLoader,
+      loaderOptions: {
+        path: EnvHelper.isTest() ? path.join(__dirname, '../i18n') : path.join(__dirname, '../../../i18n'),
+        watch: true,
+      },
+      fallbacks: {
+        'pt-*': Locale.pt_BR,
+      },
+      resolvers: [AcceptLanguageResolver],
     }),
     DatabaseModule,
     TicketProviderModule,
@@ -45,6 +61,7 @@ EnvHelper.verifyNodeEnv();
     TicketProviderApiTokenModule,
     TicketProviderEncryptionKeyModule,
     TicketTransferModule,
+    TranslationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

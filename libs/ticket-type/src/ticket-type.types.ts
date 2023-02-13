@@ -26,3 +26,8 @@ export enum TicketTypeEventPattern {
   Create = 'ticket.type.create',
   Update = 'ticket.type.update',
 }
+
+export enum TicketTypeTranslatableAttributes {
+  Name = 'name',
+  Description = 'description',
+}

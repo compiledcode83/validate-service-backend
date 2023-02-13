@@ -85,11 +85,15 @@ describe('Redeem (e2e)', () => {
 
     it(`should respond with validation error if ticket with specified uuid is already on sale`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       await ListingFactory.create({ ticketId: 1, userId: user.id, marketType: 'secondary' });
 
@@ -108,11 +112,15 @@ describe('Redeem (e2e)', () => {
 
     it(`should not allow to create a new redeem if there's an active redeem of same mode`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       await RedeemFactory.create({
         purchaseId: ticket.purchaseId,
@@ -137,11 +145,15 @@ describe('Redeem (e2e)', () => {
 
     it(`should create a new redeem`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
 
       await request(app.getHttpServer())
@@ -228,11 +240,15 @@ describe('Redeem (e2e)', () => {
   describe('Redeem verify', () => {
     it(`should respond with validation error if redeem was already redeemed`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const redeem = await RedeemFactory.create({
         purchaseId: ticket.purchaseId,
@@ -262,11 +278,15 @@ describe('Redeem (e2e)', () => {
 
     it(`should respond with validation error if redeem has expired`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const redeem = await RedeemFactory.create({
         userId: user.id,
@@ -298,11 +318,15 @@ describe('Redeem (e2e)', () => {
 
     it(`should respond with validation error if redeem code is invalid`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const redeem = await RedeemFactory.create({
         userId: user.id,
@@ -332,11 +356,15 @@ describe('Redeem (e2e)', () => {
 
     it(`should verify the redeem code successfully`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const redeem = await RedeemFactory.create({
         userId: user.id,
@@ -378,11 +406,15 @@ describe('Redeem (e2e)', () => {
   describe('Redeem QR', () => {
     it(`should respond with validation error if there's no QR display token`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const redeem = await RedeemFactory.create({
         purchaseId: ticket.purchaseId,
@@ -424,6 +456,7 @@ describe('Redeem (e2e)', () => {
         userId: user.id,
         status: TicketStatus.Active,
         ticketTypeId: ticketType.id,
+        eventId: event.id,
         purchaseId,
       });
       const ticket2 = await TicketFactory.create({
@@ -431,6 +464,7 @@ describe('Redeem (e2e)', () => {
         userId: user.id,
         status: TicketStatus.Validated,
         ticketTypeId: ticketType.id,
+        eventId: event.id,
         purchaseId,
       });
       const redeem = await RedeemFactory.create({
@@ -467,18 +501,19 @@ describe('Redeem (e2e)', () => {
                     imageUrl: ticket.imageUrl,
                     status: ticket.status,
                     purchaseId: ticket.purchaseId,
-                    ticketType: {
+                    ticketType: expect.objectContaining({
                       uuid: ticketType.uuid,
                       name: ticketType.name,
                       description: ticketType.description,
-                      ticketDateStart: DateTime.fromJSDate(ticketType.ticketDateStart).toFormat(DATE_FORMAT),
-                      ticketDateEnd: DateTime.fromJSDate(ticketType.ticketDateEnd).toFormat(DATE_FORMAT),
-                      event: {
+                      ticketDateStart: ticketType.ticketDateStart,
+                      ticketDateEnd: ticketType.ticketDateEnd,
+                      event: expect.objectContaining({
                         uuid: event.uuid,
                         name: event.name,
-                        description: event.description,
-                      },
-                    },
+                        shortDescription: event.shortDescription,
+                        longDescription: event.longDescription,
+                      }),
+                    }),
                   }),
                 ]),
               }),
@@ -493,18 +528,19 @@ describe('Redeem (e2e)', () => {
                     imageUrl: ticket2.imageUrl,
                     status: ticket2.status,
                     purchaseId: ticket2.purchaseId,
-                    ticketType: {
+                    ticketType: expect.objectContaining({
                       uuid: ticketType.uuid,
                       name: ticketType.name,
                       description: ticketType.description,
-                      ticketDateStart: DateTime.fromJSDate(ticketType.ticketDateStart).toFormat(DATE_FORMAT),
-                      ticketDateEnd: DateTime.fromJSDate(ticketType.ticketDateEnd).toFormat(DATE_FORMAT),
-                      event: {
+                      ticketDateStart: ticketType.ticketDateStart,
+                      ticketDateEnd: ticketType.ticketDateEnd,
+                      event: expect.objectContaining({
                         uuid: event.uuid,
                         name: event.name,
-                        description: event.description,
-                      },
-                    },
+                        shortDescription: event.shortDescription,
+                        longDescription: event.longDescription,
+                      }),
+                    }),
                   }),
                 ]),
               }),
@@ -533,6 +569,7 @@ describe('Redeem (e2e)', () => {
         userId: user.id,
         status: TicketStatus.Active,
         ticketTypeId: ticketType.id,
+        eventId: event.id,
         purchaseId,
       });
       const ticket2 = await TicketFactory.create({
@@ -540,6 +577,7 @@ describe('Redeem (e2e)', () => {
         userId: user.id,
         status: TicketStatus.Validated,
         ticketTypeId: ticketType.id,
+        eventId: event.id,
         purchaseId,
       });
       const redeem = await RedeemFactory.create({
@@ -580,12 +618,13 @@ describe('Redeem (e2e)', () => {
                       uuid: ticketType.uuid,
                       name: ticketType.name,
                       description: ticketType.description,
-                      ticketDateStart: DateTime.fromJSDate(ticketType.ticketDateStart).toFormat(DATE_FORMAT),
-                      ticketDateEnd: DateTime.fromJSDate(ticketType.ticketDateEnd).toFormat(DATE_FORMAT),
+                      ticketDateStart: ticketType.ticketDateStart,
+                      ticketDateEnd: ticketType.ticketDateEnd,
                       event: {
                         uuid: event.uuid,
                         name: event.name,
-                        description: event.description,
+                        shortDescription: event.shortDescription,
+                        longDescription: event.longDescription,
                       },
                     },
                   }),
@@ -599,12 +638,13 @@ describe('Redeem (e2e)', () => {
                       uuid: ticketType.uuid,
                       name: ticketType.name,
                       description: ticketType.description,
-                      ticketDateStart: DateTime.fromJSDate(ticketType.ticketDateStart).toFormat(DATE_FORMAT),
-                      ticketDateEnd: DateTime.fromJSDate(ticketType.ticketDateEnd).toFormat(DATE_FORMAT),
+                      ticketDateStart: ticketType.ticketDateStart,
+                      ticketDateEnd: ticketType.ticketDateEnd,
                       event: {
                         uuid: event.uuid,
                         name: event.name,
-                        description: event.description,
+                        shortDescription: event.shortDescription,
+                        longDescription: event.longDescription,
                       },
                     },
                   }),

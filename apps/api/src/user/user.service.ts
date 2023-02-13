@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { CreateTicketUserDto } from '@api/ticket/dto/create-ticket-user.dto';
-import { QueryRunner } from 'typeorm';
 import { UserRepository } from './user.repository';
 import { UserCreateMessage } from '@app/user/messages/user-create.message';
 import { User } from '@app/user/user.entity';
-import { UserEventPattern, UserStatus } from '@app/user/user.types';
+import { UserEventPattern } from '@app/user/user.types';
 import { OutboxService } from '@app/outbox/outbox.service';
 
 @Injectable()
@@ -56,33 +54,5 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  async findOrCreate(queryRunner: QueryRunner, user: CreateTicketUserDto): Promise<User> {
-    if (user?.uuid) {
-      return this.findByUuid(user.uuid);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { ticketProvider, ...userData } = user;
-    const { generatedMaps } = await queryRunner.manager
-      .createQueryBuilder(User, 'user')
-      .insert()
-      .values({
-        ...this.userRepository.create(userData),
-        ticketProviderId: user.ticketProvider.id,
-      })
-      .execute();
-    const [insertedValues] = generatedMaps;
-
-    return queryRunner.manager.findOneBy(User, { id: insertedValues.id });
-  }
-
-  async completeWithSuccess(uuid: string, walletAddress: string): Promise<void> {
-    await this.userRepository.update({ uuid }, { walletAddress, status: UserStatus.Active });
-  }
-
-  async completeWithError(uuid: string, errorData: string): Promise<void> {
-    await this.userRepository.update({ uuid }, { errorData });
   }
 }

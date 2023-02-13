@@ -2,8 +2,10 @@ import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { ParamToBodyInterceptor } from '@app/common/interceptors/param-to-body.interceptor';
 import { RequestToBodyInterceptor } from '@app/common/interceptors/request-to-body.interceptor';
 import { AuthRequest } from '@app/common/types/auth.request';
+import { CreateTicketDto } from '@app/ticket/dto/create-ticket.dto';
 import { TicketPaginatedResult } from '@app/ticket/interfaces/ticket-paginated-result';
 import { Ticket } from '@app/ticket/ticket.entity';
+import { Locale } from '@app/translation/translation.types';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -21,7 +23,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateTicketDto } from './dto/create-ticket.dto';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { DeleteTicketDto } from './dto/delete-ticket.dto';
 import { FindTicketsDto } from './dto/find-tickets.dto';
 import { ValidateTicketDto } from './dto/validate-ticket.dto';
@@ -85,14 +87,10 @@ export class TicketController {
   @ApiOperation({ description: `Create a new ticket` })
   @ApiResponse(ApiResponseHelper.success(Ticket, HttpStatus.CREATED))
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
-  @UseInterceptors(
-    ClassSerializerInterceptor,
-    new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'),
-    new RequestToBodyInterceptor('ticketProvider', 'user.ticketProvider'),
-  )
+  @UseInterceptors(ClassSerializerInterceptor, new RequestToBodyInterceptor('ticketProvider', 'ticketProvider'))
   @Post()
-  async create(@Body() body: CreateTicketDto): Promise<Ticket> {
-    return this.ticketService.create(body);
+  async create(@Body() body: CreateTicketDto, @I18n() i18n: I18nContext): Promise<Ticket> {
+    return this.ticketService.create(body, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Delete a ticket` })

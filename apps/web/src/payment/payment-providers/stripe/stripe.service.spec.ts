@@ -17,6 +17,7 @@ import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { OrderFactory } from '@app/database/factories/order.factory';
 import { OrderPaymentFactory } from '@app/database/factories/order-payment.factory';
 import { OrderPaymentStatus } from '@app/order/order.types';
+import { Locale } from '@app/translation/translation.types';
 
 EnvHelper.verifyNodeEnv();
 
@@ -85,7 +86,7 @@ describe('StripeService', () => {
       { ticketTypeId: ticketType1.id, quantity: buyingQuantity },
       { ticketTypeId: ticketType2.id, quantity: buyingQuantity },
     ]);
-    const fullOrder = await orderService.findByUuid(order.uuid);
+    const fullOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
     const session = await stripeService['createCheckoutSession'](fullOrder);
 
     expect(session).toEqual(
@@ -150,7 +151,7 @@ describe('StripeService', () => {
     });
 
     const order = await OrderFactory.create({ buyerId: user.id }, [{ ticketTypeId: ticketType.id, quantity: 1 }]);
-    const fullOrder = await orderService.findByUuid(order.uuid);
+    const fullOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
     const session = await stripeService.createPaywall(fullOrder);
 
     expect(session).toEqual(
@@ -176,7 +177,7 @@ describe('StripeService', () => {
     });
 
     const order = await OrderFactory.create({ buyerId: user.id }, [{ ticketTypeId: ticketType.id, quantity: 1 }]);
-    const fullOrder = await orderService.findByUuid(order.uuid);
+    const fullOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
     const session = await stripeService.createPaywall(fullOrder);
 
     expect(session).toEqual(

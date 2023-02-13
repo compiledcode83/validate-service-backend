@@ -44,6 +44,7 @@ import { PaymentCancelPaywallMessage } from '@web/payment/messages/payment-cance
 import { OrderPayment } from '@app/order/order-payment.entity';
 import { PaymentService } from '@web/payment/payment.service';
 import { OrderService } from '@web/order/order.service';
+import { Locale } from '@app/translation/translation.types';
 
 jest.setTimeout(30000);
 waitForExpect.defaults.timeout = 25000;
@@ -114,6 +115,8 @@ describe('Consumer microservice (e2e)', () => {
     it('Expects to get a successfull ticket create reply and update ticket data', async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -122,6 +125,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
 
       const replyMessage = new TicketCreateReplyMessage({
@@ -165,6 +170,8 @@ describe('Consumer microservice (e2e)', () => {
     it('Expects to get an error for ticket create reply and update ticket data with it', async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -173,6 +180,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
 
       const replyMessage = new TicketCreateReplyMessage({
@@ -223,6 +232,7 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
         eventId: event.id,
       });
 
@@ -285,6 +295,7 @@ describe('Consumer microservice (e2e)', () => {
         tokenId: null,
         transactionHash: null,
         eventId: event.id,
+        ticketTypeId: ticketType.id,
       });
 
       const order = await OrderFactory.create({ buyerId: user.id, status: OrderStatus.Created }, [
@@ -337,10 +348,14 @@ describe('Consumer microservice (e2e)', () => {
     it('Expects to get an error for ticket delete reply and update ticket data', async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
         status: TicketStatus.Active,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
 
       const replyMessage = new TicketDeleteReplyMessage({
@@ -378,7 +393,14 @@ describe('Consumer microservice (e2e)', () => {
       const ticketProvider = await TicketProviderFactory.create();
       const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-      const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: userFrom.id,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
+      });
       const ticketTransfer = await TicketTransferFactory.create({
         ticketProviderId: ticketProvider.id,
         userIdFrom: userFrom.id,
@@ -432,7 +454,14 @@ describe('Consumer microservice (e2e)', () => {
       const ticketProvider = await TicketProviderFactory.create();
       const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
       const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-      const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+      const ticket = await TicketFactory.create({
+        ticketProviderId: ticketProvider.id,
+        userId: userFrom.id,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
+      });
       const ticketTransfer = await TicketTransferFactory.create({
         ticketProviderId: ticketProvider.id,
         userIdFrom: userFrom.id,
@@ -558,6 +587,8 @@ describe('Consumer microservice (e2e)', () => {
     it(`Expects to get successfull ${MessageEventPattern.SendReply} event and save message status`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -566,6 +597,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const message = await MessageFactory.create({
         ticketId: ticket.id,
@@ -602,6 +635,8 @@ describe('Consumer microservice (e2e)', () => {
     it(`Expects to get error ${MessageEventPattern.SendReply} event and save message status and errorData`, async () => {
       const ticketProvider = await TicketProviderFactory.create();
       const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+      const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+      const ticketType = await TicketTypeFactory.create({ eventId: event.id });
       const ticket = await TicketFactory.create({
         ticketProviderId: ticketProvider.id,
         userId: user.id,
@@ -610,6 +645,8 @@ describe('Consumer microservice (e2e)', () => {
         ipfsUri: null,
         tokenId: null,
         transactionHash: null,
+        ticketTypeId: ticketType.id,
+        eventId: event.id,
       });
       const message = await MessageFactory.create({
         ticketId: ticket.id,
@@ -662,9 +699,12 @@ describe('Consumer microservice (e2e)', () => {
       });
 
       const order = await OrderFactory.create({ buyerId: user.id }, [{ ticketTypeId: ticketType.id, quantity: 1 }]);
-      await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
+      await paymentService.create(
+        { orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe },
+        Locale.en_US,
+      );
 
-      const createdOrder = await orderService.findByUuid(order.uuid);
+      const createdOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       expect(createdOrder).toEqual(
         expect.objectContaining({
@@ -692,7 +732,7 @@ describe('Consumer microservice (e2e)', () => {
 
       await new Promise((fulfill) => setTimeout(fulfill, 500));
 
-      const canceledOrder = await orderService.findByUuid(order.uuid);
+      const canceledOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       expect(canceledOrder).toEqual(
         expect.objectContaining({
@@ -722,8 +762,11 @@ describe('Consumer microservice (e2e)', () => {
       const order = await OrderFactory.create({ buyerId: user.id, status: OrderStatus.Completed }, [
         { ticketTypeId: ticketType.id, quantity: 1 },
       ]);
-      await paymentService.create({ orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe });
-      const createdOrder = await orderService.findByUuid(order.uuid);
+      await paymentService.create(
+        { orderUuid: order.uuid, paymentProviderType: PaymentProviderType.Stripe },
+        Locale.en_US,
+      );
+      const createdOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       await AppDataSource.manager
         .getRepository(OrderPayment)
@@ -745,7 +788,7 @@ describe('Consumer microservice (e2e)', () => {
 
       await new Promise((fulfill) => setTimeout(fulfill, 1500));
 
-      const completedOrder = await orderService.findByUuid(order.uuid);
+      const completedOrder = await orderService.findByUuid(order.uuid, Locale.en_US);
 
       expect(completedOrder).toEqual(
         expect.objectContaining({

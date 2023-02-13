@@ -16,6 +16,8 @@ import { OutboxStatus } from '@app/outbox/outbox.types';
 import { TicketStatus } from '@app/ticket/ticket.types';
 import { TicketTransferEventPattern } from '@app/ticket-transfer/ticket-transfer.types';
 import { UserStatus } from '@app/user/user.types';
+import { EventFactory } from '@app/database/factories/event.factory';
+import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
 
 describe('Ticket-transfer (e2e)', () => {
   let app: INestApplication;
@@ -78,7 +80,14 @@ describe('Ticket-transfer (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id, status: UserStatus.Creating });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: userFrom.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .post('/api/v1/ticket-transfers')
@@ -99,9 +108,13 @@ describe('Ticket-transfer (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: userFrom.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
       status: TicketStatus.Creating,
     });
 
@@ -123,10 +136,14 @@ describe('Ticket-transfer (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const currentOwner = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: currentOwner.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
 
     await request(app.getHttpServer())
@@ -150,7 +167,14 @@ describe('Ticket-transfer (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: userFrom.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .post('/api/v1/ticket-transfers')
@@ -226,7 +250,14 @@ describe('Ticket-transfer (e2e)', () => {
     const ticketProviderSecond = await TicketProviderFactory.create();
     const userFrom = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
     const userTo = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProviderSecond.id, userId: userFrom.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProviderSecond.id,
+      userId: userFrom.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
     const ticketTransfer = await TicketTransferFactory.create({
       ticketProviderId: ticketProviderSecond.id,
       userIdFrom: userFrom.id,
@@ -249,7 +280,14 @@ describe('Ticket-transfer (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const userFrom = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const userTo = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: userFrom.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: userFrom.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
     const ticketTransfer = await TicketTransferFactory.create({
       ticketProviderId: ticketProvider.id,
       userIdFrom: userFrom.id,

@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import {
   EntitySubscriberInterface,
   EventSubscriber as EventSubscriberDecorator,
@@ -9,6 +10,7 @@ import { Event } from './event.entity';
 import { EventHelper } from './event.helper';
 
 @EventSubscriberDecorator()
+@Injectable()
 export class EventSubscriber implements EntitySubscriberInterface<Event> {
   listenTo(): any {
     return Event;
@@ -26,10 +28,5 @@ export class EventSubscriber implements EntitySubscriberInterface<Event> {
 
   afterLoad(entity: Event): void {
     entity.ticketsInformation = EventHelper.getTicketsInformation(entity);
-
-    const dates = EventHelper.getEventDates(entity);
-
-    entity.dateStart = dates.dateStart;
-    entity.dateEnd = dates.dateEnd;
   }
 }

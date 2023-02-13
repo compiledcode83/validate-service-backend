@@ -23,6 +23,8 @@ import { Ticket } from '@app/ticket/ticket.entity';
 import { ParamToQueryInterceptor } from '@app/common/interceptors/param-to-query.interceptor';
 import { RequestToParamInterceptor } from '@app/common/interceptors/request-to-param.interceptor';
 import { TicketPaginatedResult } from '@app/ticket/interfaces/ticket-paginated-result';
+import { I18n, I18nContext } from 'nestjs-i18n';
+import { Locale } from '@app/translation/translation.types';
 
 @Controller('tickets')
 export class TicketController {
@@ -35,8 +37,11 @@ export class TicketController {
   @UseInterceptors(ClassSerializerInterceptor, new ParamToQueryInterceptor('purchaseId', 'purchaseId'))
   @HttpCode(HttpStatus.OK)
   @Get(':purchaseId')
-  async findAllPaginated(@Query() searchParams: FindTicketsDto): Promise<PagingResult<Ticket>> {
-    const tickets = await this.ticketService.findAllPaginated(searchParams);
+  async findAllPaginated(
+    @Query() searchParams: FindTicketsDto,
+    @I18n() i18n: I18nContext,
+  ): Promise<PagingResult<Ticket>> {
+    const tickets = await this.ticketService.findAllPaginated(searchParams, i18n.lang as Locale);
 
     if (!tickets?.data?.length) {
       throw new NotFoundException('Ticket not found');
@@ -56,7 +61,8 @@ export class TicketController {
   async findAllUserPaginated(
     @Query() searchParams: FindUserTicketsDto,
     @Req() req: AuthRequest,
+    @I18n() i18n: I18nContext,
   ): Promise<PagingResult<Ticket>> {
-    return this.ticketService.findAllUserPaginated(searchParams, req.user.id);
+    return this.ticketService.findAllUserPaginated(searchParams, req.user.id, i18n.lang as Locale);
   }
 }

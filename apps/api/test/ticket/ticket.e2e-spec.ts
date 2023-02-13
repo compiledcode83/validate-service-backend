@@ -83,13 +83,7 @@ describe('Ticket (e2e)', () => {
       .set('Api-Key', token)
       .then((response) => {
         expect(response.body.message).toEqual(
-          expect.arrayContaining([
-            'imageUrl must be an URL address',
-            'additionalData must be an object',
-            'user.name must be shorter than or equal to 128 characters',
-            'user.email must be shorter than or equal to 255 characters',
-            'user.phoneNumber must be a valid phone number',
-          ]),
+          expect.arrayContaining(['imageUrl must be an URL address', 'additionalData must be an object']),
         );
         expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       });
@@ -109,14 +103,19 @@ describe('Ticket (e2e)', () => {
       },
       user: {
         uuid: user.uuid,
+        name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
       },
       event: {
+        uuid: event.uuid,
         name: event.name,
       },
       ticketType: {
+        uuid: ticketType.uuid,
         name: ticketType.name,
-        ticketDateStart: DateTime.fromJSDate(ticketType.ticketDateStart).toFormat(DATE_FORMAT),
-        ticketDateEnd: DateTime.fromJSDate(ticketType.ticketDateEnd).toFormat(DATE_FORMAT),
+        ticketDateStart: ticketType.ticketDateStart,
+        ticketDateEnd: ticketType.ticketDateEnd,
       },
     };
 
@@ -164,14 +163,17 @@ describe('Ticket (e2e)', () => {
         type: 'Adult',
       },
       user: {
+        uuid: faker.datatype.uuid(),
         name: faker.name.fullName(),
         email: faker.internet.email(),
         phoneNumber: faker.phone.number('+4891#######'),
       },
       event: {
+        uuid: faker.datatype.uuid(),
         name: faker.random.word(),
       },
       ticketType: {
+        uuid: faker.datatype.uuid(),
         name: faker.random.word(),
         ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
         ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
@@ -234,11 +236,16 @@ describe('Ticket (e2e)', () => {
       },
       user: {
         uuid: user.uuid,
+        name: faker.name.fullName(),
+        email: faker.internet.email(),
+        phoneNumber: faker.phone.number('+4891#######'),
       },
       event: {
+        uuid: faker.datatype.uuid(),
         name: faker.random.word(),
       },
       ticketType: {
+        uuid: faker.datatype.uuid(),
         name: faker.random.word(),
         ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
         ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
@@ -322,11 +329,16 @@ describe('Ticket (e2e)', () => {
       },
       user: {
         uuid: user.uuid,
+        name: faker.name.fullName(),
+        email: faker.internet.email(),
+        phoneNumber: faker.phone.number('+4891#######'),
       },
       event: {
+        uuid: faker.datatype.uuid(),
         name: faker.random.word(),
       },
       ticketType: {
+        uuid: faker.datatype.uuid(),
         name: faker.random.word(),
         ticketDateStart: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
         ticketDateEnd: DateTime.now().plus({ days: 10 }).toFormat('yyyy-MM-dd'),
@@ -405,8 +417,15 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const ticketProviderSecond = await TicketProviderFactory.create();
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const user = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProviderSecond.id, userId: user.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProviderSecond.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .get(`/api/v1/tickets/${ticket.uuid}`)
@@ -422,7 +441,14 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
-    const ticket = await TicketFactory.create({ ticketProviderId: ticketProvider.id, userId: user.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
+    const ticket = await TicketFactory.create({
+      ticketProviderId: ticketProvider.id,
+      userId: user.id,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
+    });
 
     await request(app.getHttpServer())
       .get(`/api/v1/tickets/${ticket.uuid}`)
@@ -449,15 +475,21 @@ describe('Ticket (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
     const user2 = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const ticket2 = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user2.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
 
     await request(app.getHttpServer())
@@ -489,15 +521,21 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const ticket2 = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Validated,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
 
     await request(app.getHttpServer())
@@ -547,10 +585,14 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Validated,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const hash = faker.random.alphaNumeric(16);
 
@@ -574,10 +616,14 @@ describe('Ticket (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const ticketProviderSecond = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProviderSecond.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const hash = faker.random.alphaNumeric(16);
 
@@ -601,10 +647,14 @@ describe('Ticket (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const ticketProviderSecond = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     await TicketFactory.create({
       ticketProviderId: ticketProviderSecond.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const hash = faker.random.alphaNumeric(16);
 
@@ -625,10 +675,14 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const hash = faker.random.alphaNumeric(16);
 
@@ -673,10 +727,14 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
     const hash = faker.random.alphaNumeric(16);
 
@@ -706,10 +764,14 @@ describe('Ticket (e2e)', () => {
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const ticketProviderSecond = await TicketProviderFactory.create();
     const user = await UserFactory.create({ ticketProviderId: ticketProviderSecond.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProviderSecond.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
 
     await request(app.getHttpServer())
@@ -726,10 +788,14 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Validated,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
 
     await request(app.getHttpServer())
@@ -746,10 +812,14 @@ describe('Ticket (e2e)', () => {
     const ticketProvider = await TicketProviderFactory.create();
     const token = await testHelper.createTicketProviderToken(ticketProvider.id);
     const user = await UserFactory.create({ ticketProviderId: ticketProvider.id });
+    const event = await EventFactory.create({ ticketProviderId: ticketProvider.id });
+    const ticketType = await TicketTypeFactory.create({ eventId: event.id });
     const ticket = await TicketFactory.create({
       ticketProviderId: ticketProvider.id,
       userId: user.id,
       status: TicketStatus.Active,
+      ticketTypeId: ticketType.id,
+      eventId: event.id,
     });
 
     await request(app.getHttpServer())

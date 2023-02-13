@@ -215,6 +215,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/admin/tsconfig.app.json"
       }
+    },
+    "translation": {
+      "type": "library",
+      "root": "libs/translation",
+      "entryFile": "index",
+      "sourceRoot": "libs/translation/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/translation/tsconfig.lib.json"
+      }
     }
   }
 }

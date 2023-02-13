@@ -3,6 +3,8 @@ import { TicketStatus } from '@app/ticket/ticket.types';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Ticket } from '@app/ticket/ticket.entity';
+import { TranslationService } from '@app/translation/translation.service';
+import { Locale } from '@app/translation/translation.types';
 
 class TicketRedeemEvent {
   @ApiProperty({ description: `Event uuid`, maximum: 36 })
@@ -18,18 +20,30 @@ class TicketRedeemEvent {
   name: string;
 
   @ApiProperty({
-    description: 'Description of the event',
+    description: 'Short description of the event',
+    example: 'Lorem ipsum',
+    maximum: 512,
+    minimum: 1,
+    required: false,
+  })
+  shortDescription: string;
+
+  @ApiProperty({
+    description: 'Long description of the event',
     example: 'Lorem ipsum',
     maximum: 10000,
     minimum: 1,
     required: false,
   })
-  description: string;
+  longDescription: string;
 
-  constructor(event: Event) {
+  constructor(event: Event, locale: Locale) {
+    TranslationService.mapEntity(event, locale);
+
     this.uuid = event.uuid;
     this.name = event.name;
-    this.description = event.description;
+    this.shortDescription = event.shortDescription;
+    this.longDescription = event.longDescription;
   }
 }
 
@@ -64,13 +78,15 @@ class TicketRedeemTicketType {
   @ApiProperty({ type: TicketRedeemEvent })
   event: TicketRedeemEvent;
 
-  constructor(ticketType: TicketType) {
+  constructor(ticketType: TicketType, locale: Locale) {
+    TranslationService.mapEntity(ticketType, locale);
+
     this.uuid = ticketType.uuid;
     this.name = ticketType.name;
     this.description = ticketType.description;
     this.ticketDateStart = ticketType.ticketDateStart;
     this.ticketDateEnd = ticketType.ticketDateEnd;
-    this.event = new TicketRedeemEvent(ticketType.event);
+    this.event = new TicketRedeemEvent(ticketType.event, locale);
   }
 }
 
@@ -102,12 +118,12 @@ export class TicketRedeemDto {
   @ApiProperty({ type: TicketRedeemTicketType })
   ticketType: TicketRedeemTicketType;
 
-  constructor(ticket: Ticket) {
+  constructor(ticket: Ticket, locale: Locale) {
     this.uuid = ticket.uuid;
     this.hash = ticket.hash;
     this.imageUrl = ticket.imageUrl;
     this.status = ticket.status;
     this.purchaseId = ticket.purchaseId;
-    this.ticketType = new TicketRedeemTicketType(ticket.ticketType);
+    this.ticketType = new TicketRedeemTicketType(ticket.ticketType, locale);
   }
 }

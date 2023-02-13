@@ -10,8 +10,10 @@ import { OutboxService } from '@app/outbox/outbox.service';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
 import { PaginatedResult } from '@app/common/pagination/pagination.types';
 import { TicketTypeCreateMessage } from '@app/ticket-type/messages/ticket-type-create.message';
-import { TicketTypeEventPattern } from '@app/ticket-type/ticket-type.types';
+import { TicketTypeEventPattern, TicketTypeTranslatableAttributes } from '@app/ticket-type/ticket-type.types';
 import { TicketTypeUpdateMessage } from '@app/ticket-type/messages/ticket-type-update.message';
+import { EntityAttribute, EntityName, Locale } from '@app/translation/translation.types';
+import { TranslationService } from '@app/translation/translation.service';
 
 @Injectable()
 export class TicketTypeService {
@@ -19,10 +21,15 @@ export class TicketTypeService {
     private readonly ticketTypeRepository: TicketTypeRepository,
     private readonly eventService: EventService,
     private readonly outboxService: OutboxService,
+    private readonly translationService: TranslationService,
   ) {}
 
-  async findByUuid(uuid: string): Promise<TicketType> {
-    return this.ticketTypeRepository.findOneBy({ uuid });
+  async findByUuid(uuid: string, locale: Locale): Promise<TicketType> {
+    const ticketType = await this.ticketTypeRepository.findOneBy({ uuid });
+
+    TranslationService.mapEntity(ticketType, locale);
+
+    return ticketType;
   }
 
   async findByUuidAndTicketProvider(uuid: string, ticketProviderId: number): Promise<TicketType> {
@@ -32,31 +39,19 @@ export class TicketTypeService {
     });
   }
 
-  async findByNameAndEvent(
-    name: string,
-    eventId: number,
-    ticketDateStart: any,
-    ticketDateEnd: any,
-    excludeUuid?: string,
-  ): Promise<TicketType> {
-    const findParams = { name, eventId, ticketDateStart, ticketDateEnd: ticketDateEnd ?? null };
+  async findAllPaginated(searchParams: FindTicketTypesDto, locale: Locale): Promise<PaginatedResult<TicketType>> {
+    const event = await this.eventService.findByUuid(searchParams.eventUuid, locale);
 
-    if (excludeUuid) {
-      findParams['uuid'] = Not(excludeUuid);
-    }
+    const ticketTypePaginated = await this.ticketTypeRepository.getPaginatedQueryBuilder(searchParams, event.id);
 
-    return this.ticketTypeRepository.findOneBy(findParams);
+    ticketTypePaginated.data.map((ticketType) => TranslationService.mapEntity(ticketType, locale));
+
+    return ticketTypePaginated;
   }
 
-  async findAllPaginated(searchParams: FindTicketTypesDto): Promise<PaginatedResult<TicketType>> {
-    const event = await this.eventService.findByUuid(searchParams.eventUuid);
-
-    return this.ticketTypeRepository.getPaginatedQueryBuilder(searchParams, event.id);
-  }
-
-  async create(body: CreateTicketTypeDto): Promise<TicketType> {
-    const { ticketProvider, ...ticketTypeParams } = body;
-    const event = await this.eventService.findByUuid(body.eventUuid);
+  async create(body: CreateTicketTypeDto, locale: Locale): Promise<TicketType> {
+    const { ticketProvider, name, description, ...ticketTypeParams } = body;
+    const event = await this.eventService.findByUuid(body.eventUuid, locale);
     const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
 
     try {
@@ -67,13 +62,14 @@ export class TicketTypeService {
         this.ticketTypeRepository.create({ ...ticketTypeParams, eventId: event.id }),
       );
       const ticketType = await queryRunner.manager.findOneBy(TicketType, { id: createdTicketType.id });
+      await this.saveTranslations(queryRunner, createdTicketType.id, body, locale);
 
       const payload = new TicketTypeCreateMessage({ ticketType });
       await this.outboxService.create(queryRunner, TicketTypeEventPattern.Create, payload);
 
       await queryRunner.commitTransaction();
 
-      return this.findByUuid(ticketType.uuid);
+      return this.findByUuid(ticketType.uuid, locale);
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
@@ -83,8 +79,8 @@ export class TicketTypeService {
     }
   }
 
-  async update(body: UpdateTicketTypeDto): Promise<TicketType> {
-    const { ticketProvider, uuid, ...ticketTypeParams } = body;
+  async update(body: UpdateTicketTypeDto, locale: Locale): Promise<TicketType> {
+    const { ticketProvider, uuid, name, description, ...ticketTypeParams } = body;
 
     const queryRunner = this.ticketTypeRepository.dataSource.createQueryRunner();
 
@@ -101,11 +97,12 @@ export class TicketTypeService {
 
       const updatedTicketType = await queryRunner.manager.findOneBy(TicketType, { uuid });
       const payload = new TicketTypeUpdateMessage({ ticketType: updatedTicketType });
+      await this.saveTranslations(queryRunner, updatedTicketType.id, body, locale);
 
       await this.outboxService.create(queryRunner, TicketTypeEventPattern.Update, payload);
       await queryRunner.commitTransaction();
 
-      return this.findByUuid(uuid);
+      return this.findByUuid(uuid, locale);
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
@@ -115,13 +112,30 @@ export class TicketTypeService {
     }
   }
 
-  async findOrCreate(
+  private async saveTranslations(
     queryRunner: QueryRunner,
-    eventId: number,
-    name: string,
-    ticketDateStart: any,
-    ticketDateEnd?: any,
-  ): Promise<TicketType> {
-    return this.ticketTypeRepository.findOrCreate(queryRunner, eventId, name, ticketDateStart, ticketDateEnd);
+    ticketTypeId: number,
+    dto: CreateTicketTypeDto | UpdateTicketTypeDto,
+    locale: Locale,
+  ) {
+    const saveTranslations: EntityAttribute[] = [];
+    const eventTranslatableAttributes = Object.values<string>(TicketTypeTranslatableAttributes);
+
+    for (const attributeName of Object.keys(dto)) {
+      if (eventTranslatableAttributes.includes(attributeName)) {
+        saveTranslations.push({
+          name: attributeName,
+          value: dto[attributeName],
+        });
+      }
+    }
+
+    await this.translationService.saveTranslations(
+      queryRunner,
+      EntityName.TicketType,
+      ticketTypeId,
+      saveTranslations,
+      locale,
+    );
   }
 }

@@ -1,6 +1,7 @@
 import { ApiResponseHelper } from '@app/common/helpers/api-response.helper';
 import { Event } from '@app/event/event.entity';
 import { EventPaginatedResult } from '@app/event/event.types';
+import { Locale } from '@app/translation/translation.types';
 import {
   ClassSerializerInterceptor,
   Controller,
@@ -15,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Public } from '@web/auth/decorators/public.decorator';
+import { I18n, I18nContext } from 'nestjs-i18n';
 import { FindEventsDto } from './dto/find-events.dto';
 import { EventService } from './event.service';
 
@@ -25,11 +27,15 @@ export class EventController {
 
   @ApiOperation({ description: `Find events` })
   @ApiResponse(ApiResponseHelper.success(EventPaginatedResult))
+  @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.OK)
   @Public()
   @Get()
-  async findAllPaginated(@Query() searchParams: FindEventsDto): Promise<EventPaginatedResult> {
-    return this.eventService.findAllPaginated(searchParams);
+  async findAllPaginated(
+    @Query() searchParams: FindEventsDto,
+    @I18n() i18n: I18nContext,
+  ): Promise<EventPaginatedResult> {
+    return this.eventService.findAllPaginated(searchParams, i18n.lang as Locale);
   }
 
   @ApiOperation({ description: `Get event information` })
@@ -38,8 +44,8 @@ export class EventController {
   @HttpCode(HttpStatus.OK)
   @Public()
   @Get(':uuid')
-  async findOne(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<Event> {
-    const event = await this.eventService.findByUuid(uuid);
+  async findOne(@Param('uuid', ParseUUIDPipe) uuid: string, @I18n() i18n: I18nContext): Promise<Event> {
+    const event = await this.eventService.findByUuid(uuid, i18n.lang as Locale);
 
     if (!event) {
       throw new NotFoundException();
