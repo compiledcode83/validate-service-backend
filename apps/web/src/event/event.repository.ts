@@ -65,7 +65,9 @@ export class EventRepository extends CommonRepository {
       )
       .getOne();
 
-    this.mapTranslation(event, locale);
+    if (event) {
+      this.mapTranslation(event, locale);
+    }
 
     return event;
   }

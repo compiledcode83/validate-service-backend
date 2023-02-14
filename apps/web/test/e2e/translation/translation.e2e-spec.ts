@@ -2,28 +2,17 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { DateTime } from 'luxon';
-import { MoreThan } from 'typeorm';
 import { AppBootstrapManager } from '@web/app-bootstrap.manager';
-import { UserFactory } from '@app/database/factories/user.factory';
 import { AppDataSource } from '@app/common/configs/datasource';
 import { TicketProviderFactory } from '@app/database/factories/ticket-provider.factory';
-import { TicketFactory } from '@app/database/factories/ticket.factory';
-import { TicketStatus } from '@app/ticket/ticket.types';
 import { TestHelper } from '@app/common/helpers/test.helper';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { MessageEventPattern, MessageType } from '@app/message/message.types';
-import { ListingFactory } from '@app/database/factories/listing.factory';
-import { EventFactory } from '@app/database/factories/event.factory';
 import { TicketTypeFactory } from '@app/database/factories/ticket-type.factory';
-import { DATE_FORMAT, TicketTypeSaleStatus, TicketTypeTranslatableAttributes } from '@app/ticket-type/ticket-type.types';
-import { RedeemMode, RedeemStatus } from '@app/redeem/redeem.types';
-import { RedeemFactory } from '@app/database/factories/redeem.factory';
-import { Redeem } from '@app/redeem/redeem.entity';
-import { RedeemTicket } from '@app/redeem/redeem-ticket.entity';
-import { OutboxStatus } from '@app/outbox/outbox.types';
-import { Outbox } from '@app/outbox/outbox.entity';
-import { Message } from '@app/message/message.entity';
-import { MessageSendMessage } from '@app/message/messages/message-send.message';
+import {
+  DATE_FORMAT,
+  TicketTypeSaleStatus,
+  TicketTypeTranslatableAttributes,
+} from '@app/ticket-type/ticket-type.types';
 import { CurrencyEnum } from '@app/common/types/currency.enum';
 import { EntityName, Locale } from '@app/translation/translation.types';
 import { MarketType } from '@app/common/types/market-type.enum';

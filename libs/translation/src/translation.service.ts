@@ -35,7 +35,11 @@ export class TranslationService {
   }
 
   static mapEntity<T extends Translatable>(entity: T, locale: Locale) {
-    const translations = (entity.translations || [])
+    if (entity?.translations.length === 0) {
+      return entity;
+    }
+
+    const translations = entity.translations
       .filter((item) => item.locale === locale && item.entityName === entity.constructor.name)
       .reduce((acc, item) => {
         acc[item.entityAttribute] = item.text;
@@ -43,6 +47,6 @@ export class TranslationService {
         return acc;
       }, {});
 
-    return Object.assign(entity, translations);
+    return Object.assign(entity, translations || {});
   }
 }

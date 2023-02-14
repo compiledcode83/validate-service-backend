@@ -65,7 +65,9 @@ export class TicketTypeRepository extends CommonRepository {
       )
       .getOne();
 
-    this.mapTranslation(ticketType, locale);
+    if (ticketType) {
+      this.mapTranslation(ticketType, locale);
+    }
 
     return ticketType;
   }
