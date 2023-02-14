@@ -18,6 +18,7 @@ import { UserService } from '@web/user/user.service';
 import { UserRepository } from '@web/user/user.repository';
 import { EventExistsValidator } from '@web/event/validators/event-exists.validator';
 import { EventModule } from '@web/event/event.module';
+import { ListingSubscriber } from '@app/listing/listing.subscriber';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { EventModule } from '@web/event/event.module';
     UserRepository,
     IsTicketOnSaleValidator,
     EventExistsValidator,
+    ListingSubscriber,
   ],
   exports: [ListingService],
 })

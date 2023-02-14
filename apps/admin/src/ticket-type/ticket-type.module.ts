@@ -12,6 +12,7 @@ import { OutboxModule } from '@app/outbox/outbox.module';
 import { OutboxService } from '@app/outbox/outbox.service';
 import { OutboxRepository } from '@app/outbox/outbox.repository';
 import { TicketTypeModule as CommonTicketTypeModule } from '@app/ticket-type/ticket-type.module';
+import { TicketTypeSubscriber } from '@app/ticket-type/ticket-type.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TicketType]), EventModule, OutboxModule, CommonTicketTypeModule],
@@ -23,6 +24,7 @@ import { TicketTypeModule as CommonTicketTypeModule } from '@app/ticket-type/tic
     TicketTypeExistsValidator,
     OutboxService,
     OutboxRepository,
+    TicketTypeSubscriber,
   ],
   controllers: [TicketTypeController],
   exports: [TicketTypeService],

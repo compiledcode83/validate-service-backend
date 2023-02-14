@@ -9,6 +9,7 @@ import { UserService } from './user.service';
 import { UserExistsValidatorByIdentifier } from './validators/user-exists-by-identifier.validator';
 import { UserValidator } from './user.validator';
 import { User } from '@app/user/user.entity';
+import { UserSubscriber } from '@app/user/user.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), TicketProviderModule],
@@ -20,6 +21,7 @@ import { User } from '@app/user/user.entity';
     TicketProviderExistsValidator,
     UserExistsValidatorByIdentifier,
     UserValidator,
+    UserSubscriber,
   ],
   exports: [UserService],
 })

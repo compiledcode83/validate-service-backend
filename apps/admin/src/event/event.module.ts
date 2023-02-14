@@ -11,6 +11,7 @@ import { TicketProviderEncryptionKeyService } from '../ticket-provider-encryptio
 import { TicketProviderEncryptionKeyRepository } from '../ticket-provider-encryption-key/ticket-provider-encryption-key.repository';
 import { Event } from '@app/event/event.entity';
 import { TicketProviderEncryptionService } from '@app/ticket-provider-encryption-key/ticket-provider-encryption.service';
+import { EventSubscriber } from '@app/event/event.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Event])],
@@ -25,6 +26,7 @@ import { TicketProviderEncryptionService } from '@app/ticket-provider-encryption
     TicketProviderEncryptionKeyService,
     TicketProviderEncryptionKeyRepository,
     TicketProviderEncryptionService,
+    EventSubscriber
   ],
   exports: [EventService],
 })

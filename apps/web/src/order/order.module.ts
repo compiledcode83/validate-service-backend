@@ -12,6 +12,7 @@ import { OrderSecondary } from '@app/order/order-secondary.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
 import { OrderPayment } from '@app/order/order-payment.entity';
 import { OrderRepository } from './order.repository';
+import { OrderSubscriber } from '@app/order/order.subscriber';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { OrderRepository } from './order.repository';
     OutboxModule,
     MessageModule,
   ],
-  providers: [OrderService, OrderRepository],
+  providers: [OrderService, OrderRepository, OrderSubscriber],
   controllers: [OrderController],
   exports: [OrderService],
 })

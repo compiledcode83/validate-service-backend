@@ -11,6 +11,7 @@ import { QrService } from './qr.service';
 import { RedeemIsActiveValidator } from './validators/redeem-is-active.validator';
 import { MessageModule } from '@web/message/message.module';
 import { Redeem } from '@app/redeem/redeem.entity';
+import { RedeemSubscriber } from '@app/redeem/redeem.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Redeem]), TicketModule, MessageModule],
@@ -22,6 +23,7 @@ import { Redeem } from '@app/redeem/redeem.entity';
     RedeemCodeValidator,
     QrService,
     RedeemIsActiveValidator,
+    RedeemSubscriber,
   ],
   controllers: [RedeemController],
   exports: [RedeemService],
