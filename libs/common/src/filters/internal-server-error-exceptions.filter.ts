@@ -20,6 +20,8 @@ export class InternalServerErrorExceptionsFilter implements ExceptionFilter {
     });
     Sentry.captureException(exception);
 
+    console.error(`Error ${statusCode}: ${exception.message}`, exception?.stack);
+
     response.status(statusCode).json({
       statusCode: statusCode,
       message: 'Internal server error',
