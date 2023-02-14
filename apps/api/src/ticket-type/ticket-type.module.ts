@@ -9,6 +9,7 @@ import { TicketTypeExistsValidator } from './validators/ticket-type-exists.valid
 import { EventModule } from '@api/event/event.module';
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
+import { TicketTypeSubscriber } from '@app/ticket-type/ticket-type.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TicketType]), EventModule, OutboxModule],
@@ -18,6 +19,7 @@ import { OutboxModule } from '@app/outbox/outbox.module';
     EventExistsValidator,
     TicketTypeDuplicateValidator,
     TicketTypeExistsValidator,
+    TicketTypeSubscriber,
   ],
   controllers: [TicketTypeController],
   exports: [TicketTypeService],

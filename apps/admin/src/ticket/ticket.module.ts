@@ -21,6 +21,7 @@ import { Ticket } from '@app/ticket/ticket.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
 import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
 import { TicketTypeModule as CommonTicketTypeModule } from '@app/ticket-type/ticket-type.module';
+import { TicketSubscriber } from '@app/ticket/ticket.subscriber';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { TicketTypeModule as CommonTicketTypeModule } from '@app/ticket-type/tic
     TicketProviderExistsValidator,
     TicketTypeService,
     TicketTypeRepository,
+    TicketSubscriber,
   ],
   exports: [TicketService],
 })

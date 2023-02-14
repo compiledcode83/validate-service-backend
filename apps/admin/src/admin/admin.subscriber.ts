@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { Admin } from './admin.entity';
 
 @EventSubscriberDecorator()
-export class UserSubscriber implements EntitySubscriberInterface<Admin> {
+export class AdminSubscriber implements EntitySubscriberInterface<Admin> {
   listenTo(): any {
     return Admin;
   }

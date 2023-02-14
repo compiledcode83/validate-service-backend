@@ -9,6 +9,7 @@ import { TicketExistsAndActiveValidator } from './validators/ticket-exists-and-a
 import { TicketTransferReceiverValidator } from './validators/ticket-transfer-receiver.validator';
 import { TicketTransfer } from '@app/ticket-transfer/ticket-transfer.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
+import { TicketTransferSubscriber } from '@app/ticket-transfer/ticket-transfer.subscriber';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TicketTransfer]), UserModule, TicketModule, OutboxModule],
@@ -17,6 +18,7 @@ import { OutboxModule } from '@app/outbox/outbox.module';
     TicketTransferRepository,
     TicketExistsAndActiveValidator,
     TicketTransferReceiverValidator,
+    TicketTransferSubscriber,
   ],
   controllers: [TicketTransferController],
   exports: [TicketTransferService],

@@ -14,6 +14,7 @@ import { Ticket } from '@app/ticket/ticket.entity';
 import { OutboxModule } from '@app/outbox/outbox.module';
 import { TicketProviderEncryptionKeyModule } from '@app/ticket-provider-encryption-key/ticket-provider-encryption-key.module';
 import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
+import { TicketSubscriber } from '@app/ticket/ticket.subscriber';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TicketModule as CommonTicketModule } from '@app/ticket/ticket.module';
     TicketUserExistsAndActiveValidator,
     TicketIsValidatableValidator,
     TicketIsDeletableValidator,
+    TicketSubscriber
   ],
   controllers: [TicketController],
   exports: [TicketService],
