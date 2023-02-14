@@ -174,6 +174,9 @@ describe('Events (e2e)', () => {
               }),
               dateStart: DateTime.now().plus({ days: 30 }).toUTC().toFormat(DATE_FORMAT),
               dateEnd: DateTime.now().plus({ days: 45 }).toUTC().toFormat(DATE_FORMAT),
+              name: event1.name,
+              shortDescription: event1.shortDescription,
+              longDescription: event1.longDescription,
             }),
             expect.not.objectContaining({
               uuid: event2.uuid,
