@@ -7,12 +7,13 @@ import { ListingStatus } from '@app/listing/listing.types';
 import { Event } from '@app/event/event.entity';
 import { EventRepository as CommonRepository } from '@app/event/event.repository';
 import { TicketTypeSaleStatus } from '@app/ticket-type/ticket-type.types';
-import { EntityName } from '@app/translation/translation.types';
+import { EntityName, Locale } from '@app/translation/translation.types';
 import { FindOptionsWhere } from 'typeorm';
+import { TranslationService } from '@app/translation/translation.service';
 
 @Injectable()
 export class EventRepository extends CommonRepository {
-  async getPaginatedQueryBuilder(searchParams: FindEventsDto): Promise<PagingResult<Event>> {
+  async getPaginatedQueryBuilder(searchParams: FindEventsDto, locale: Locale): Promise<PagingResult<Event>> {
     const queryBuilder = this.createQueryBuilder('event').leftJoinAndSelect(
       'event.translations',
       'translations',
@@ -43,11 +44,18 @@ export class EventRepository extends CommonRepository {
       },
     });
 
-    return paginator.paginate(queryBuilder);
+    const paginatedEvents = await paginator.paginate(queryBuilder);
+
+    this.mapTranslations(paginatedEvents, locale);
+
+    return paginatedEvents;
   }
 
-  async findOneBy(where: FindOptionsWhere<Event> | FindOptionsWhere<Event>[]): Promise<Event> {
-    return this.createQueryBuilder('event')
+  async findOneBy(
+    where: FindOptionsWhere<Event> | FindOptionsWhere<Event>[],
+    locale: Locale = Locale.en_US,
+  ): Promise<Event> {
+    const event = await this.createQueryBuilder('event')
       .where(where)
       .leftJoinAndSelect(
         'event.translations',
@@ -56,5 +64,20 @@ export class EventRepository extends CommonRepository {
         { entityName: EntityName.Event },
       )
       .getOne();
+
+    if (event) {
+      this.mapTranslation(event, locale);
+    }
+
+    return event;
+  }
+
+  private mapTranslations(events: PagingResult<Event>, locale: Locale): void {
+    events.data.forEach((event) => this.mapTranslation(event, locale));
+  }
+
+  private mapTranslation(event: Event, locale: Locale) {
+    TranslationService.mapEntity(event, locale);
+    delete event.translations;
   }
 }

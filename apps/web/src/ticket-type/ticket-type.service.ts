@@ -1,4 +1,5 @@
 import { TicketType } from '@app/ticket-type/ticket-type.entity';
+import { Locale } from '@app/translation/translation.types';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { OrderService } from '@web/order/order.service';
 import { QueryRunner } from 'typeorm';
@@ -13,8 +14,8 @@ export class TicketTypeService {
     private readonly orderService: OrderService,
   ) {}
 
-  async findAllPaginated(searchParams: FindTicketTypesDto) {
-    const paginatedResult = await this.ticketTypeRepository.getPaginatedQueryBuilder(searchParams);
+  async findAllPaginated(searchParams: FindTicketTypesDto, locale: Locale) {
+    const paginatedResult = await this.ticketTypeRepository.getPaginatedQueryBuilder(searchParams, locale);
 
     for (const ticketType of paginatedResult.data) {
       const boughtAndReservedCount = await this.orderService.getOneBoughtAndReservedCount(ticketType.id);
@@ -23,10 +24,6 @@ export class TicketTypeService {
     }
 
     return paginatedResult;
-  }
-
-  async findByUuid(uuid: string, relations: string[] = []): Promise<TicketType> {
-    return this.ticketTypeRepository.findOne({ where: { uuid }, relations });
   }
 
   async findSellableWithLock(queryRunner: QueryRunner, uuid: string[]): Promise<TicketType[]> {
