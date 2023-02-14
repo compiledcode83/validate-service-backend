@@ -126,6 +126,10 @@ export class EnvironmentVariables {
   @MinLength(1, { groups: ['web'] })
   APP_TICKET_DOMAIN: string;
 
+  @IsString({ groups: ['web'] })
+  @MinLength(1, { groups: ['web'] })
+  APP_MARKETPLACE_DOMAIN: string;
+
   @IsInt({ groups: ['web'] })
   @Min(100000, { groups: ['web'] })
   APP_AUTH_CODE_MIN: number;

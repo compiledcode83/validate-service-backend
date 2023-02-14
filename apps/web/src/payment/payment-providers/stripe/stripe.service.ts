@@ -147,8 +147,8 @@ export class StripeService implements PaymentProviderService {
       line_items: lineItems,
       mode: 'payment',
       currency: order.saleCurrency,
-      success_url: 'https://marketplace.valicit.com/payment/success',
-      cancel_url: 'https://marketplace.valicit.com/payment/cancel',
+      success_url: `https://${this.configService.get('appConfig.marketplaceDomain')}/payment/success`,
+      cancel_url: `https://${this.configService.get('appConfig.marketplaceDomain')}/payment/cancel`,
       after_expiration: {
         recovery: {
           enabled: false,
